@@ -34,7 +34,7 @@ import java.util.*;
  * Author: MrCrayfish
  */
 public class CreativeScreenEvents {
-    private static final ResourceLocation ICONS = new ResourceLocation(Reference.MOD_ID, "textures/gui/icons.png");
+    private static final ResourceLocation ICONS = ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "textures/gui/icons.png");
     private static int startIndex;
     private static CreativeModeTab lastTab = CreativeModeTabs.getDefaultTab();
 

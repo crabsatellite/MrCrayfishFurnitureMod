@@ -2,44 +2,55 @@ package com.mrcrayfish.furniture.network;
 
 import com.mrcrayfish.furniture.Reference;
 import com.mrcrayfish.furniture.network.message.*;
-import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.network.NetworkDirection;
-import net.neoforged.neoforge.network.NetworkRegistry;
-import net.neoforged.neoforge.network.simple.SimpleChannel;
-
-import javax.annotation.Nullable;
-import java.util.Optional;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 /**
  * Author: MrCrayfish
  */
+@EventBusSubscriber(modid = Reference.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
 public class PacketHandler {
-    public static final String PROTOCOL_VERSION = "1";
-
-    private static SimpleChannel instance;
-    private static int nextId = 0;
-
-    public static void init() {
-        instance = NetworkRegistry.ChannelBuilder
-                .named(ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "network"))
-                .networkProtocolVersion(() -> PROTOCOL_VERSION)
-                .clientAcceptedVersions(PROTOCOL_VERSION::equals)
-                .serverAcceptedVersions(PROTOCOL_VERSION::equals)
-                .simpleChannel();
-        register(C2SMessageLockCrate.class, new C2SMessageLockCrate(), NetworkDirection.PLAY_TO_SERVER);
-        register(C2SMessageSendMail.class, new C2SMessageSendMail(), NetworkDirection.PLAY_TO_SERVER);
-        register(C2SMessageSetMailBoxName.class, new C2SMessageSetMailBoxName(), NetworkDirection.PLAY_TO_SERVER);
-        register(C2SMessageOpenMailBox.class, new C2SMessageOpenMailBox(), NetworkDirection.PLAY_TO_SERVER);
-        register(S2CMessageFlipGrill.class, new S2CMessageFlipGrill(), NetworkDirection.PLAY_TO_CLIENT);
-        register(C2SMessageSetDoorMat.class, new C2SMessageSetDoorMat(), NetworkDirection.PLAY_TO_SERVER);
-    }
-
-    private static <T> void register(Class<T> clazz, IMessage<T> message, @Nullable NetworkDirection direction) {
-        instance.registerMessage(nextId++, clazz, message::encode, message::decode, message::handle, Optional.ofNullable(direction));
-    }
-
-    public static SimpleChannel getPlayChannel() {
-        return instance;
+    
+    @SubscribeEvent
+    public static void register(RegisterPayloadHandlersEvent event) {
+        PayloadRegistrar registrar = event.registrar(Reference.MOD_ID).versioned("1.0.0");
+        
+        // Client to Server messages
+        registrar.playToServer(
+                C2SMessageLockCrate.TYPE,
+                C2SMessageLockCrate.CODEC,
+                (message, context) -> message.handle(message, context)
+        );
+        registrar.playToServer(
+                C2SMessageSendMail.TYPE,
+                C2SMessageSendMail.CODEC,
+                (message, context) -> message.handle(message, context)
+        );
+        registrar.playToServer(
+                C2SMessageSetMailBoxName.TYPE,
+                C2SMessageSetMailBoxName.CODEC,
+                (message, context) -> message.handle(message, context)
+        );
+        registrar.playToServer(
+                C2SMessageOpenMailBox.TYPE,
+                C2SMessageOpenMailBox.CODEC,
+                (message, context) -> message.handle(message, context)
+        );
+        registrar.playToServer(
+                C2SMessageSetDoorMat.TYPE,
+                C2SMessageSetDoorMat.CODEC,
+                (message, context) -> message.handle(message, context)
+        );
+        
+        // Server to Client messages
+        registrar.playToClient(
+                S2CMessageFlipGrill.TYPE,
+                S2CMessageFlipGrill.CODEC,
+                (message, context) -> message.handle(message, context)
+        );
     }
 }
 

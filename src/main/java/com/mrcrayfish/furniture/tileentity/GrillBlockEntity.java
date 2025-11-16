@@ -27,6 +27,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -154,7 +155,7 @@ public class GrillBlockEntity extends BlockEntity implements WorldlyContainer {
                 this.cookingTimes[position] = 0;
 
                 /* Sends a packet to players tracking the chunk the Grill is in indicating that animation should play */
-                PacketHandler.getPlayChannel().send(PacketDistributor.TRACKING_CHUNK.with(() -> this.level.getChunkAt(this.worldPosition)), new S2CMessageFlipGrill(this.worldPosition, position));
+                PacketDistributor.sendToPlayersTrackingChunk((ServerLevel) this.level, this.level.getChunkAt(this.worldPosition).getPos(), new S2CMessageFlipGrill(this.worldPosition, position));
 
                 /* Send updates to client */
                 CompoundTag compound = new CompoundTag();

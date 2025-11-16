@@ -1,42 +1,39 @@
 package com.mrcrayfish.furniture.network.message;
 
+import com.mrcrayfish.furniture.Reference;
 import com.mrcrayfish.furniture.network.play.ServerPlayHandler;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.neoforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 /**
  * Author: MrCrayfish
  */
-public class C2SMessageSetMailBoxName implements IMessage<C2SMessageSetMailBoxName> {
-    private String name;
-    private BlockPos pos;
+public record C2SMessageSetMailBoxName(String name, BlockPos pos) implements CustomPacketPayload, IMessage<C2SMessageSetMailBoxName> {
+    public static final CustomPacketPayload.Type<C2SMessageSetMailBoxName> TYPE = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "set_mailbox_name"));
+    public static final StreamCodec<FriendlyByteBuf, C2SMessageSetMailBoxName> CODEC = StreamCodec.composite(
+            ByteBufCodecs.stringUtf8(32), C2SMessageSetMailBoxName::name,
+            BlockPos.STREAM_CODEC, C2SMessageSetMailBoxName::pos,
+            C2SMessageSetMailBoxName::new
+    );
 
-    public C2SMessageSetMailBoxName() {
-    }
-
-    public C2SMessageSetMailBoxName(String name, BlockPos pos) {
-        this.name = name;
-        this.pos = pos;
+    @Override
+    public CustomPacketPayload.Type<C2SMessageSetMailBoxName> type() {
+        return TYPE;
     }
 
     @Override
-    public void encode(C2SMessageSetMailBoxName message, FriendlyByteBuf buffer) {
-        buffer.writeUtf(message.name, 32);
-        buffer.writeBlockPos(message.pos);
+    public StreamCodec<FriendlyByteBuf, C2SMessageSetMailBoxName> codec() {
+        return CODEC;
     }
 
     @Override
-    public C2SMessageSetMailBoxName decode(FriendlyByteBuf buffer) {
-        return new C2SMessageSetMailBoxName(buffer.readUtf(32), buffer.readBlockPos());
-    }
-
-    @Override
-    public void handle(C2SMessageSetMailBoxName message, Supplier<NetworkEvent.Context> supplier) {
-        supplier.get().enqueueWork(() -> IMessage.callServerConsumer(message, supplier, ServerPlayHandler::handleSetMailBoxNameMessage));
-        supplier.get().setPacketHandled(true);
+    public void handle(C2SMessageSetMailBoxName message, IPayloadContext context) {
+        context.enqueueWork(() -> IMessage.callServerConsumer(message, context, ServerPlayHandler::handleSetMailBoxNameMessage));
     }
 
     public String getName() {

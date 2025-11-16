@@ -46,6 +46,7 @@ public class ForgeShapedRecipeBuilder extends ShapedRecipeBuilder {
     private final boolean showNotification = true;
 
     private ForgeShapedRecipeBuilder(RecipeCategory category, String key, ItemStack resultIn) {
+        super(category, resultIn.getItem(), resultIn.getCount());
         this.category = category;
         this.key = key;
         this.result = resultIn.copy();
@@ -111,7 +112,7 @@ public class ForgeShapedRecipeBuilder extends ShapedRecipeBuilder {
      */
     public void build(Consumer<RecipeOutput> consumerIn, ResourceLocation id) {
         this.validate(id);
-        this.advancementBuilder.parent(ResourceLocation.fromNamespaceAndPath("recipes/root")).addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(id)).rewards(AdvancementRewards.Builder.recipe(id)).requirements(AdvancementRequirements.OR);
+        this.advancementBuilder.parent(ResourceLocation.fromNamespaceAndPath("recipes/root")).addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(id)).rewards(AdvancementRewards.Builder.recipe(id)).requirements(AdvancementRequirements.Strategy.OR());
         consumerIn.accept(new Result(this.key, id, this.result, this.group == null ? "" : this.group, determineBookCategory(this.category), this.pattern, this.ingredientMap, this.advancementBuilder, id.withPrefix("recipes/" + this.category.getFolderName() + "/"), this.showNotification));
     }
 
@@ -146,11 +147,12 @@ public class ForgeShapedRecipeBuilder extends ShapedRecipeBuilder {
         }
     }
 
-    public static class Result extends ShapedRecipeBuilder.CraftingResult {
+    public static class Result {
         private final String key;
         private final ResourceLocation id;
         private final ItemStack result;
         private final String group;
+        private final CraftingBookCategory category;
         private final List<String> pattern;
         private final Map<Character, Ingredient> ingredientMap;
         private final Advancement.Builder advancementBuilder;
@@ -158,7 +160,7 @@ public class ForgeShapedRecipeBuilder extends ShapedRecipeBuilder {
         private final boolean showNotification;
 
         public Result(String key, ResourceLocation id, ItemStack result, String group, CraftingBookCategory category, List<String> pattern, Map<Character, Ingredient> ingredientMap, Advancement.Builder advancementBuilder, ResourceLocation advancementId, boolean showNotification) {
-            super(category);
+            this.category = category;
             this.key = key;
             this.id = id;
             this.result = result;
@@ -170,9 +172,8 @@ public class ForgeShapedRecipeBuilder extends ShapedRecipeBuilder {
             this.showNotification = showNotification;
         }
 
-        @Override
         public void serializeRecipeData(JsonObject json) {
-            super.serializeRecipeData(json);
+            json.addProperty("category", this.category.getSerializedName());
 
             if (!this.group.isEmpty()) {
                 json.addProperty("group", this.group);
@@ -193,7 +194,7 @@ public class ForgeShapedRecipeBuilder extends ShapedRecipeBuilder {
 
             json.add("key", jsonobject);
             JsonObject result = new JsonObject();
-            result.addProperty("item", BuiltInRegistries.ITEM.getKey(this.result.getItem()).toString());
+            result.addProperty("id", BuiltInRegistries.ITEM.getKey(this.result.getItem()).toString());
             if (this.result.getCount() > 1) {
                 result.addProperty("count", this.result.getCount());
             }

@@ -1,7 +1,6 @@
 package com.mrcrayfish.furniture.common;
 
 import com.mrcrayfish.furniture.core.ModItems;
-import com.mrcrayfish.furniture.network.PacketHandler;
 import com.mrcrayfish.furniture.tileentity.GrillBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -13,7 +12,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
  */
 public class CommonHandler {
     public static void setup() {
-        PacketHandler.init();
         DispenserBlock.registerBehavior(ModItems.SPATULA::get, (source, stack) ->
         {
             Direction direction = source.getBlockState().getValue(DispenserBlock.FACING);
