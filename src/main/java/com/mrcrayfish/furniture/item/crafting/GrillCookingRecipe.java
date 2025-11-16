@@ -14,8 +14,8 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
  * Author: MrCrayfish
  */
 public class GrillCookingRecipe extends AbstractCookingRecipe {
-    public GrillCookingRecipe(ResourceLocation id, String group, CookingBookCategory category, Ingredient ingredient, ItemStack result, float exp, int cookTime) {
-        super(ModRecipeTypes.GRILL_COOKING.get(), id, group, category, ingredient, result, exp, cookTime);
+    public GrillCookingRecipe(String group, CookingBookCategory category, Ingredient ingredient, ItemStack result, float exp, int cookTime) {
+        super(ModRecipeTypes.GRILL_COOKING.get(), group, category, ingredient, result, exp, cookTime);
     }
 
     @Override

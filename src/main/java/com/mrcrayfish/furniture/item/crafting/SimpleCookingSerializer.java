@@ -36,7 +36,7 @@ public class SimpleCookingSerializer<T extends AbstractCookingRecipe> extends ne
         ItemStack result = this.getResult(object);
         float experience = GsonHelper.getAsFloat(object, "experience", 0.0F);
         int cookingTime = GsonHelper.getAsInt(object, "cookingtime", this.cookingTime);
-        return this.factory.create(id, group, category, ingredient, result, experience, cookingTime);
+        return this.factory.create(group, category, ingredient, result, experience, cookingTime);
     }
 
     private ItemStack getResult(JsonObject object) {
@@ -49,10 +49,10 @@ public class SimpleCookingSerializer<T extends AbstractCookingRecipe> extends ne
 
     @Override
     public T fromNetwork(ResourceLocation id, FriendlyByteBuf buf) {
-        return this.factory.create(id, buf.readUtf(), buf.readEnum(CookingBookCategory.class), Ingredient.fromNetwork(buf), buf.readItem(), buf.readFloat(), buf.readVarInt());
+        return this.factory.create(buf.readUtf(), buf.readEnum(CookingBookCategory.class), Ingredient.fromNetwork(buf), buf.readItem(), buf.readFloat(), buf.readVarInt());
     }
 
     public interface Factory<T extends AbstractCookingRecipe> {
-        T create(ResourceLocation id, String group, CookingBookCategory category, Ingredient ingredient, ItemStack result, float experience, int cookingTime);
+        T create(String group, CookingBookCategory category, Ingredient ingredient, ItemStack result, float experience, int cookingTime);
     }
 }
