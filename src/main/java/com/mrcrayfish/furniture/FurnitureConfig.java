@@ -7,6 +7,21 @@ import org.apache.commons.lang3.tuple.Pair;
  * Author: MrCrayfish
  */
 public class FurnitureConfig {
+    public static final FurnitureConfig.Client CLIENT;
+    public static final FurnitureConfig.Common COMMON;
+    static final ModConfigSpec clientSpec;
+    static final ModConfigSpec commonSpec;
+
+    static {
+        final Pair<FurnitureConfig.Client, ModConfigSpec> clientSpecPair = new ModConfigSpec.Builder().configure(FurnitureConfig.Client::new);
+        clientSpec = clientSpecPair.getRight();
+        CLIENT = clientSpecPair.getLeft();
+
+        final Pair<FurnitureConfig.Common, ModConfigSpec> commonSpecPair = new ModConfigSpec.Builder().configure(FurnitureConfig.Common::new);
+        commonSpec = commonSpecPair.getRight();
+        COMMON = commonSpecPair.getLeft();
+    }
+
     public static class Client {
         public final ModConfigSpec.BooleanValue drawCollisionShapes;
 
@@ -36,22 +51,6 @@ public class FurnitureConfig {
                     .defineInRange("pullMailInterval", 20, 1, Integer.MAX_VALUE);
             builder.pop();
         }
-    }
-
-    static final ModConfigSpec clientSpec;
-    public static final FurnitureConfig.Client CLIENT;
-
-    static final ModConfigSpec commonSpec;
-    public static final FurnitureConfig.Common COMMON;
-
-    static {
-        final Pair<FurnitureConfig.Client, ModConfigSpec> clientSpecPair = new ModConfigSpec.Builder().configure(FurnitureConfig.Client::new);
-        clientSpec = clientSpecPair.getRight();
-        CLIENT = clientSpecPair.getLeft();
-
-        final Pair<FurnitureConfig.Common, ForgeConfigSpec> commonSpecPair = new ForgeConfigSpec.Builder().configure(FurnitureConfig.Common::new);
-        commonSpec = commonSpecPair.getRight();
-        COMMON = commonSpecPair.getLeft();
     }
 }
 
