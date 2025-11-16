@@ -65,15 +65,20 @@ public class PostBoxBlock extends FurnitureHorizontalBlock {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult result) {
         if (player instanceof ServerPlayer serverPlayer) {
-            NetworkHooks.openScreen(serverPlayer, this.getMenuProvider(state, level, pos), buffer -> {
-                // Send the mailbox data when the player opens the post box
-                List<MailBox> mailBoxes = PostOffice.getMailBoxes(serverPlayer);
-                CompoundTag compound = new CompoundTag();
-                ListTag mailBoxList = new ListTag();
-                mailBoxes.forEach(mailBox -> mailBoxList.add(mailBox.serializeDetails()));
-                compound.put("MailBoxes", mailBoxList);
-                buffer.writeNbt(compound);
-            });
+            // In 1.21.1, we need to get the mailboxes and pass them through the MenuProvider
+            List<MailBox> mailBoxes = PostOffice.getMailBoxes(serverPlayer);
+            serverPlayer.openMenu(new SimpleMenuProvider((windowId, playerInventory, playerEntity) -> {
+                List<com.mrcrayfish.furniture.client.MailBoxEntry> entries = new ArrayList<>();
+                for (MailBox mailBox : mailBoxes) {
+                    entries.add(new com.mrcrayfish.furniture.client.MailBoxEntry(
+                        mailBox.getId(),
+                        mailBox.getName(),
+                        mailBox.getOwnerId(),
+                        mailBox.getOwnerName()
+                    ));
+                }
+                return new PostBoxMenu(windowId, playerInventory, ContainerLevelAccess.create(level, pos), entries);
+            }, TITLE));
         }
         return InteractionResult.SUCCESS;
     }

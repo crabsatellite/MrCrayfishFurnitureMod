@@ -90,7 +90,7 @@ public class CrateBlock extends FurnitureHorizontalBlock implements IPortableInv
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult result) {
         if (!level.isClientSide()) {
             if (level.getBlockEntity(pos) instanceof CrateBlockEntity blockEntity) {
-                NetworkHooks.openScreen((ServerPlayer) player, blockEntity, pos);
+                player.openMenu(blockEntity);
             }
         }
         return InteractionResult.SUCCESS;

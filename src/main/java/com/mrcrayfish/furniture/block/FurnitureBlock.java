@@ -60,8 +60,5 @@ public abstract class FurnitureBlock extends Block {
         return type2 == type1 ? (BlockEntityTicker<A>) ticker : null;
     }
 
-    @Override
-    public boolean isPathfindable(BlockState state, BlockGetter getter, BlockPos pos, PathComputationType type) {
-        return false;
-    }
+
 }

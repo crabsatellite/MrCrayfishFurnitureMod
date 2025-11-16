@@ -12,7 +12,6 @@ import com.mrcrayfish.furniture.util.BlockEntityUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.network.NetworkHooks;
 
 /**
  * Author: MrCrayfish
@@ -48,7 +47,7 @@ public class ServerPlayHandler {
             return;
 
         BlockEntityUtil.sendUpdatePacket(blockEntity);
-        NetworkHooks.openScreen(player, blockEntity, message.getPos());
+        player.openMenu(blockEntity);
     }
 
     public static void handleSendMailMessage(ServerPlayer player, C2SMessageSendMail message) {
@@ -96,7 +95,7 @@ public class ServerPlayHandler {
             return;
 
         BlockEntityUtil.sendUpdatePacket(mailBox);
-        NetworkHooks.openScreen(player, mailBox, message.getPos());
+        player.openMenu(mailBox);
     }
 }
 
