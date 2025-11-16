@@ -299,9 +299,9 @@ public class ClientHandler {
 
         event.register((stack, i) ->
         {
-            CompoundTag tag = stack.getTag();
-            if (tag != null) {
-                CompoundTag blockEntityTag = tag.getCompound("BlockEntityTag");
+            net.minecraft.world.item.component.CustomData customData = stack.getOrDefault(net.minecraft.core.component.DataComponents.BLOCK_ENTITY_DATA, net.minecraft.world.item.component.CustomData.EMPTY);
+            if (!customData.isEmpty()) {
+                CompoundTag blockEntityTag = customData.copyTag();
                 if (blockEntityTag.contains("Color", Tag.TAG_INT)) {
                     return DyeColor.byId(blockEntityTag.getInt("Color")).getMapColor().col;
                 }
