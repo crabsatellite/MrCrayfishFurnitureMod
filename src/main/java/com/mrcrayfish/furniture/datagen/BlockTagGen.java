@@ -12,6 +12,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -102,14 +103,14 @@ public class BlockTagGen extends BlockTagsProvider {
         IntrinsicHolderTagsProvider.IntrinsicTagAppender<Block> mineableWithAxe = this.tag(BlockTags.MINEABLE_WITH_AXE);
         ModBlocks.REGISTER.getEntries().stream()
                 .filter(s -> s.get().defaultBlockState().getSoundType() == SoundType.WOOD)
-                .map(RegistryObject::get)
+                .map(DeferredHolder::get)
                 .forEach(mineableWithAxe::add);
 
         // Dynamically gets all stone blocks and marks them as mineable with an pickaxe
         IntrinsicHolderTagsProvider.IntrinsicTagAppender<Block> mineableWithPickaxe = this.tag(BlockTags.MINEABLE_WITH_PICKAXE);
         ModBlocks.REGISTER.getEntries().stream()
                 .filter(s -> s.get().defaultBlockState().getSoundType() == SoundType.STONE || s.get().defaultBlockState().getSoundType() == SoundType.METAL)
-                .map(RegistryObject::get)
+                .map(DeferredHolder::get)
                 .forEach(mineableWithPickaxe::add);
     }
 }
