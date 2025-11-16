@@ -6,10 +6,12 @@ import com.google.common.collect.Sets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementRequirements;
 import net.minecraft.advancements.AdvancementRewards;
 import net.minecraft.advancements.Criterion;
 import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
@@ -19,8 +21,10 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.level.ItemLike;
 
 import javax.annotation.Nullable;
@@ -117,13 +121,22 @@ public class ForgeShapedRecipeBuilder extends ShapedRecipeBuilder {
             .rewards(AdvancementRewards.Builder.recipe(id))
             .requirements(AdvancementRequirements.Strategy.OR);
         
-        Result result = new Result(this.key, id, this.result, this.group == null ? "" : this.group, 
-            this.determineBookCategory(this.category), this.pattern, this.ingredientMap, 
-            this.advancementBuilder, id.withPrefix("recipes/" + this.category.getFolderName() + "/"), 
-            this.showNotification);
+        // Build the shaped recipe
+        CraftingBookCategory craftingCategory = this.determineBookCategory(this.category);
+        ShapedRecipe recipe = new ShapedRecipe(
+            this.group == null ? "" : this.group,
+            craftingCategory,
+            ShapedRecipe.pattern(this.pattern, this.ingredientMap),
+            this.result
+        );
         
-        // RecipeOutput.accept() method signature in 1.21.1
-        output.accept(result.getId(), result, result.getAdvancementId());
+        // Build the advancement
+        AdvancementHolder advancement = this.advancementBuilder.build(
+            id.withPrefix("recipes/" + this.category.getFolderName() + "/")
+        );
+        
+        // Pass to output
+        output.accept(id, recipe, advancement);
     }
 
     private CraftingBookCategory determineBookCategory(RecipeCategory category) {
@@ -219,7 +232,7 @@ public class ForgeShapedRecipeBuilder extends ShapedRecipeBuilder {
             JsonObject jsonobject = new JsonObject();
 
             for (Map.Entry<Character, Ingredient> entry : this.ingredientMap.entrySet()) {
-                jsonobject.add(String.valueOf(entry.getKey()), entry.getValue().toJson());
+                jsonobject.add(String.valueOf(entry.getKey()), entry.getValue().toJson(true));
             }
 
             json.add("key", jsonobject);
