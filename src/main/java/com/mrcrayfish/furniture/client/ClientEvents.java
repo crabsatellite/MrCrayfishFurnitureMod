@@ -52,8 +52,8 @@ public class ClientEvents {
             float fy2 = (float) (y2 + yIn);
             float fz2 = (float) (z2 + zIn);
             
-            consumer.vertex(pose.pose(), fx1, fy1, fz1).color(red, green, blue, alpha).normal(pose.normal(), 0.0F, 1.0F, 0.0F).endVertex();
-            consumer.vertex(pose.pose(), fx2, fy2, fz2).color(red, green, blue, alpha).normal(pose.normal(), 0.0F, 1.0F, 0.0F).endVertex();
+            consumer.addVertex(pose, fx1, fy1, fz1).setColor(red, green, blue, alpha).setNormal(pose, 0.0F, 1.0F, 0.0F);
+            consumer.addVertex(pose, fx2, fy2, fz2).setColor(red, green, blue, alpha).setNormal(pose, 0.0F, 1.0F, 0.0F);
         });
     }
 }
