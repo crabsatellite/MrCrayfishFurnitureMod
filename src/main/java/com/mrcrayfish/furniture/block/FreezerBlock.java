@@ -120,13 +120,14 @@ public class FreezerBlock extends FurnitureHorizontalBlock implements EntityBloc
     }
 
     @Override
-    public void playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
         BlockState upState = level.getBlockState(pos.above());
         if (upState.getBlock() instanceof FridgeBlock) {
             level.setBlock(pos.above(), Blocks.AIR.defaultBlockState(), 35);
             level.levelEvent(player, 2001, pos.above(), Block.getId(upState));
         }
         super.playerWillDestroy(level, pos, state, player);
+        return state;
     }
 
     @Nullable

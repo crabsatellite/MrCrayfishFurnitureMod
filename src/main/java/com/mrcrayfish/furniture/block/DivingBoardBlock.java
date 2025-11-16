@@ -68,7 +68,7 @@ public class DivingBoardBlock extends FurnitureHorizontalBlock {
     }
 
     @Override
-    public void playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
         Direction direction = state.getValue(DIRECTION);
         DivingBoardPart part = state.getValue(PART);
         BlockPos otherPos = part == DivingBoardPart.BASE ? pos.relative(direction) : pos.relative(direction.getOpposite());
@@ -78,6 +78,7 @@ public class DivingBoardBlock extends FurnitureHorizontalBlock {
             level.levelEvent(player, 2001, otherPos, Block.getId(otherBlockState));
         }
         super.playerWillDestroy(level, pos, state, player);
+        return state;
     }
 
     @Override
@@ -106,7 +107,7 @@ public class DivingBoardBlock extends FurnitureHorizontalBlock {
                 entityIn.push(0, Math.sqrt(0.22 * (height + 0.25F)), 0);
                 if (level.isClientSide) {
                     for (int i = 0; i < 5; i++) {
-                        level.addParticle(ParticleTypes.ENTITY_EFFECT, entityIn.xo, entityIn.yo, entityIn.zo, 1.0, 1.0, 1.0);
+                        level.addParticle(ParticleTypes.CLOUD, entityIn.xo, entityIn.yo, entityIn.zo, 0.0, 0.0, 0.0);
                     }
                 } else {
                     level.playSound(null, pos, ModSounds.BLOCK_DIVING_BOARD_BOUNCE.get(), SoundSource.BLOCKS, 1.0F, level.random.nextFloat() * 0.1F + 1.0F);

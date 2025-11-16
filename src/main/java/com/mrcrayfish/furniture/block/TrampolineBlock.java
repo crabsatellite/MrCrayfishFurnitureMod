@@ -197,7 +197,7 @@ public class TrampolineBlock extends FurnitureBlock implements EntityBlock {
                 entity.push(0, Math.sqrt(0.22 * (height + 0.25F)), 0);
                 if (level.isClientSide) {
                     for (int i = 0; i < 5; i++) {
-                        level.addParticle(ParticleTypes.ENTITY_EFFECT, entity.xo, entity.yo, entity.zo, 1.0, 1.0, 1.0);
+                        level.addParticle(ParticleTypes.CLOUD, entity.xo, entity.yo, entity.zo, 0.0, 0.0, 0.0);
                     }
                 } else {
                     level.playSound(null, pos, ModSounds.BLOCK_TRAMPOLINE_BOUNCE.get(), SoundSource.BLOCKS, 1.0F, level.random.nextFloat() * 0.2F + 0.9F);
