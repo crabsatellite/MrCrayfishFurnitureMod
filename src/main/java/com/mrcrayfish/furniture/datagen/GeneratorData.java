@@ -4,6 +4,7 @@ import com.mrcrayfish.furniture.core.ModBlocks;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 import javax.annotation.Nullable;
 import java.util.function.Supplier;
@@ -54,7 +55,7 @@ public class GeneratorData {
         try {
             String fieldFormat = stripped ? "%s_STRIPPED_%s" : "%s_%s";
             String fieldName = String.format(fieldFormat, type.id().toUpperCase(), variant.id().toUpperCase());
-            RegistryObject<Block> block = (RegistryObject<Block>) ModBlocks.class.getField(fieldName).get(null);
+            DeferredHolder<Block, Block> block = (DeferredHolder<Block, Block>) ModBlocks.class.getField(fieldName).get(null);
             return block.getId();
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException("Failed to find field");
@@ -66,7 +67,7 @@ public class GeneratorData {
         try {
             String fieldFormat = stripped ? "UPGRADED_FENCE_STRIPPED_%s" : "UPGRADED_FENCE_%s";
             String fieldName = String.format(fieldFormat, variant.id().toUpperCase());
-            RegistryObject<Block> block = (RegistryObject<Block>) ModBlocks.class.getField(fieldName).get(null);
+            DeferredHolder<Block, Block> block = (DeferredHolder<Block, Block>) ModBlocks.class.getField(fieldName).get(null);
             return block.getId();
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException("Failed to find field");
