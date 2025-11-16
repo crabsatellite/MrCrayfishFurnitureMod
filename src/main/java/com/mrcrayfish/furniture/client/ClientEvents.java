@@ -44,12 +44,18 @@ public class ClientEvents {
     }
 
     private static void drawShape(PoseStack poseStack, VertexConsumer consumer, VoxelShape voxelShape, double xIn, double yIn, double zIn, float red, float green, float blue, float alpha) {
-        Matrix4f matrix4f = poseStack.last().pose();
-        Matrix3f matrix3f = poseStack.last().normal();
+        PoseStack.Pose pose = poseStack.last();
         voxelShape.forAllEdges((x1, y1, z1, x2, y2, z2) ->
         {
-            consumer.vertex(matrix4f, (float) (x1 + xIn), (float) (y1 + yIn), (float) (z1 + zIn)).color(red, green, blue, alpha).normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
-            consumer.vertex(matrix4f, (float) (x2 + xIn), (float) (y2 + yIn), (float) (z2 + zIn)).color(red, green, blue, alpha).normal(matrix3f, 0.0F, 1.0F, 0.0F).endVertex();
+            float fx1 = (float) (x1 + xIn);
+            float fy1 = (float) (y1 + yIn);
+            float fz1 = (float) (z1 + zIn);
+            float fx2 = (float) (x2 + xIn);
+            float fy2 = (float) (y2 + yIn);
+            float fz2 = (float) (z2 + zIn);
+            
+            consumer.vertex(pose.pose(), fx1, fy1, fz1).color(red, green, blue, alpha).normal(pose.normal(), 0.0F, 1.0F, 0.0F).endVertex();
+            consumer.vertex(pose.pose(), fx2, fy2, fz2).color(red, green, blue, alpha).normal(pose.normal(), 0.0F, 1.0F, 0.0F).endVertex();
         });
     }
 }
