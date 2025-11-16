@@ -10,6 +10,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -111,17 +112,17 @@ public class SofaBlock extends FurnitureHorizontalBlock {
     }
 
     @Override
-    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player playerEntity, InteractionHand hand, BlockHitResult result) {
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player playerEntity, InteractionHand hand, BlockHitResult result) {
         if (!level.isClientSide()) {
             if (stack.getItem() == Items.NAME_TAG && this != ModBlocks.SOFA_RAINBOW.get()) {
                 if (stack.getHoverName().getString().equals("jeb_")) {
                     BlockState rainbowSofaState = ModBlocks.SOFA_RAINBOW.get().defaultBlockState().setValue(DIRECTION, state.getValue(DIRECTION)).setValue(TYPE, state.getValue(TYPE));
                     level.setBlock(pos, rainbowSofaState, 3);
-                    return InteractionResult.SUCCESS;
+                    return ItemInteractionResult.SUCCESS;
                 }
             }
         }
-        return InteractionResult.PASS;
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
     @Override

@@ -146,20 +146,22 @@ public class MailBoxBlockEntity extends BasicLootBlockEntity {
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        return this.writeData(new CompoundTag());
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return this.saveWithoutMetadata(registries);
     }
 
     @Nullable
     @Override
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
-        return ClientboundBlockEntityDataPacket.create(this, BlockEntity::getUpdateTag);
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider registries) {
         CompoundTag compound = pkt.getTag();
-        this.readData(compound);
+        if (compound != null) {
+            this.readData(compound);
+        }
     }
 
     private void readData(CompoundTag compound) {

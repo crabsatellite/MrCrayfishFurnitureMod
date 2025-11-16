@@ -91,8 +91,8 @@ public class TrampolineBlockEntity extends BlockEntity {
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        return this.saveWithFullMetadata();
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return this.saveWithoutMetadata(registries);
     }
 
     @Nullable
@@ -102,9 +102,11 @@ public class TrampolineBlockEntity extends BlockEntity {
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider registries) {
         CompoundTag compound = pkt.getTag();
-        this.readData(compound);
+        if (compound != null) {
+            this.readData(compound);
+        }
     }
 
     private void readData(CompoundTag compound) {

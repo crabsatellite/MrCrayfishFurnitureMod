@@ -223,7 +223,7 @@ public class GrillBlockEntity extends BlockEntity implements WorldlyContainer {
         if (blockEntity.remainingFuel == 0 && canCook) {
             for (int i = blockEntity.fuel.size() - 1; i >= 0; i--) {
                 if (!blockEntity.fuel.get(i).isEmpty()) {
-                    blockEntity.remainingFuel = net.neoforged.neoforge.common.CommonHooks.getBurnTime(blockEntity.fuel.get(i), RecipeType.SMELTING);
+                    blockEntity.remainingFuel = blockEntity.fuel.get(i).getBurnTime(null);
                     blockEntity.fuel.set(i, ItemStack.EMPTY);
 
                     /* Send updates to client */
@@ -556,20 +556,22 @@ public class GrillBlockEntity extends BlockEntity implements WorldlyContainer {
     }
 
     @Override
-    public CompoundTag getUpdateTag() {
-        return this.saveWithFullMetadata();
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return this.saveWithoutMetadata(registries);
     }
 
     @Nullable
     @Override
     public ClientboundBlockEntityDataPacket getUpdatePacket() {
-        return ClientboundBlockEntityDataPacket.create(this, BlockEntity::getUpdateTag);
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider registries) {
         CompoundTag compound = pkt.getTag();
-        this.load(compound);
+        if (compound != null) {
+            this.loadAdditional(compound, registries);
+        }
     }
 
     @Override
