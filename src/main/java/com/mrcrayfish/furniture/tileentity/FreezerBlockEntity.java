@@ -28,6 +28,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.RecipeInput;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -106,8 +108,9 @@ public class FreezerBlockEntity extends BasicLootBlockEntity {
 
         ItemStack fuelStack = blockEntity.items.get(1);
         if (blockEntity.isFreezing() || !fuelStack.isEmpty() && !blockEntity.items.get(0).isEmpty()) {
-            SimpleContainer inv = new SimpleContainer(blockEntity.items.get(0));
-            Recipe<?> recipe = level.getRecipeManager().getRecipeFor(ModRecipeTypes.FREEZER_SOLIDIFY.get(), inv, level).orElse(null);
+            RecipeInput inv = RecipeInput.create(blockEntity.items.get(0));
+            RecipeHolder<?> recipeHolder = level.getRecipeManager().getRecipeFor(ModRecipeTypes.FREEZER_SOLIDIFY.get(), inv, level).orElse(null);
+            Recipe<?> recipe = recipeHolder != null ? recipeHolder.value() : null;
             if (!blockEntity.isFreezing() && blockEntity.canFreeze(recipe)) {
                 blockEntity.fuelTime = blockEntity.getFreezeTime(fuelStack);
                 blockEntity.fuelTimeTotal = blockEntity.fuelTime;
@@ -223,9 +226,11 @@ public class FreezerBlockEntity extends BasicLootBlockEntity {
     }
 
     protected int getFreezeTime() {
-        SimpleContainer inv = new SimpleContainer(this.items.get(0));
+        RecipeInput inv = RecipeInput.create(this.items.get(0));
         return this.level.getRecipeManager().getRecipeFor(ModRecipeTypes.FREEZER_SOLIDIFY.get(), inv, this.level)
-            .map(AbstractCookingRecipe::getCookingTime)
+            .map(holder -> holder.value())
+            .filter(recipe -> recipe instanceof AbstractCookingRecipe)
+            .map(recipe -> ((AbstractCookingRecipe) recipe).getCookingTime())
             .orElse(300);
     }
 
@@ -260,9 +265,9 @@ public class FreezerBlockEntity extends BasicLootBlockEntity {
         if (recipe != null) {
             ResourceLocation recipeId = this.level.getRecipeManager().getAllRecipesFor(ModRecipeTypes.FREEZER_SOLIDIFY.get())
                 .stream()
-                .filter(r -> r.equals(recipe))
+                .filter(holder -> holder.value().equals(recipe))
                 .findFirst()
-                .map(Recipe::getId)
+                .map(RecipeHolder::id)
                 .orElse(null);
             if (recipeId != null) {
                 this.usedRecipeCount.compute(recipeId, (id, count) -> 1 + (count == null ? 0 : count));
@@ -272,9 +277,9 @@ public class FreezerBlockEntity extends BasicLootBlockEntity {
 
     public void spawnExperience(Player player) {
         for (Map.Entry<ResourceLocation, Integer> entry : this.usedRecipeCount.entrySet()) {
-            player.level().getRecipeManager().byKey(entry.getKey()).ifPresent((recipe) ->
+            player.level().getRecipeManager().byKey(entry.getKey()).ifPresent(recipeHolder ->
             {
-                if (recipe instanceof AbstractCookingRecipe cookingRecipe) {
+                if (recipeHolder.value() instanceof AbstractCookingRecipe cookingRecipe) {
                     spawnExperienceOrbs(player, entry.getValue(), cookingRecipe.getExperience());
                 }
             });
