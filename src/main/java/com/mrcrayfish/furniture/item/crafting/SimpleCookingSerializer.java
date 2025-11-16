@@ -1,55 +1,69 @@
 package com.mrcrayfish.furniture.item.crafting;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.item.crafting.CookingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.ShapedRecipe;
 
 /**
  * Author: MrCrayfish
  */
-public class SimpleCookingSerializer<T extends AbstractCookingRecipe> extends net.minecraft.world.item.crafting.SimpleCookingSerializer<T> {
+public class SimpleCookingSerializer<T extends AbstractCookingRecipe> implements net.minecraft.world.item.crafting.RecipeSerializer<T> {
     private final Factory<T> factory;
-    private final int cookingTime;
+    private final int defaultCookingTime;
+    private final MapCodec<T> codec;
+    private final StreamCodec<RegistryFriendlyByteBuf, T> streamCodec;
 
-    public SimpleCookingSerializer(Factory<T> factory, int cookingTime) {
-        super(null, cookingTime);
+    public SimpleCookingSerializer(Factory<T> factory, int defaultCookingTime) {
         this.factory = factory;
-        this.cookingTime = cookingTime;
+        this.defaultCookingTime = defaultCookingTime;
+        
+        this.codec = RecordCodecBuilder.mapCodec(instance -> instance.group(
+            Codec.STRING.optionalFieldOf("group", "").forGetter(AbstractCookingRecipe::getGroup),
+            CookingBookCategory.CODEC.fieldOf("category").orElse(CookingBookCategory.MISC).forGetter(AbstractCookingRecipe::category),
+            Ingredient.CODEC_NONEMPTY.fieldOf("ingredient").forGetter(recipe -> recipe.getIngredients().get(0)),
+            ItemStack.CODEC.fieldOf("result").forGetter(recipe -> recipe.getResultItem(null)),
+            Codec.FLOAT.fieldOf("experience").orElse(0.0F).forGetter(AbstractCookingRecipe::getExperience),
+            Codec.INT.fieldOf("cookingtime").orElse(this.defaultCookingTime).forGetter(AbstractCookingRecipe::getCookingTime)
+        ).apply(instance, (group, category, ingredient, result, experience, cookingTime) -> 
+            this.factory.create(group, category, ingredient, result, experience, cookingTime)
+        ));
+        
+        this.streamCodec = StreamCodec.of(
+            (buf, recipe) -> {
+                buf.writeUtf(recipe.getGroup());
+                buf.writeEnum(recipe.category());
+                Ingredient.CONTENTS_STREAM_CODEC.encode(buf, recipe.getIngredients().get(0));
+                ItemStack.STREAM_CODEC.encode(buf, recipe.getResultItem(null));
+                buf.writeFloat(recipe.getExperience());
+                buf.writeVarInt(recipe.getCookingTime());
+            },
+            buf -> {
+                String group = buf.readUtf();
+                CookingBookCategory category = buf.readEnum(CookingBookCategory.class);
+                Ingredient ingredient = Ingredient.CONTENTS_STREAM_CODEC.decode(buf);
+                ItemStack result = ItemStack.STREAM_CODEC.decode(buf);
+                float experience = buf.readFloat();
+                int cookingTime = buf.readVarInt();
+                return this.factory.create(group, category, ingredient, result, experience, cookingTime);
+            }
+        );
     }
 
     @Override
-    public T fromJson(ResourceLocation id, JsonObject object) {
-        String group = GsonHelper.getAsString(object, "group", "");
-        JsonElement element = (GsonHelper.isArrayNode(object, "ingredient") ? GsonHelper.getAsJsonArray(object, "ingredient") : GsonHelper.getAsJsonObject(object, "ingredient"));
-        CookingBookCategory category = CookingBookCategory.CODEC.byName(GsonHelper.getAsString(object, "category", null), CookingBookCategory.MISC);
-        Ingredient ingredient = Ingredient.fromJson(element);
-        if (!object.has("result"))
-            throw new com.google.gson.JsonSyntaxException("Missing result, expected to find a string or object");
-        ItemStack result = this.getResult(object);
-        float experience = GsonHelper.getAsFloat(object, "experience", 0.0F);
-        int cookingTime = GsonHelper.getAsInt(object, "cookingtime", this.cookingTime);
-        return this.factory.create(group, category, ingredient, result, experience, cookingTime);
-    }
-
-    private ItemStack getResult(JsonObject object) {
-        if (object.get("result").isJsonObject())
-            return ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(object, "result"));
-        String rawResult = GsonHelper.getAsString(object, "result");
-        ResourceLocation resultId = ResourceLocation.fromNamespaceAndPath(rawResult);
-        return new ItemStack(BuiltInRegistries.ITEM.getOptional(resultId).orElseThrow(() -> new IllegalStateException("Item: " + rawResult + " does not exist")));
+    public MapCodec<T> codec() {
+        return this.codec;
     }
 
     @Override
-    public T fromNetwork(ResourceLocation id, FriendlyByteBuf buf) {
-        return this.factory.create(buf.readUtf(), buf.readEnum(CookingBookCategory.class), Ingredient.fromNetwork(buf), buf.readItem(), buf.readFloat(), buf.readVarInt());
+    public StreamCodec<RegistryFriendlyByteBuf, T> streamCodec() {
+        return this.streamCodec;
     }
 
     public interface Factory<T extends AbstractCookingRecipe> {
