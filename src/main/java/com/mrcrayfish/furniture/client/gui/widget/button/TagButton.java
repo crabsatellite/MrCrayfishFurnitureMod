@@ -60,10 +60,10 @@ public class TagButton extends Button {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         BufferBuilder builder = Tesselator.getInstance().getBuilder();
         builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-        builder.vertex(matrix4f, x, y + height, 0.0F).uv(((float) (textureX + height) * scaleX), ((float) (textureY) * scaleY)).endVertex();
-        builder.vertex(matrix4f, x + width, y + height, 0.0F).uv(((float) (textureX + height) * scaleX), ((float) (textureY + width) * scaleY)).endVertex();
-        builder.vertex(matrix4f, x + width, y, 0.0F).uv(((float) (textureX) * scaleX), ((float) (textureY + width) * scaleY)).endVertex();
-        builder.vertex(matrix4f, x, y, 0.0F).uv(((float) (textureX) * scaleX), ((float) (textureY) * scaleY)).endVertex();
+        builderaddVertex(matrix4f, x, y + height, 0.0F).uv(((float) (textureX + height) * scaleX), ((float) (textureY) * scaleY)).endVertex();
+        builderaddVertex(matrix4f, x + width, y + height, 0.0F).uv(((float) (textureX + height) * scaleX), ((float) (textureY + width) * scaleY)).endVertex();
+        builderaddVertex(matrix4f, x + width, y, 0.0F).uv(((float) (textureX) * scaleX), ((float) (textureY + width) * scaleY)).endVertex();
+        builderaddVertex(matrix4f, x, y, 0.0F).uv(((float) (textureX) * scaleX), ((float) (textureY) * scaleY)).endVertex();
         BufferUploader.drawWithShader(builder.end());
     }
 

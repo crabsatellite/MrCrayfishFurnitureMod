@@ -58,11 +58,11 @@ public class KitchenSinkBlockEntityRenderer implements BlockEntityRenderer<Kitch
 
         //TODO test
         VertexConsumer consumer = source.getBuffer(RenderType.translucent());
-        Matrix4f matrix = poseStack.last().pose();
-        consumer.vertex(matrix, x, y + height, z).color(red, green, blue, 1.0F).uv(maxU, minV).uv2(light).normal(0.0F, 1.0F, 0.0F).endVertex();
-        consumer.vertex(matrix, x, y + height, z + depth).color(red, green, blue, 1.0F).uv(minU, minV).uv2(light).normal(0.0F, 1.0F, 0.0F).endVertex();
-        consumer.vertex(matrix, x + width, y + height, z + depth).color(red, green, blue, 1.0F).uv(minU, maxV).uv2(light).normal(0.0F, 1.0F, 0.0F).endVertex();
-        consumer.vertex(matrix, x + width, y + height, z).color(red, green, blue, 1.0F).uv(maxU, maxV).uv2(light).normal(0.0F, 1.0F, 0.0F).endVertex();
+        PoseStack.Pose pose = poseStack.last();
+        consumer.vertex(pose.pose(), x, y + height, z).color(red, green, blue, 1.0F).uv(maxU, minV).uv2(light).normal(pose.normal(), 0.0F, 1.0F, 0.0F).endVertex();
+        consumer.vertex(pose.pose(), x, y + height, z + depth).color(red, green, blue, 1.0F).uv(minU, minV).uv2(light).normal(pose.normal(), 0.0F, 1.0F, 0.0F).endVertex();
+        consumer.vertex(pose.pose(), x + width, y + height, z + depth).color(red, green, blue, 1.0F).uv(minU, maxV).uv2(light).normal(pose.normal(), 0.0F, 1.0F, 0.0F).endVertex();
+        consumer.vertex(pose.pose(), x + width, y + height, z).color(red, green, blue, 1.0F).uv(maxU, maxV).uv2(light).normal(pose.normal(), 0.0F, 1.0F, 0.0F).endVertex();
     }
 }
 
