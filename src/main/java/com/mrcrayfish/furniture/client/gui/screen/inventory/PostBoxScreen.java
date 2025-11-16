@@ -82,7 +82,6 @@ public class PostBoxScreen extends AbstractContainerScreen<PostBoxMenu> {
 
     @Override
     public void containerTick() {
-        this.searchField.tick();
         this.btnSend.active = this.selected != null && !this.menu.getMail().isEmpty();
     }
 
@@ -147,7 +146,6 @@ public class PostBoxScreen extends AbstractContainerScreen<PostBoxMenu> {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(graphics, mouseX, mouseY, partialTicks);
         super.render(graphics, mouseX, mouseY, partialTicks);
         this.renderTooltip(graphics, mouseX, mouseY);
     }
