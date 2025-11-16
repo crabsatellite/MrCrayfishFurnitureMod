@@ -6,6 +6,7 @@ import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.common.NeoForge;
 
 /**
  * Author: MrCrayfish
@@ -51,7 +52,7 @@ public class FreezerResultSlot extends Slot {
             ((FreezerBlockEntity) this.container).spawnExperience(this.player);
         }
         this.removeCount = 0;
-        MinecraftForge.EVENT_BUS.post(new ItemSolidifyEvent(this.player, stack));
+        NeoForge.EVENT_BUS.post(new ItemSolidifyEvent(this.player, stack));
     }
 }
 
