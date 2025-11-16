@@ -20,7 +20,6 @@ import net.minecraft.world.item.crafting.SimpleCookingSerializer;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.Tags;
-import net.minecraft.core.registries.BuiltInRegistries;
 
 import java.util.function.Consumer;
 

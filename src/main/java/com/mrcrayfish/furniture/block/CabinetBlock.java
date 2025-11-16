@@ -8,7 +8,6 @@ import com.mrcrayfish.furniture.util.VoxelShapeHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
@@ -76,7 +75,7 @@ public class CabinetBlock extends FurnitureHorizontalBlock implements EntityBloc
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult result) {
         if (state.getValue(DIRECTION).getOpposite() == result.getDirection()) {
             if (!level.isClientSide()) {
                 if (level.getBlockEntity(pos) instanceof CabinetBlockEntity blockEntity) {

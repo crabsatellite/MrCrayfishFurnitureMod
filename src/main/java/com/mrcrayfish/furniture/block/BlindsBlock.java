@@ -7,7 +7,6 @@ import com.mrcrayfish.furniture.util.VoxelShapeHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -101,7 +100,7 @@ public class BlindsBlock extends FurnitureHorizontalBlock {
     }*/
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult result) {
         this.toggleBlinds(level, pos, !state.getValue(OPEN), state.getValue(DIRECTION), 5);
         if (!level.isClientSide()) {
             if (state.getValue(OPEN)) {

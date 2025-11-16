@@ -16,7 +16,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -79,12 +78,12 @@ public class KitchenSinkBlock extends FurnitureHorizontalBlock implements Entity
         return SHAPES.get(state);
     }
 
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player playerEntity, InteractionHand hand, BlockHitResult result) {
+    @Override
+    protected InteractionResult useItemOn(ItemStack heldItem, BlockState state, Level level, BlockPos pos, Player playerEntity, InteractionHand hand, BlockHitResult result) {
         if (!level.isClientSide()) {
-            ItemStack heldItem = playerEntity.getItemInHand(hand);
             if (heldItem.getItem() == Items.GLASS_BOTTLE) {
                 IFluidHandler handler = FluidUtil.getFluidHandler(level, pos, null).orElse(null);
-                if (handler.getFluidInTank(0).getAmount() > 0 && !level.isClientSide()) {
+                if (handler.getFluidInTank(0).getAmount() > 0) {
                     if (!playerEntity.getAbilities().instabuild) {
                         // Create water potion using Minecraft 1.21.1 API
                         ItemStack waterPotion = net.minecraft.world.item.alchemy.PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.WATER);
@@ -97,18 +96,23 @@ public class KitchenSinkBlock extends FurnitureHorizontalBlock implements Entity
                             playerEntity.inventoryMenu.sendAllDataToRemote();
                         }
                     }
-
                     level.playSound(null, pos, SoundEvents.BOTTLE_FILL, SoundSource.BLOCKS, 1.0F, 1.0F);
                     handler.drain(FluidType.BUCKET_VOLUME, IFluidHandler.FluidAction.EXECUTE);
+                    return InteractionResult.SUCCESS;
                 }
-                return InteractionResult.sidedSuccess(level.isClientSide());
             }
 
             // Check if item can interact with fluid handler using FluidUtil
-            if (!heldItem.isEmpty() && FluidUtil.getFluidHandler(heldItem).isPresent()) {
+            if (FluidUtil.getFluidHandler(heldItem).isPresent()) {
                 return FluidUtil.interactWithFluidHandler(playerEntity, hand, level, pos, result.getDirection()) ? InteractionResult.SUCCESS : InteractionResult.PASS;
             }
+        }
+        return InteractionResult.PASS;
+    }
 
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player playerEntity, BlockHitResult result) {
+        if (!level.isClientSide()) {
             BlockPos waterPos = pos.below().below();
             if (this.isWaterSource(level, waterPos)) {
                 IFluidHandler handler = FluidUtil.getFluidHandler(level, pos, null).orElse(null);
@@ -127,14 +131,14 @@ public class KitchenSinkBlock extends FurnitureHorizontalBlock implements Entity
                     adjacentSources += this.isWaterSource(level, waterPos.east()) ? 1 : 0;
                     adjacentSources += this.isWaterSource(level, waterPos.south()) ? 1 : 0;
                     adjacentSources += this.isWaterSource(level, waterPos.west()) ? 1 : 0;
-                    if (adjacentSources < 2) //If it has less then two adjacent water sources, it is not infinite and thus it should be consumed
-                    {
+                    if (adjacentSources < 2) {
                         level.setBlockAndUpdate(waterPos, Blocks.AIR.defaultBlockState());
                     }
+                    return InteractionResult.SUCCESS;
                 }
             }
         }
-        return InteractionResult.SUCCESS;
+        return InteractionResult.PASS;
     }
 
     private boolean isWaterSource(Level level, BlockPos pos) {

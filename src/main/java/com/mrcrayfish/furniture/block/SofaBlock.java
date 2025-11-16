@@ -111,9 +111,8 @@ public class SofaBlock extends FurnitureHorizontalBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player playerEntity, InteractionHand hand, BlockHitResult result) {
+    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player playerEntity, InteractionHand hand, BlockHitResult result) {
         if (!level.isClientSide()) {
-            ItemStack stack = playerEntity.getItemInHand(hand);
             if (stack.getItem() == Items.NAME_TAG && this != ModBlocks.SOFA_RAINBOW.get()) {
                 if (stack.getHoverName().getString().equals("jeb_")) {
                     BlockState rainbowSofaState = ModBlocks.SOFA_RAINBOW.get().defaultBlockState().setValue(DIRECTION, state.getValue(DIRECTION)).setValue(TYPE, state.getValue(TYPE));
@@ -121,6 +120,13 @@ public class SofaBlock extends FurnitureHorizontalBlock {
                     return InteractionResult.SUCCESS;
                 }
             }
+        }
+        return InteractionResult.PASS;
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player playerEntity, BlockHitResult result) {
+        if (!level.isClientSide()) {
             return SeatEntity.create(level, pos, 0.4, playerEntity, state.getValue(DIRECTION));
         }
         return InteractionResult.SUCCESS;

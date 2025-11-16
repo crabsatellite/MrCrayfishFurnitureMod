@@ -64,18 +64,19 @@ public class GrillBlock extends FurnitureWaterloggedBlock implements EntityBlock
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
+    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
         if (!level.isClientSide() && result.getDirection() == Direction.UP) {
             if (level.getBlockEntity(pos) instanceof GrillBlockEntity blockEntity) {
-                ItemStack stack = player.getItemInHand(hand);
                 if (stack.getItem() == ModItems.SPATULA.get()) {
                     blockEntity.flipItem(this.getPosition(result, pos));
+                    return InteractionResult.SUCCESS;
                 } else if (stack.getItem() == Items.COAL || stack.getItem() == Items.CHARCOAL) {
                     if (blockEntity.addFuel(stack)) {
                         stack.shrink(1);
                         level.playSound(null, pos, SoundEvents.ANCIENT_DEBRIS_HIT, SoundSource.BLOCKS, 1.0F, 1.5F);
+                        return InteractionResult.SUCCESS;
                     }
-                } else if (!stack.isEmpty()) {
+                } else {
                     Optional<GrillCookingRecipe> optional = blockEntity.findMatchingRecipe(stack);
                     if (optional.isPresent()) {
                         GrillCookingRecipe recipe = optional.get();
@@ -83,14 +84,24 @@ public class GrillBlock extends FurnitureWaterloggedBlock implements EntityBlock
                             if (!player.getAbilities().instabuild) {
                                 stack.shrink(1);
                             }
+                            return InteractionResult.SUCCESS;
                         }
                     }
-                } else {
-                    blockEntity.removeItem(this.getPosition(result, pos));
                 }
             }
         }
-        return InteractionResult.SUCCESS;
+        return InteractionResult.PASS;
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult result) {
+        if (!level.isClientSide() && result.getDirection() == Direction.UP) {
+            if (level.getBlockEntity(pos) instanceof GrillBlockEntity blockEntity) {
+                blockEntity.removeItem(this.getPosition(result, pos));
+                return InteractionResult.SUCCESS;
+            }
+        }
+        return InteractionResult.PASS;
     }
 
     private int getPosition(BlockHitResult hit, BlockPos pos) {
