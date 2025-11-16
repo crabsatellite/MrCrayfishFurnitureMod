@@ -6,10 +6,11 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
-import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.DismountHelper;
@@ -46,7 +47,7 @@ public class SeatEntity extends Entity {
     }
 
     @Override
-    protected void defineSynchedData() {
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
     }
 
     @Override
@@ -58,19 +59,16 @@ public class SeatEntity extends Entity {
     }
 
     @Override
-    public double getPassengersRidingOffset() {
+    protected double (Entity entity, EntityDimensions dimensions) {
         return 0.0;
     }
 
     @Override
-    protected boolean canRide(Entity entity) {
+    protected boolean canAddPassenger(Entity entity) {
         return true;
     }
 
-    @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket() {
-        return new ClientboundAddEntityPacket(this);
-    }
+
 
     public static InteractionResult create(Level level, BlockPos pos, double yOffset, Player player, Direction direction) {
         if (!level.isClientSide()) {
