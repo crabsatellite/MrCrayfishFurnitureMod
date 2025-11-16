@@ -177,9 +177,9 @@ public class PostBoxScreen extends AbstractContainerScreen<PostBoxMenu> {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double speed) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         if (RenderUtil.isMouseInArea((int) mouseX, (int) mouseY, this.leftPos + 8, this.topPos + 32, 116, 57)) {
-            this.scroll = (int) Math.max(0, Math.min(this.getMaxScroll(), this.scroll - (speed * 10)));
+            this.scroll = (int) Math.max(0, Math.min(this.getMaxScroll(), this.scroll - (scrollY * 10)));
             return true;
         }
         return false;
