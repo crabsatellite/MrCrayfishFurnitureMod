@@ -12,7 +12,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.RecipeInput;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.Level;
 
 /**
@@ -114,7 +114,7 @@ public class FreezerMenu extends AbstractContainerMenu {
     }
 
     private boolean isIngredient(ItemStack stack) {
-        RecipeInput inv = RecipeInput.create(stack);
+        SingleRecipeInput inv = new SingleRecipeInput(stack);
         return this.level.getRecipeManager().getRecipeFor(ModRecipeTypes.FREEZER_SOLIDIFY.get(), inv, this.level).isPresent();
     }
 

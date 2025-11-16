@@ -29,7 +29,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.item.crafting.RecipeInput;
+import net.minecraft.world.item.crafting.SingleRecipeInput;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -108,7 +108,7 @@ public class FreezerBlockEntity extends BasicLootBlockEntity {
 
         ItemStack fuelStack = blockEntity.items.get(1);
         if (blockEntity.isFreezing() || !fuelStack.isEmpty() && !blockEntity.items.get(0).isEmpty()) {
-            RecipeInput inv = RecipeInput.create(blockEntity.items.get(0));
+            SingleRecipeInput inv = new SingleRecipeInput(blockEntity.items.get(0));
             RecipeHolder<?> recipeHolder = level.getRecipeManager().getRecipeFor(ModRecipeTypes.FREEZER_SOLIDIFY.get(), inv, level).orElse(null);
             Recipe<?> recipe = recipeHolder != null ? recipeHolder.value() : null;
             if (!blockEntity.isFreezing() && blockEntity.canFreeze(recipe)) {
@@ -226,7 +226,7 @@ public class FreezerBlockEntity extends BasicLootBlockEntity {
     }
 
     protected int getFreezeTime() {
-        RecipeInput inv = RecipeInput.create(this.items.get(0));
+        SingleRecipeInput inv = new SingleRecipeInput(this.items.get(0));
         return this.level.getRecipeManager().getRecipeFor(ModRecipeTypes.FREEZER_SOLIDIFY.get(), inv, this.level)
             .map(holder -> holder.value())
             .filter(recipe -> recipe instanceof AbstractCookingRecipe)
