@@ -4,6 +4,7 @@ import com.mrcrayfish.furniture.Reference;
 import com.mrcrayfish.furniture.block.CoffeeTableBlock;
 import com.mrcrayfish.furniture.core.ModBlocks;
 import net.minecraft.advancements.critereon.StatePropertiesPredicate;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.BlockLootSubProvider;
@@ -34,17 +35,13 @@ import java.util.stream.Collectors;
  * @author Ocelot
  */
 public class LootTableGen extends LootTableProvider {
-    public LootTableGen(PackOutput output) {
-        super(output, Set.of(), List.of(new SubProviderEntry(BlockProvider::new, LootContextParamSets.BLOCK)));
-    }
-
-    @Override
-    protected void validate(Map<ResourceLocation, LootTable> map, ValidationContext context) {
+    public LootTableGen(PackOutput output, HolderLookup.Provider registries) {
+        super(output, Set.of(), List.of(new SubProviderEntry(BlockProvider::new, LootContextParamSets.BLOCK)), registries);
     }
 
     private static class BlockProvider extends BlockLootSubProvider {
-        protected BlockProvider() {
-            super(Set.of(), FeatureFlags.REGISTRY.allFlags());
+        protected BlockProvider(HolderLookup.Provider registries) {
+            super(Set.of(), FeatureFlags.REGISTRY.allFlags(), registries);
         }
 
         @Override
@@ -214,7 +211,7 @@ public class LootTableGen extends LootTableProvider {
         }
 
         public void registerTrampoline(Block block) {
-            this.add(block, trampoline -> LootTable.lootTable().withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1)).add(LootItem.lootTableItem(trampoline).apply(CopyNameFunction.copyName(CopyNameFunction.NameSource.BLOCK_ENTITY)).apply(CopyComponentsFunction.copyData(ContextNbtProvider.BLOCK_ENTITY).copy("BlockEntityTag.Count", "")))));
+            this.add(block, trampoline -> LootTable.lootTable().withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1)).add(LootItem.lootTableItem(trampoline).apply(CopyNameFunction.copyName(CopyNameFunction.NameSource.BLOCK_ENTITY)))));
         }
 
 
