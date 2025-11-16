@@ -239,7 +239,7 @@ public class ForgeShapedRecipeBuilder extends ShapedRecipeBuilder {
         }
 
         public ResourceLocation getId() {
-            return new ResourceLocation(this.id.getNamespace(), this.key);
+            return ResourceLocation.fromNamespaceAndPath(this.id.getNamespace(), this.key);
         }
 
         @Nullable

@@ -14,7 +14,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
  * Author: MrCrayfish
  */
 public record S2CMessageFlipGrill(BlockPos pos, int position) implements CustomPacketPayload, IMessage<S2CMessageFlipGrill> {
-    public static final CustomPacketPayload.Type<S2CMessageFlipGrill> TYPE = new CustomPacketPayload.Type<>(new ResourceLocation(Reference.MOD_ID, "flip_grill"));
+    public static final CustomPacketPayload.Type<S2CMessageFlipGrill> TYPE = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "flip_grill"));
     public static final StreamCodec<FriendlyByteBuf, S2CMessageFlipGrill> CODEC = StreamCodec.composite(
             BlockPos.STREAM_CODEC, S2CMessageFlipGrill::pos,
             ByteBufCodecs.INT, S2CMessageFlipGrill::position,

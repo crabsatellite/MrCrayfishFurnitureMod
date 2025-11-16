@@ -16,7 +16,11 @@ import java.util.function.Supplier;
 public class ModItems {
     public static final DeferredRegister<Item> REGISTER = DeferredRegister.create(Registries.ITEM, Reference.MOD_ID);
 
-    public static final DeferredHolder<Item, Item> SPATULA = register("spatula", () -> new SwordItem(Tiers.IRON, 3, -1.4F, new Item.Properties()));
+    public static final DeferredHolder<Item, Item> SPATULA = register("spatula", () -> {
+        // In 1.21.1, SwordItem constructor takes Tier and Properties with attributes
+        Item.Properties properties = new Item.Properties();
+        return new SwordItem(Tiers.IRON, 3, -1.4F, properties);
+    });
 
     private static DeferredHolder<Item, Item> register(String name, Supplier<Item> item) {
         return REGISTER.register(name, item);

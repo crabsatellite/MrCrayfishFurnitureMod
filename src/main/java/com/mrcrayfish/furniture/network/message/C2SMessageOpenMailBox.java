@@ -13,7 +13,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
  * Author: MrCrayfish
  */
 public record C2SMessageOpenMailBox(BlockPos pos) implements CustomPacketPayload, IMessage<C2SMessageOpenMailBox> {
-    public static final CustomPacketPayload.Type<C2SMessageOpenMailBox> TYPE = new CustomPacketPayload.Type<>(new ResourceLocation(Reference.MOD_ID, "open_mailbox"));
+    public static final CustomPacketPayload.Type<C2SMessageOpenMailBox> TYPE = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "open_mailbox"));
     public static final StreamCodec<FriendlyByteBuf, C2SMessageOpenMailBox> CODEC = StreamCodec.composite(
             BlockPos.STREAM_CODEC, C2SMessageOpenMailBox::pos,
             C2SMessageOpenMailBox::new

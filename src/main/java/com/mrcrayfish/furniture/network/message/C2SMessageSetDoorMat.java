@@ -14,7 +14,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
  * Author: MrCrayfish
  */
 public record C2SMessageSetDoorMat(BlockPos pos, String message) implements CustomPacketPayload, IMessage<C2SMessageSetDoorMat> {
-    public static final CustomPacketPayload.Type<C2SMessageSetDoorMat> TYPE = new CustomPacketPayload.Type<>(new ResourceLocation(Reference.MOD_ID, "set_door_mat"));
+    public static final CustomPacketPayload.Type<C2SMessageSetDoorMat> TYPE = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "set_door_mat"));
     public static final StreamCodec<FriendlyByteBuf, C2SMessageSetDoorMat> CODEC = StreamCodec.composite(
             BlockPos.STREAM_CODEC, C2SMessageSetDoorMat::pos,
             ByteBufCodecs.stringUtf8(64), C2SMessageSetDoorMat::message,
