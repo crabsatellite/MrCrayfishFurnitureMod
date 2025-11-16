@@ -59,10 +59,10 @@ public class KitchenSinkBlockEntityRenderer implements BlockEntityRenderer<Kitch
         //TODO test
         VertexConsumer consumer = source.getBuffer(RenderType.translucent());
         PoseStack.Pose pose = poseStack.last();
-        consumer.addVertex(pose, x, y + height, z).setColor(red, green, blue, 1.0F).setUv(maxU, minV).setUv2(light).setNormal(0.0F, 1.0F, 0.0F);
-        consumer.addVertex(pose, x, y + height, z + depth).setColor(red, green, blue, 1.0F).setUv(minU, minV).setUv2(light).setNormal(0.0F, 1.0F, 0.0F);
-        consumer.addVertex(pose, x + width, y + height, z + depth).setColor(red, green, blue, 1.0F).setUv(minU, maxV).setUv2(light).setNormal(0.0F, 1.0F, 0.0F);
-        consumer.addVertex(pose, x + width, y + height, z).setColor(red, green, blue, 1.0F).setUv(maxU, maxV).setUv2(light).setNormal(0.0F, 1.0F, 0.0F);
+        consumer.addVertex(pose.pose(), x, y + height, z).setColor(red, green, blue, 1.0F).setUv(maxU, minV).setUv2(light).setNormal(pose.normal(), 0.0F, 1.0F, 0.0F);
+        consumer.addVertex(pose.pose(), x, y + height, z + depth).setColor(red, green, blue, 1.0F).setUv(minU, minV).setUv2(light).setNormal(pose.normal(), 0.0F, 1.0F, 0.0F);
+        consumer.addVertex(pose.pose(), x + width, y + height, z + depth).setColor(red, green, blue, 1.0F).setUv(minU, maxV).setUv2(light).setNormal(pose.normal(), 0.0F, 1.0F, 0.0F);
+        consumer.addVertex(pose.pose(), x + width, y + height, z).setColor(red, green, blue, 1.0F).setUv(maxU, maxV).setUv2(light).setNormal(pose.normal(), 0.0F, 1.0F, 0.0F);
     }
 }
 
