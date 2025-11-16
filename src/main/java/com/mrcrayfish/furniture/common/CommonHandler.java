@@ -14,9 +14,9 @@ public class CommonHandler {
     public static void setup() {
         DispenserBlock.registerBehavior(ModItems.SPATULA::get, (source, stack) ->
         {
-            Direction direction = source.getBlockState().getValue(DispenserBlock.FACING);
-            BlockPos pos = source.getPos().relative(direction).below();
-            BlockEntity tileEntity = source.getLevel().getBlockEntity(pos);
+            Direction direction = source.state().getValue(DispenserBlock.FACING);
+            BlockPos pos = source.pos().relative(direction).below();
+            BlockEntity tileEntity = source.level().getBlockEntity(pos);
             if (tileEntity instanceof GrillBlockEntity) {
                 ((GrillBlockEntity) tileEntity).flipItems();
             }
