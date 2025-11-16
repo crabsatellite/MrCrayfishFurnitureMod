@@ -10,6 +10,7 @@ import com.mrcrayfish.furniture.util.BlockEntityUtil;
 import com.mrcrayfish.furniture.util.ItemStackHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -446,8 +447,8 @@ public class GrillBlockEntity extends BlockEntity implements WorldlyContainer {
     }
 
     @Override
-    public void load(CompoundTag compound) {
-        super.load(compound);
+    protected void loadAdditional(CompoundTag compound, HolderLookup.Provider registries) {
+        super.loadAdditional(compound, registries);
         if (compound.contains("Grill", Tag.TAG_LIST)) {
             this.grill.clear();
             ItemStackHelper.loadAllItems("Grill", compound, this.grill);
@@ -486,8 +487,8 @@ public class GrillBlockEntity extends BlockEntity implements WorldlyContainer {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
         this.writeItems(tag);
         this.writeFuel(tag);
         this.writeCookingTimes(tag);

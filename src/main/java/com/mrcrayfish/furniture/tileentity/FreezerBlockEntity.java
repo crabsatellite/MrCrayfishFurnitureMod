@@ -9,6 +9,7 @@ import com.mrcrayfish.furniture.event.FreezerFuelTimeEvent;
 import com.mrcrayfish.furniture.inventory.container.FreezerMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -320,8 +321,8 @@ public class FreezerBlockEntity extends BasicLootBlockEntity {
     }
 
     @Override
-    public void load(CompoundTag compound) {
-        super.load(compound);
+    protected void loadAdditional(CompoundTag compound, HolderLookup.Provider registries) {
+        super.loadAdditional(compound, registries);
         this.freezeTime = compound.getInt("FreezeTime");
         this.freezeTimeTotal = compound.getInt("FreezeTimeTotal");
         this.fuelTime = compound.getInt("FuelTime");
@@ -338,8 +339,8 @@ public class FreezerBlockEntity extends BasicLootBlockEntity {
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
         tag.putInt("FreezeTime", this.freezeTime);
         tag.putInt("FreezeTimeTotal", this.freezeTimeTotal);
         tag.putInt("FuelTime", this.fuelTime);

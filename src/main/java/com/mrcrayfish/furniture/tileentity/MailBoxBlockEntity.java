@@ -6,6 +6,7 @@ import com.mrcrayfish.furniture.common.mail.PostOffice;
 import com.mrcrayfish.furniture.core.ModBlockEntities;
 import com.mrcrayfish.furniture.inventory.container.MailBoxMenu;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.Connection;
@@ -133,14 +134,14 @@ public class MailBoxBlockEntity extends BasicLootBlockEntity {
     }
 
     @Override
-    public void load(CompoundTag compound) {
-        super.load(compound);
+    protected void loadAdditional(CompoundTag compound, HolderLookup.Provider registries) {
+        super.loadAdditional(compound, registries);
         this.readData(compound);
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
         this.writeData(tag);
     }
 

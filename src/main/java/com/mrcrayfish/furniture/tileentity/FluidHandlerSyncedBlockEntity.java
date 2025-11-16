@@ -2,6 +2,7 @@ package com.mrcrayfish.furniture.tileentity;
 
 import com.mrcrayfish.furniture.util.BlockEntityUtil;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -37,15 +38,15 @@ public abstract class FluidHandlerSyncedBlockEntity extends BlockEntity {
     }
 
     @Override
-    public void load(CompoundTag tag) {
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         //TODO may need to implement fluid fix from Vehicle Mod. See FluidUtils#fixEmptyTag(NBTTagCompound tag)
-        super.load(tag);
+        super.loadAdditional(tag, registries);
         this.tank.readFromNBT(tag);
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
         this.tank.writeToNBT(tag);
     }
 
