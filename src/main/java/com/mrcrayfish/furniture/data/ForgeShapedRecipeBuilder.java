@@ -3,15 +3,8 @@ package com.mrcrayfish.furniture.data;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import net.minecraft.advancements.Advancement;
-import net.minecraft.advancements.AdvancementHolder;
-import net.minecraft.advancements.AdvancementRequirements;
-import net.minecraft.advancements.AdvancementRewards;
-import net.minecraft.advancements.Criterion;
+import net.minecraft.advancements.*;
 import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
@@ -21,14 +14,11 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
-import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.item.crafting.ShapedRecipePattern;
 import net.minecraft.world.level.ItemLike;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -46,8 +36,8 @@ public class ForgeShapedRecipeBuilder extends ShapedRecipeBuilder {
     private final List<String> pattern = Lists.newArrayList();
     private final Map<Character, Ingredient> ingredientMap = Maps.newLinkedHashMap();
     private final Advancement.Builder advancementBuilder = Advancement.Builder.advancement();
-    private String group;
     private final boolean showNotification = true;
+    private String group;
 
     private ForgeShapedRecipeBuilder(RecipeCategory category, String key, ItemStack resultIn) {
         super(category, resultIn.getItem(), resultIn.getCount());
@@ -118,25 +108,25 @@ public class ForgeShapedRecipeBuilder extends ShapedRecipeBuilder {
     public void build(RecipeOutput output, ResourceLocation id) {
         this.validate(id);
         this.advancementBuilder
-            .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(id))
-            .rewards(AdvancementRewards.Builder.recipe(id))
-            .requirements(AdvancementRequirements.Strategy.OR);
-        
+                .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(id))
+                .rewards(AdvancementRewards.Builder.recipe(id))
+                .requirements(AdvancementRequirements.Strategy.OR);
+
         // Build the shaped recipe
         CraftingBookCategory craftingCategory = this.determineBookCategory(this.category);
         ShapedRecipePattern recipePattern = ShapedRecipePattern.of(this.ingredientMap, this.pattern);
         ShapedRecipe recipe = new ShapedRecipe(
-            this.group == null ? "" : this.group,
-            craftingCategory,
-            recipePattern,
-            this.result
+                this.group == null ? "" : this.group,
+                craftingCategory,
+                recipePattern,
+                this.result
         );
-        
+
         // Build the advancement
         AdvancementHolder advancement = this.advancementBuilder.build(
-            id.withPrefix("recipes/" + this.category.getFolderName() + "/")
+                id.withPrefix("recipes/" + this.category.getFolderName() + "/")
         );
-        
+
         // Pass to output
         output.accept(id, recipe, advancement);
     }
@@ -189,85 +179,6 @@ public class ForgeShapedRecipeBuilder extends ShapedRecipeBuilder {
             } else if (!this.hasAnyCriteria()) {
                 throw new IllegalStateException("No way of obtaining recipe " + id);
             }
-        }
-    }
-
-    public static class Result {
-        private final String key;
-        private final ResourceLocation id;
-        private final ItemStack result;
-        private final String group;
-        private final CraftingBookCategory category;
-        private final List<String> pattern;
-        private final Map<Character, Ingredient> ingredientMap;
-        private final Advancement.Builder advancementBuilder;
-        private final ResourceLocation advancementId;
-        private final boolean showNotification;
-
-        public Result(String key, ResourceLocation id, ItemStack result, String group, CraftingBookCategory category, List<String> pattern, Map<Character, Ingredient> ingredientMap, Advancement.Builder advancementBuilder, ResourceLocation advancementId, boolean showNotification) {
-            this.category = category;
-            this.key = key;
-            this.id = id;
-            this.result = result;
-            this.group = group;
-            this.pattern = pattern;
-            this.ingredientMap = ingredientMap;
-            this.advancementBuilder = advancementBuilder;
-            this.advancementId = advancementId;
-            this.showNotification = showNotification;
-        }
-
-        public void serializeRecipeData(JsonObject json) {
-            json.addProperty("category", this.category.getSerializedName());
-
-            if (!this.group.isEmpty()) {
-                json.addProperty("group", this.group);
-            }
-
-            JsonArray jsonarray = new JsonArray();
-
-            for (String s : this.pattern) {
-                jsonarray.add(s);
-            }
-
-            json.add("pattern", jsonarray);
-            JsonObject jsonobject = new JsonObject();
-
-            for (Map.Entry<Character, Ingredient> entry : this.ingredientMap.entrySet()) {
-                jsonobject.add(String.valueOf(entry.getKey()), entry.getValue().toJson());
-            }
-
-            json.add("key", jsonobject);
-            JsonObject result = new JsonObject();
-            @SuppressWarnings("deprecation")
-            String itemId = BuiltInRegistries.ITEM.getKey(this.result.getItem()).toString();
-            result.addProperty("id", itemId);
-            if (this.result.getCount() > 1) {
-                result.addProperty("count", this.result.getCount());
-            }
-            // Components serialization is handled differently in 1.21.1
-            // NBT tags are now part of DataComponents system
-            json.add("result", result);
-            json.addProperty("show_notification", this.showNotification);
-        }
-
-        //TODO figure out what happened to serializers
-        public RecipeSerializer<?> getType() {
-            return RecipeSerializer.SHAPED_RECIPE;
-        }
-
-        public ResourceLocation getId() {
-            return ResourceLocation.fromNamespaceAndPath(this.id.getNamespace(), this.key);
-        }
-
-        @Nullable
-        public JsonObject serializeAdvancement() {
-            return null; // Advancement serialization is handled by RecipeOutput in 1.21.1
-        }
-
-        @Nullable
-        public ResourceLocation getAdvancementId() {
-            return this.advancementId;
         }
     }
 }
