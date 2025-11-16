@@ -18,6 +18,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -86,8 +88,9 @@ public class KitchenSinkBlock extends FurnitureHorizontalBlock implements Entity
                 IFluidHandler handler = FluidUtil.getFluidHandler(level, pos, null).orElse(null);
                 if (handler.getFluidInTank(0).getAmount() > 0) {
                     if (!playerEntity.getAbilities().instabuild) {
-                        // Create water potion using Minecraft 1.21.1 API
-                        ItemStack waterPotion = net.minecraft.world.item.alchemy.PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.WATER);
+                        // Create water potion using Minecraft 1.21.1 DataComponents API
+                        ItemStack waterPotion = new ItemStack(Items.POTION);
+                        waterPotion.set(DataComponents.POTION_CONTENTS, new PotionContents(Potions.WATER));
                         heldItem.shrink(1);
                         if (heldItem.isEmpty()) {
                             playerEntity.setItemInHand(hand, waterPotion);
@@ -99,16 +102,16 @@ public class KitchenSinkBlock extends FurnitureHorizontalBlock implements Entity
                     }
                     level.playSound(null, pos, SoundEvents.BOTTLE_FILL, SoundSource.BLOCKS, 1.0F, 1.0F);
                     handler.drain(FluidType.BUCKET_VOLUME, IFluidHandler.FluidAction.EXECUTE);
-                    return InteractionResult.SUCCESS;
+                    return ItemInteractionResult.SUCCESS;
                 }
             }
 
             // Check if item can interact with fluid handler using FluidUtil
             if (FluidUtil.getFluidHandler(heldItem).isPresent()) {
-                return FluidUtil.interactWithFluidHandler(playerEntity, hand, level, pos, result.getDirection()) ? InteractionResult.SUCCESS : InteractionResult.PASS;
+                return FluidUtil.interactWithFluidHandler(playerEntity, hand, level, pos, result.getDirection()) ? ItemInteractionResult.SUCCESS : ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
             }
         }
-        return InteractionResult.PASS;
+        return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
     @Override
