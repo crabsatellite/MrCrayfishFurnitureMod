@@ -77,8 +77,7 @@ public class DivingBoardBlock extends FurnitureHorizontalBlock {
             level.setBlock(otherPos, Blocks.AIR.defaultBlockState(), 35);
             level.levelEvent(player, 2001, otherPos, Block.getId(otherBlockState));
         }
-        super.playerWillDestroy(level, pos, state, player);
-        return state;
+        return super.playerWillDestroy(level, pos, state, player);
     }
 
     @Override

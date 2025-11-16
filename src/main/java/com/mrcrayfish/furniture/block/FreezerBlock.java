@@ -126,8 +126,7 @@ public class FreezerBlock extends FurnitureHorizontalBlock implements EntityBloc
             level.setBlock(pos.above(), Blocks.AIR.defaultBlockState(), 35);
             level.levelEvent(player, 2001, pos.above(), Block.getId(upState));
         }
-        super.playerWillDestroy(level, pos, state, player);
-        return state;
+        return super.playerWillDestroy(level, pos, state, player);
     }
 
     @Nullable

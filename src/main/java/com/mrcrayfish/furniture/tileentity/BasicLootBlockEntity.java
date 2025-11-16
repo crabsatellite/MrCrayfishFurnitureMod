@@ -71,13 +71,13 @@ public abstract class BasicLootBlockEntity extends RandomizableContainerBlockEnt
 
     @Override
     public boolean isEmpty() {
-        Iterator it = this.items.iterator();
+        Iterator<ItemStack> it = this.items.iterator();
         ItemStack stack;
         do {
             if (!it.hasNext()) {
                 return true;
             }
-            stack = (ItemStack) it.next();
+            stack = it.next();
         }
         while (stack.isEmpty());
         return false;
