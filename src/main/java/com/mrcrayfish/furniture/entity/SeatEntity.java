@@ -59,11 +59,6 @@ public class SeatEntity extends Entity {
     }
 
     @Override
-    protected double (Entity entity, EntityDimensions dimensions) {
-        return 0.0;
-    }
-
-    @Override
     protected boolean canAddPassenger(Entity entity) {
         return true;
     }
