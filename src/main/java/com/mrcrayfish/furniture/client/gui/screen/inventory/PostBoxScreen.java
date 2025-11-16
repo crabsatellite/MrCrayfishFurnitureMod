@@ -6,7 +6,6 @@ import com.mrcrayfish.furniture.Reference;
 import com.mrcrayfish.furniture.client.MailBoxEntry;
 import com.mrcrayfish.furniture.client.gui.widget.button.IconButton;
 import com.mrcrayfish.furniture.inventory.container.PostBoxMenu;
-import com.mrcrayfish.furniture.network.PacketHandler;
 import com.mrcrayfish.furniture.network.message.C2SMessageSendMail;
 import com.mrcrayfish.furniture.util.RenderUtil;
 import net.minecraft.ChatFormatting;
@@ -19,6 +18,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,7 +76,7 @@ public class PostBoxScreen extends AbstractContainerScreen<PostBoxMenu> {
 
     private void sendMail(Button button) {
         if (this.selected != null && !this.menu.getMail().isEmpty()) {
-            PacketHandler.getPlayChannel().sendToServer(new C2SMessageSendMail(this.selected.getOwnerId(), this.selected.getMailBoxId()));
+            PacketDistributor.sendToServer(new C2SMessageSendMail(this.selected.getOwnerId(), this.selected.getMailBoxId()));
         }
     }
 

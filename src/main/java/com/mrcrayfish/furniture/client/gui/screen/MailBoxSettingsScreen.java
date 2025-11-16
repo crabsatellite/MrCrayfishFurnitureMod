@@ -2,7 +2,6 @@ package com.mrcrayfish.furniture.client.gui.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mrcrayfish.furniture.Reference;
-import com.mrcrayfish.furniture.network.PacketHandler;
 import com.mrcrayfish.furniture.network.message.C2SMessageOpenMailBox;
 import com.mrcrayfish.furniture.network.message.C2SMessageSetMailBoxName;
 import com.mrcrayfish.furniture.tileentity.MailBoxBlockEntity;
@@ -13,6 +12,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 /**
  * Author: MrCrayfish
@@ -45,26 +45,25 @@ public class MailBoxSettingsScreen extends Screen {
 
         this.btnSave = this.addRenderableWidget(Button.builder(Component.translatable("gui.button.cfm.save"), button -> {
             if (this.isValidName()) {
-                PacketHandler.getPlayChannel().sendToServer(new C2SMessageSetMailBoxName(this.nameField.getValue(), this.mailBoxBlockEntity.getBlockPos()));
+                PacketDistributor.sendToServer(new C2SMessageSetMailBoxName(this.nameField.getValue(), this.mailBoxBlockEntity.getBlockPos()));
             }
         }).pos(guiLeft + 7, guiTop + 42).size(79, 20).build());
         this.btnSave.active = false;
 
         this.addRenderableWidget(Button.builder(Component.translatable("gui.button.cfm.back"), button -> {
-            PacketHandler.getPlayChannel().sendToServer(new C2SMessageOpenMailBox(this.mailBoxBlockEntity.getBlockPos()));
+            PacketDistributor.sendToServer(new C2SMessageOpenMailBox(this.mailBoxBlockEntity.getBlockPos()));
         }).pos(guiLeft + 91, guiTop + 42).size(79, 20).build());
     }
 
     @Override
     public void tick() {
         super.tick();
-        this.nameField.tick();
         this.btnSave.active = this.isValidName();
     }
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(graphics);
+        this.renderBackground(graphics, mouseX, mouseY, partialTicks);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         int startX = (this.width - this.xSize) / 2;
         int startY = (this.height - this.ySize) / 2;

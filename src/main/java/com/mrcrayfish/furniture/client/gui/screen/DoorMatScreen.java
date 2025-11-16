@@ -2,7 +2,6 @@ package com.mrcrayfish.furniture.client.gui.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mrcrayfish.furniture.Reference;
-import com.mrcrayfish.furniture.network.PacketHandler;
 import com.mrcrayfish.furniture.network.message.C2SMessageSetDoorMat;
 import com.mrcrayfish.furniture.tileentity.DoorMatBlockEntity;
 import net.minecraft.client.gui.GuiGraphics;
@@ -13,6 +12,7 @@ import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 /**
  * Author: MrCrayfish
@@ -53,7 +53,7 @@ public class DoorMatScreen extends Screen {
 
         this.btnSave = this.addRenderableWidget(Button.builder(Component.translatable("gui.button.cfm.save"), button -> {
             if (this.isValidName()) {
-                PacketHandler.getPlayChannel().sendToServer(new C2SMessageSetDoorMat(this.doorMatBlockEntity.getBlockPos(), this.nameField.getValue()));
+                PacketDistributor.sendToServer(new C2SMessageSetDoorMat(this.doorMatBlockEntity.getBlockPos(), this.nameField.getValue()));
                 this.minecraft.player.closeContainer();
             }
         }).pos(guiLeft + 7, guiTop + 42).size(79, 20).build());
@@ -65,13 +65,12 @@ public class DoorMatScreen extends Screen {
     @Override
     public void tick() {
         super.tick();
-        this.nameField.tick();
         this.btnSave.active = this.isValidName();
     }
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(graphics);
+        this.renderBackground(graphics, mouseX, mouseY, partialTicks);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         int startX = (this.width - this.xSize) / 2;
         int startY = (this.height - this.ySize) / 2;
