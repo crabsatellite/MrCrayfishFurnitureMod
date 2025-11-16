@@ -15,36 +15,30 @@ import net.minecraft.world.entity.vehicle.DismountHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.neoforge.network.NetworkHooks;
 
 import java.util.List;
 
 /**
  * Author: MrCrayfish
  */
-public class SeatEntity extends Entity
-{
-    public SeatEntity(Level level)
-    {
+public class SeatEntity extends Entity {
+    public SeatEntity(Level level) {
         super(ModEntities.SEAT.get(), level);
         this.noPhysics = true;
     }
 
-    private SeatEntity(Level level, BlockPos source, double yOffset, Direction direction)
-    {
+    private SeatEntity(Level level, BlockPos source, double yOffset, Direction direction) {
         this(level);
         this.setPos(source.getX() + 0.5, source.getY() + yOffset, source.getZ() + 0.5);
         this.setRot(direction.getOpposite().toYRot(), 0F);
     }
 
     @Override
-    public void tick()
-    {
+    public void tick() {
         super.tick();
-        if(!this.level().isClientSide)
-        {
-            if(this.getPassengers().isEmpty() || this.level().isEmptyBlock(this.blockPosition()))
-            {
+        if (!this.level().isClientSide) {
+            if (this.getPassengers().isEmpty() || this.level().isEmptyBlock(this.blockPosition())) {
                 this.remove(RemovalReason.DISCARDED);
                 this.level().updateNeighbourForOutputSignal(blockPosition(), this.level().getBlockState(blockPosition()).getBlock());
             }
@@ -52,39 +46,36 @@ public class SeatEntity extends Entity
     }
 
     @Override
-    protected void defineSynchedData() {}
+    protected void defineSynchedData() {
+    }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag compound) {}
+    protected void readAdditionalSaveData(CompoundTag compound) {
+    }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag compound) {}
+    protected void addAdditionalSaveData(CompoundTag compound) {
+    }
 
     @Override
-    public double getPassengersRidingOffset()
-    {
+    public double getPassengersRidingOffset() {
         return 0.0;
     }
 
     @Override
-    protected boolean canRide(Entity entity)
-    {
+    protected boolean canRide(Entity entity) {
         return true;
     }
 
     @Override
-    public Packet<ClientGamePacketListener> getAddEntityPacket()
-    {
+    public Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
-    public static InteractionResult create(Level level, BlockPos pos, double yOffset, Player player, Direction direction)
-    {
-        if(!level.isClientSide())
-        {
+    public static InteractionResult create(Level level, BlockPos pos, double yOffset, Player player, Direction direction) {
+        if (!level.isClientSide()) {
             List<SeatEntity> seats = level.getEntitiesOfClass(SeatEntity.class, new AABB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1.0, pos.getY() + 1.0, pos.getZ() + 1.0));
-            if(seats.isEmpty())
-            {
+            if (seats.isEmpty()) {
                 SeatEntity seat = new SeatEntity(level, pos, yOffset, direction);
                 level.addFreshEntity(seat);
                 player.startRiding(seat, false);
@@ -94,15 +85,12 @@ public class SeatEntity extends Entity
     }
 
     @Override
-    public Vec3 getDismountLocationForPassenger(LivingEntity entity)
-    {
+    public Vec3 getDismountLocationForPassenger(LivingEntity entity) {
         Direction original = this.getDirection();
         Direction[] offsets = {original, original.getClockWise(), original.getCounterClockWise(), original.getOpposite()};
-        for(Direction dir : offsets)
-        {
+        for (Direction dir : offsets) {
             Vec3 safeVec = DismountHelper.findSafeDismountLocation(entity.getType(), this.level(), this.blockPosition().relative(dir), false);
-            if(safeVec != null)
-            {
+            if (safeVec != null) {
                 return safeVec.add(0, 0.25, 0);
             }
         }
@@ -110,27 +98,23 @@ public class SeatEntity extends Entity
     }
 
     @Override
-    protected void addPassenger(Entity entity)
-    {
+    protected void addPassenger(Entity entity) {
         super.addPassenger(entity);
         entity.setYRot(this.getYRot());
     }
 
     @Override
-    public void positionRider(Entity entity, Entity.MoveFunction function)
-    {
+    public void positionRider(Entity entity, Entity.MoveFunction function) {
         super.positionRider(entity, function);
         this.clampYaw(entity);
     }
 
     @Override
-    public void onPassengerTurned(Entity entity)
-    {
+    public void onPassengerTurned(Entity entity) {
         this.clampYaw(entity);
     }
 
-    private void clampYaw(Entity passenger)
-    {
+    private void clampYaw(Entity passenger) {
         passenger.setYBodyRot(this.getYRot());
         float wrappedYaw = Mth.wrapDegrees(passenger.getYRot() - this.getYRot());
         float clampedYaw = Mth.clamp(wrappedYaw, -120.0F, 120.0F);
@@ -139,3 +123,4 @@ public class SeatEntity extends Entity
         passenger.setYHeadRot(passenger.getYRot());
     }
 }
+

@@ -15,7 +15,6 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -34,8 +33,7 @@ import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
 /**
  * Author: MrCrayfish
  */
-public class PostBoxScreen extends AbstractContainerScreen<PostBoxMenu>
-{
+public class PostBoxScreen extends AbstractContainerScreen<PostBoxMenu> {
     private static final ResourceLocation GUI_TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/gui/container/post_box.png");
     private static final ResourceLocation ICONS_TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/gui/icons.png");
     private static final int LIST_WIDTH = 116;
@@ -55,8 +53,7 @@ public class PostBoxScreen extends AbstractContainerScreen<PostBoxMenu>
     private final List<MailBoxEntry> mailBoxList;
     private List<MailBoxEntry> filteredMailBoxList = new ArrayList<>();
 
-    public PostBoxScreen(PostBoxMenu container, Inventory playerInventory, Component title)
-    {
+    public PostBoxScreen(PostBoxMenu container, Inventory playerInventory, Component title) {
         super(container, playerInventory, title);
         this.imageHeight = 187;
         this.mailBoxList = container.getMailBoxes();
@@ -65,8 +62,7 @@ public class PostBoxScreen extends AbstractContainerScreen<PostBoxMenu>
     }
 
     @Override
-    protected void init()
-    {
+    protected void init() {
         super.init();
         this.searchField = new EditBox(this.font, this.leftPos + 22, this.topPos + 19, 101, 9, Component.translatable("gui.cfm.post_box.search"));
         this.searchField.setBordered(false);
@@ -78,31 +74,26 @@ public class PostBoxScreen extends AbstractContainerScreen<PostBoxMenu>
         this.btnSend.active = false;
     }
 
-    private void sendMail(Button button)
-    {
-        if(this.selected != null && !this.menu.getMail().isEmpty())
-        {
+    private void sendMail(Button button) {
+        if (this.selected != null && !this.menu.getMail().isEmpty()) {
             PacketHandler.getPlayChannel().sendToServer(new C2SMessageSendMail(this.selected.getOwnerId(), this.selected.getMailBoxId()));
         }
     }
 
     @Override
-    public void containerTick()
-    {
+    public void containerTick() {
         this.searchField.tick();
         this.btnSend.active = this.selected != null && !this.menu.getMail().isEmpty();
     }
 
     @Override
-    protected void renderBg(GuiGraphics graphics, float partialTicks, int mouseX, int mouseY)
-    {
+    protected void renderBg(GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         int startX = (this.width - this.imageWidth) / 2;
         int startY = (this.height - this.imageHeight) / 2;
         graphics.blit(GUI_TEXTURE, startX, startY, 0, 0, this.imageWidth, this.imageHeight);
 
-        if(this.menu.getMail().isEmpty())
-        {
+        if (this.menu.getMail().isEmpty()) {
             graphics.blit(GUI_TEXTURE, startX + 149, startY + 33, 116, 202, 16, 16);
         }
 
@@ -110,8 +101,7 @@ public class PostBoxScreen extends AbstractContainerScreen<PostBoxMenu>
     }
 
     @Override
-    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY)
-    {
+    protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY) {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         super.renderLabels(graphics, mouseX, mouseY);
 
@@ -123,13 +113,11 @@ public class PostBoxScreen extends AbstractContainerScreen<PostBoxMenu>
         RenderUtil.scissor(this.leftPos + 8, this.topPos + 32, 116, 57);
         {
             int scroll = this.scroll;
-            if(this.pressedMouseY != -1)
-            {
+            if (this.pressedMouseY != -1) {
                 scroll = (int) (this.getMaxScroll() * (scrollBarY / (double) (LIST_HEIGHT - SCROLL_BAR_HEIGHT)) + 0.5);
             }
             int startIndex = scroll / ITEM_HEIGHT;
-            for(int i = startIndex; i < Math.min(startIndex + MAX_VISIBLE_ITEMS, this.filteredMailBoxList.size()); i++)
-            {
+            for (int i = startIndex; i < Math.min(startIndex + MAX_VISIBLE_ITEMS, this.filteredMailBoxList.size()); i++) {
                 PoseStack poseStack = graphics.pose();
                 poseStack.pushPose();
                 poseStack.translate(8, 32, 0);
@@ -142,14 +130,11 @@ public class PostBoxScreen extends AbstractContainerScreen<PostBoxMenu>
                 RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
                 graphics.blit(GUI_TEXTURE, 0, 0, 0, 211 - (isSelected ? ITEM_HEIGHT : 0), ITEM_WIDTH, ITEM_HEIGHT);
 
-                if(isSelected)
-                {
+                if (isSelected) {
                     graphics.blit(GUI_TEXTURE, ITEM_WIDTH - 20, 5, 140, 187, 14, 12);
                     graphics.drawString(this.font, ChatFormatting.BOLD + entry.getName(), 3, 3, 16777045);
                     graphics.drawString(this.font, entry.getOwnerName(), 3, 13, 0xFFFFFF);
-                }
-                else
-                {
+                } else {
                     graphics.drawString(this.font, entry.getName(), 3, 3, 0xFFFFFF);
                     graphics.drawString(this.font, entry.getOwnerName(), 3, 13, 0x777777);
                 }
@@ -161,39 +146,32 @@ public class PostBoxScreen extends AbstractContainerScreen<PostBoxMenu>
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks)
-    {
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
         this.renderBackground(graphics);
-        super.render(graphics,mouseX, mouseY, partialTicks);
+        super.render(graphics, mouseX, mouseY, partialTicks);
         this.renderTooltip(graphics, mouseX, mouseY);
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button)
-    {
-        if(RenderUtil.isMouseInArea((int) mouseX, (int) mouseY, this.leftPos + 8, this.topPos + 32, 116, 57))
-        {
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (RenderUtil.isMouseInArea((int) mouseX, (int) mouseY, this.leftPos + 8, this.topPos + 32, 116, 57)) {
             int clickedIndex = (int) ((mouseY - this.topPos - 32 + scroll) / ITEM_HEIGHT);
-            if(clickedIndex >= 0 && clickedIndex < this.filteredMailBoxList.size())
-            {
+            if (clickedIndex >= 0 && clickedIndex < this.filteredMailBoxList.size()) {
                 MailBoxEntry entry = this.filteredMailBoxList.get(clickedIndex);
                 this.selected = this.selected == entry ? null : entry;
                 return true;
             }
         }
         int scrollBarY = (int) ((LIST_HEIGHT - SCROLL_BAR_HEIGHT) * (scroll / (double) this.getMaxScroll()));
-        if(this.getMaxScroll() > 0 && RenderUtil.isMouseInArea((int) mouseX, (int) mouseY, this.leftPos + 128, this.topPos + 32 + scrollBarY, SCROLL_BAR_WIDTH, SCROLL_BAR_HEIGHT))
-        {
+        if (this.getMaxScroll() > 0 && RenderUtil.isMouseInArea((int) mouseX, (int) mouseY, this.leftPos + 128, this.topPos + 32 + scrollBarY, SCROLL_BAR_WIDTH, SCROLL_BAR_HEIGHT)) {
             this.pressedMouseY = (int) mouseY;
         }
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button)
-    {
-        if(this.pressedMouseY != -1 && button == GLFW_MOUSE_BUTTON_LEFT)
-        {
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (this.pressedMouseY != -1 && button == GLFW_MOUSE_BUTTON_LEFT) {
             this.scroll = (int) (this.getMaxScroll() * (this.getScrollBarY((int) mouseY) / (double) (LIST_HEIGHT - SCROLL_BAR_HEIGHT)) + 0.5);
             this.pressedMouseY = -1;
         }
@@ -201,10 +179,8 @@ public class PostBoxScreen extends AbstractContainerScreen<PostBoxMenu>
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double speed)
-    {
-        if(RenderUtil.isMouseInArea((int) mouseX, (int) mouseY, this.leftPos + 8, this.topPos + 32, 116, 57))
-        {
+    public boolean mouseScrolled(double mouseX, double mouseY, double speed) {
+        if (RenderUtil.isMouseInArea((int) mouseX, (int) mouseY, this.leftPos + 8, this.topPos + 32, 116, 57)) {
             this.scroll = (int) Math.max(0, Math.min(this.getMaxScroll(), this.scroll - (speed * 10)));
             return true;
         }
@@ -212,13 +188,10 @@ public class PostBoxScreen extends AbstractContainerScreen<PostBoxMenu>
     }
 
     @Override
-    public boolean charTyped(char c, int code)
-    {
+    public boolean charTyped(char c, int code) {
         String s = this.searchField.getValue();
-        if(this.searchField.charTyped(c, code))
-        {
-            if(!Objects.equals(s, this.searchField.getValue()))
-            {
+        if (this.searchField.charTyped(c, code)) {
+            if (!Objects.equals(s, this.searchField.getValue())) {
                 this.updateMailBoxList();
             }
             return true;
@@ -227,13 +200,10 @@ public class PostBoxScreen extends AbstractContainerScreen<PostBoxMenu>
     }
 
     @Override
-    public boolean keyPressed(int key, int scanCode, int mods)
-    {
+    public boolean keyPressed(int key, int scanCode, int mods) {
         String s = this.searchField.getValue();
-        if(this.searchField.keyPressed(key, scanCode, mods))
-        {
-            if(!Objects.equals(s, this.searchField.getValue()))
-            {
+        if (this.searchField.keyPressed(key, scanCode, mods)) {
+            if (!Objects.equals(s, this.searchField.getValue())) {
                 this.updateMailBoxList();
             }
             return true;
@@ -241,19 +211,14 @@ public class PostBoxScreen extends AbstractContainerScreen<PostBoxMenu>
         return this.searchField.isFocused() && this.searchField.isVisible() && key != GLFW_KEY_ESCAPE || super.keyPressed(key, scanCode, mods);
     }
 
-    private void updateMailBoxList()
-    {
-        if(this.searchField.getValue().isEmpty())
-        {
+    private void updateMailBoxList() {
+        if (this.searchField.getValue().isEmpty()) {
             this.filteredMailBoxList = this.mailBoxList;
-        }
-        else
-        {
+        } else {
             Stream<MailBoxEntry> stream = this.mailBoxList.stream().filter(entry ->
             {
                 String searchText = this.searchField.getValue().toLowerCase(Locale.ENGLISH).trim();
-                if(entry.getName().toLowerCase().contains(searchText))
-                {
+                if (entry.getName().toLowerCase().contains(searchText)) {
                     return true;
                 }
                 return entry.getOwnerName().toLowerCase().contains(searchText);
@@ -262,19 +227,16 @@ public class PostBoxScreen extends AbstractContainerScreen<PostBoxMenu>
         }
     }
 
-    private int getScrollBarY(int mouseY)
-    {
+    private int getScrollBarY(int mouseY) {
         int scrollOffset = 0;
-        if(this.pressedMouseY != -1)
-        {
+        if (this.pressedMouseY != -1) {
             scrollOffset = (mouseY - pressedMouseY);
         }
         int scrollBarY = (int) ((LIST_HEIGHT - SCROLL_BAR_HEIGHT) * (scroll / (double) this.getMaxScroll()));
         return Mth.clamp(scrollBarY + scrollOffset, 0, LIST_HEIGHT - SCROLL_BAR_HEIGHT);
     }
 
-    private int getMaxScroll()
-    {
+    private int getMaxScroll() {
         return Math.max(0, ITEM_HEIGHT * this.filteredMailBoxList.size() - LIST_HEIGHT);
     }
 }

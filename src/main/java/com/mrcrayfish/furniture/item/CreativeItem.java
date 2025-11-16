@@ -7,7 +7,6 @@ import java.util.function.Consumer;
 /**
  * Author: MrCrayfish
  */
-public interface CreativeItem
-{
+public interface CreativeItem {
     void fill(Consumer<ItemStack> output);
 }

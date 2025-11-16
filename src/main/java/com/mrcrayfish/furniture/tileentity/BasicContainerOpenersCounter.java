@@ -9,36 +9,30 @@ import net.minecraft.world.level.block.state.BlockState;
 /**
  * Author: MrCrayfish
  */
-public class BasicContainerOpenersCounter extends ContainerOpenersCounter
-{
+public class BasicContainerOpenersCounter extends ContainerOpenersCounter {
     private final BasicLootBlockEntity blockEntity;
 
-    public BasicContainerOpenersCounter(BasicLootBlockEntity blockEntity)
-    {
+    public BasicContainerOpenersCounter(BasicLootBlockEntity blockEntity) {
         this.blockEntity = blockEntity;
     }
 
     @Override
-    protected void onOpen(Level level, BlockPos pos, BlockState state)
-    {
+    protected void onOpen(Level level, BlockPos pos, BlockState state) {
         this.blockEntity.onOpen(level, pos, state);
     }
 
     @Override
-    protected void onClose(Level level, BlockPos pos, BlockState state)
-    {
+    protected void onClose(Level level, BlockPos pos, BlockState state) {
         this.blockEntity.onClose(level, pos, state);
     }
 
     @Override
-    protected void openerCountChanged(Level level, BlockPos pos, BlockState state, int oldCount, int count)
-    {
+    protected void openerCountChanged(Level level, BlockPos pos, BlockState state, int oldCount, int count) {
         level.blockEvent(pos, state.getBlock(), 1, count);
     }
 
     @Override
-    protected boolean isOwnContainer(Player player)
-    {
+    protected boolean isOwnContainer(Player player) {
         return this.blockEntity.isMatchingContainerMenu(player.containerMenu);
     }
 }

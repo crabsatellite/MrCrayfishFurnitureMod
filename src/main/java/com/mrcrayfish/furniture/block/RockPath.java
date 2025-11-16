@@ -10,25 +10,21 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 /**
  * Author: MrCrayfish
  */
-public class RockPath extends FurnitureWaterloggedBlock
-{
+public class RockPath extends FurnitureWaterloggedBlock {
     private static final VoxelShape SHAPE = Block.box(1, 0, 1, 15, 1, 15);
 
-    public RockPath(Properties properties)
-    {
+    public RockPath(Properties properties) {
         super(properties);
         this.registerDefaultState(this.getStateDefinition().any().setValue(WATERLOGGED, false));
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext context)
-    {
+    public VoxelShape getShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext context) {
         return SHAPE;
     }
 
     @Override
-    public VoxelShape getOcclusionShape(BlockState state, BlockGetter reader, BlockPos pos)
-    {
+    public VoxelShape getOcclusionShape(BlockState state, BlockGetter reader, BlockPos pos) {
         return SHAPE;
     }
 }

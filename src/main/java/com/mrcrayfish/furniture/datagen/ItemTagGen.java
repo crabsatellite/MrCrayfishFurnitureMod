@@ -10,23 +10,20 @@ import net.minecraft.data.tags.ItemTagsProvider;
 import net.minecraft.data.tags.TagsProvider;
 import net.minecraft.tags.TagBuilder;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 import java.util.concurrent.CompletableFuture;
 
 /**
  * @author Ocelot
  */
-public class ItemTagGen extends ItemTagsProvider
-{
-    public ItemTagGen(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, CompletableFuture<TagsProvider.TagLookup<Block>> tagLookup, ExistingFileHelper existingFileHelper)
-    {
+public class ItemTagGen extends ItemTagsProvider {
+    public ItemTagGen(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, CompletableFuture<TagsProvider.TagLookup<Block>> tagLookup, ExistingFileHelper existingFileHelper) {
         super(output, lookupProvider, tagLookup, Reference.MOD_ID, existingFileHelper);
     }
 
     @Override
-    protected void addTags(HolderLookup.Provider provider)
-    {
+    protected void addTags(HolderLookup.Provider provider) {
         this.tag(ModTags.Items.GENERAL)
                 // Sofa
                 .add(ModBlocks.SOFA_WHITE.get().asItem())
@@ -219,155 +216,129 @@ public class ItemTagGen extends ItemTagsProvider
         this.copy(ModTags.Blocks.HEDGES, ModTags.Items.HEDGES);
 
         TagBuilder bedroomTag = this.getOrCreateRawBuilder(ModTags.Items.BEDROOM).replace(false);
-        for(GeneratorData.Variant variant : GeneratorData.ALL_VARIANTS)
-        {
+        for (GeneratorData.Variant variant : GeneratorData.ALL_VARIANTS) {
             bedroomTag.addElement(GeneratorData.getResultBlock(GeneratorData.BEDSIDE_CABINET, variant, false));
-            if(variant.strippedLog() != null)
-            {
+            if (variant.strippedLog() != null) {
                 bedroomTag.addElement(GeneratorData.getResultBlock(GeneratorData.BEDSIDE_CABINET, variant, true));
             }
 
             bedroomTag.addElement(GeneratorData.getResultBlock(GeneratorData.DESK, variant, false));
-            if(variant.strippedLog() != null)
-            {
+            if (variant.strippedLog() != null) {
                 bedroomTag.addElement(GeneratorData.getResultBlock(GeneratorData.DESK, variant, true));
             }
 
             bedroomTag.addElement(GeneratorData.getResultBlock(GeneratorData.DESK_CABINET, variant, false));
-            if(variant.strippedLog() != null)
-            {
+            if (variant.strippedLog() != null) {
                 bedroomTag.addElement(GeneratorData.getResultBlock(GeneratorData.DESK_CABINET, variant, true));
             }
 
             bedroomTag.addElement(GeneratorData.getResultBlock(GeneratorData.BLINDS, variant, false));
-            if(variant.strippedLog() != null)
-            {
+            if (variant.strippedLog() != null) {
                 bedroomTag.addElement(GeneratorData.getResultBlock(GeneratorData.BLINDS, variant, true));
             }
         }
 
         TagBuilder generalTag = this.getOrCreateRawBuilder(ModTags.Items.GENERAL).replace(false);
-        for(GeneratorData.Variant variant : GeneratorData.ALL_VARIANTS)
-        {
+        for (GeneratorData.Variant variant : GeneratorData.ALL_VARIANTS) {
             generalTag.addElement(GeneratorData.getResultBlock(GeneratorData.TABLE, variant, false));
-            if(variant.strippedLog() != null)
-            {
+            if (variant.strippedLog() != null) {
                 generalTag.addElement(GeneratorData.getResultBlock(GeneratorData.TABLE, variant, true));
             }
 
             generalTag.addElement(GeneratorData.getResultBlock(GeneratorData.CHAIR, variant, false));
-            if(variant.strippedLog() != null)
-            {
+            if (variant.strippedLog() != null) {
                 generalTag.addElement(GeneratorData.getResultBlock(GeneratorData.CHAIR, variant, true));
             }
 
             generalTag.addElement(GeneratorData.getResultBlock(GeneratorData.COFFEE_TABLE, variant, false));
-            if(variant.strippedLog() != null)
-            {
+            if (variant.strippedLog() != null) {
                 generalTag.addElement(GeneratorData.getResultBlock(GeneratorData.COFFEE_TABLE, variant, true));
             }
         }
 
         TagBuilder kitchenTag = this.getOrCreateRawBuilder(ModTags.Items.KITCHEN).replace(false);
-        for(GeneratorData.Variant variant : GeneratorData.ALL_VARIANTS)
-        {
+        for (GeneratorData.Variant variant : GeneratorData.ALL_VARIANTS) {
             kitchenTag.addElement(GeneratorData.getResultBlock(GeneratorData.KITCHEN_COUNTER, variant, false));
-            if(variant.strippedLog() != null)
-            {
+            if (variant.strippedLog() != null) {
                 kitchenTag.addElement(GeneratorData.getResultBlock(GeneratorData.KITCHEN_COUNTER, variant, true));
             }
 
             kitchenTag.addElement(GeneratorData.getResultBlock(GeneratorData.KITCHEN_DRAWER, variant, false));
-            if(variant.strippedLog() != null)
-            {
+            if (variant.strippedLog() != null) {
                 kitchenTag.addElement(GeneratorData.getResultBlock(GeneratorData.KITCHEN_DRAWER, variant, true));
             }
 
             kitchenTag.addElement(GeneratorData.getResultBlock(GeneratorData.KITCHEN_SINK_LIGHT, variant, false));
-            if(variant.strippedLog() != null)
-            {
+            if (variant.strippedLog() != null) {
                 kitchenTag.addElement(GeneratorData.getResultBlock(GeneratorData.KITCHEN_SINK_LIGHT, variant, true));
             }
 
             kitchenTag.addElement(GeneratorData.getResultBlock(GeneratorData.KITCHEN_SINK_DARK, variant, false));
-            if(variant.strippedLog() != null)
-            {
+            if (variant.strippedLog() != null) {
                 kitchenTag.addElement(GeneratorData.getResultBlock(GeneratorData.KITCHEN_SINK_DARK, variant, true));
             }
         }
 
         TagBuilder outdoorTag = this.getOrCreateRawBuilder(ModTags.Items.OUTDOORS).replace(false);
-        for(GeneratorData.Variant variant : GeneratorData.ALL_VARIANTS)
-        {
+        for (GeneratorData.Variant variant : GeneratorData.ALL_VARIANTS) {
             outdoorTag.addElement(GeneratorData.getResultBlock(GeneratorData.PARK_BENCH, variant, false));
-            if(variant.strippedLog() != null)
-            {
+            if (variant.strippedLog() != null) {
                 outdoorTag.addElement(GeneratorData.getResultBlock(GeneratorData.PARK_BENCH, variant, true));
             }
 
             outdoorTag.addElement(GeneratorData.getResultBlock(GeneratorData.MAIL_BOX, variant, false));
-            if(variant.strippedLog() != null)
-            {
+            if (variant.strippedLog() != null) {
                 outdoorTag.addElement(GeneratorData.getResultBlock(GeneratorData.MAIL_BOX, variant, true));
             }
 
             outdoorTag.addElement(GeneratorData.getResultBlock(GeneratorData.MAIL_BOX, variant, false));
-            if(variant.strippedLog() != null)
-            {
+            if (variant.strippedLog() != null) {
                 outdoorTag.addElement(GeneratorData.getResultBlock(GeneratorData.MAIL_BOX, variant, true));
             }
         }
 
         TagBuilder storageTag = this.getOrCreateRawBuilder(ModTags.Items.STORAGE).replace(false);
-        for(GeneratorData.Variant variant : GeneratorData.ALL_VARIANTS)
-        {
+        for (GeneratorData.Variant variant : GeneratorData.ALL_VARIANTS) {
             storageTag.addElement(GeneratorData.getResultBlock(GeneratorData.CABINET, variant, false));
-            if(variant.strippedLog() != null)
-            {
+            if (variant.strippedLog() != null) {
                 storageTag.addElement(GeneratorData.getResultBlock(GeneratorData.CABINET, variant, true));
             }
 
             storageTag.addElement(GeneratorData.getResultBlock(GeneratorData.BEDSIDE_CABINET, variant, false));
-            if(variant.strippedLog() != null)
-            {
+            if (variant.strippedLog() != null) {
                 storageTag.addElement(GeneratorData.getResultBlock(GeneratorData.BEDSIDE_CABINET, variant, true));
             }
 
             storageTag.addElement(GeneratorData.getResultBlock(GeneratorData.DESK_CABINET, variant, false));
-            if(variant.strippedLog() != null)
-            {
+            if (variant.strippedLog() != null) {
                 storageTag.addElement(GeneratorData.getResultBlock(GeneratorData.DESK_CABINET, variant, true));
             }
 
             storageTag.addElement(GeneratorData.getResultBlock(GeneratorData.CRATE, variant, false));
-            if(variant.strippedLog() != null)
-            {
+            if (variant.strippedLog() != null) {
                 storageTag.addElement(GeneratorData.getResultBlock(GeneratorData.CRATE, variant, true));
             }
 
             storageTag.addElement(GeneratorData.getResultBlock(GeneratorData.MAIL_BOX, variant, false));
-            if(variant.strippedLog() != null)
-            {
+            if (variant.strippedLog() != null) {
                 storageTag.addElement(GeneratorData.getResultBlock(GeneratorData.MAIL_BOX, variant, true));
             }
 
             storageTag.addElement(GeneratorData.getResultBlock(GeneratorData.KITCHEN_DRAWER, variant, false));
-            if(variant.strippedLog() != null)
-            {
+            if (variant.strippedLog() != null) {
                 storageTag.addElement(GeneratorData.getResultBlock(GeneratorData.KITCHEN_DRAWER, variant, true));
             }
 
             storageTag.addElement(GeneratorData.getResultBlock(GeneratorData.KITCHEN_SINK_LIGHT, variant, false));
-            if(variant.strippedLog() != null)
-            {
+            if (variant.strippedLog() != null) {
                 storageTag.addElement(GeneratorData.getResultBlock(GeneratorData.KITCHEN_SINK_LIGHT, variant, true));
             }
 
             storageTag.addElement(GeneratorData.getResultBlock(GeneratorData.KITCHEN_SINK_DARK, variant, false));
-            if(variant.strippedLog() != null)
-            {
+            if (variant.strippedLog() != null) {
                 storageTag.addElement(GeneratorData.getResultBlock(GeneratorData.KITCHEN_SINK_DARK, variant, true));
             }
         }
     }
 }
+

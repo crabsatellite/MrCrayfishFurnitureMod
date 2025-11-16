@@ -15,23 +15,19 @@ import net.minecraft.world.item.ItemStack;
 /**
  * Author: MrCrayfish
  */
-public class GrillBlockEntityRenderer implements BlockEntityRenderer<GrillBlockEntity>
-{
-    public GrillBlockEntityRenderer(BlockEntityRendererProvider.Context context) {}
+public class GrillBlockEntityRenderer implements BlockEntityRenderer<GrillBlockEntity> {
+    public GrillBlockEntityRenderer(BlockEntityRendererProvider.Context context) {
+    }
 
     @Override
-    public void render(GrillBlockEntity tileEntity, float partialTicks, PoseStack poseStack, MultiBufferSource source, int light, int overlay)
-    {
+    public void render(GrillBlockEntity tileEntity, float partialTicks, PoseStack poseStack, MultiBufferSource source, int light, int overlay) {
         NonNullList<ItemStack> grill = tileEntity.getGrill();
-        for(int j = 0; j < grill.size(); j++)
-        {
+        for (int j = 0; j < grill.size(); j++) {
             ItemStack stack = grill.get(j);
-            if(!stack.isEmpty())
-            {
+            if (!stack.isEmpty()) {
                 poseStack.pushPose();
 
-                if(tileEntity.isFlipping(j))
-                {
+                if (tileEntity.isFlipping(j)) {
                     float progress = Mth.clamp(tileEntity.getFlippingCount(j) + partialTicks, 0F, GrillBlockEntity.MAX_FLIPPING_COUNTER) / GrillBlockEntity.MAX_FLIPPING_COUNTER;
                     poseStack.translate(0.0, Math.sin(Math.toRadians(180 * progress)), 0.0);
                 }
@@ -42,13 +38,10 @@ public class GrillBlockEntityRenderer implements BlockEntityRenderer<GrillBlockE
                 poseStack.scale(0.375F, 0.375F, 0.375F);
                 poseStack.mulPose(Axis.ZP.rotationDegrees(90F * tileEntity.getRotations()[j]));
 
-                if(tileEntity.isFlipping(j))
-                {
+                if (tileEntity.isFlipping(j)) {
                     float progress = Mth.clamp(tileEntity.getFlippingCount(j) + partialTicks, 0F, GrillBlockEntity.MAX_FLIPPING_COUNTER) / GrillBlockEntity.MAX_FLIPPING_COUNTER;
                     poseStack.mulPose(Axis.XP.rotationDegrees(-540F * progress));
-                }
-                else if(tileEntity.isFlipped(j))
-                {
+                } else if (tileEntity.isFlipped(j)) {
                     poseStack.mulPose(Axis.XP.rotationDegrees(180F));
                 }
 
@@ -60,11 +53,9 @@ public class GrillBlockEntityRenderer implements BlockEntityRenderer<GrillBlockE
         }
 
         NonNullList<ItemStack> fuel = tileEntity.getFuel();
-        for(int j = 0; j < fuel.size(); ++j)
-        {
+        for (int j = 0; j < fuel.size(); ++j) {
             ItemStack stack = fuel.get(j);
-            if(!stack.isEmpty())
-            {
+            if (!stack.isEmpty()) {
                 poseStack.pushPose();
                 poseStack.translate(0.5, 0.85, 0.5);
                 poseStack.mulPose(Axis.XP.rotationDegrees(90F));

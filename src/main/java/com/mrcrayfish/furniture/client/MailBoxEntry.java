@@ -8,63 +8,54 @@ import java.util.UUID;
 /**
  * Author: MrCrayfish
  */
-public class MailBoxEntry
-{
+public class MailBoxEntry {
     private final UUID mailBoxId;
     private final String name;
     private final UUID ownerId;
     private final String ownerName;
 
-    public MailBoxEntry(UUID mailBoxId, String name, UUID ownerId, String ownerName)
-    {
+    public MailBoxEntry(UUID mailBoxId, String name, UUID ownerId, String ownerName) {
         this.mailBoxId = mailBoxId;
         this.name = name;
         this.ownerId = ownerId;
         this.ownerName = ownerName;
     }
 
-    public MailBoxEntry(CompoundTag compound)
-    {
+    public MailBoxEntry(CompoundTag compound) {
         this.mailBoxId = compound.getUUID("MailBoxUUID");
         this.name = compound.getString("MailBoxName");
         this.ownerId = compound.getUUID("OwnerUUID");
         this.ownerName = compound.getString("OwnerName");
     }
 
-    public UUID getMailBoxId()
-    {
+    public UUID getMailBoxId() {
         return this.mailBoxId;
     }
 
-    public String getName()
-    {
+    public String getName() {
         return this.name;
     }
 
-    public UUID getOwnerId()
-    {
+    public UUID getOwnerId() {
         return this.ownerId;
     }
 
-    public String getOwnerName()
-    {
+    public String getOwnerName() {
         return this.ownerName;
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
-        if(this == obj)
+    public boolean equals(Object obj) {
+        if (this == obj)
             return true;
-        if(obj == null || getClass() != obj.getClass())
+        if (obj == null || getClass() != obj.getClass())
             return false;
         MailBoxEntry other = (MailBoxEntry) obj;
         return this.mailBoxId.equals(other.mailBoxId);
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return Objects.hash(this.mailBoxId);
     }
 }

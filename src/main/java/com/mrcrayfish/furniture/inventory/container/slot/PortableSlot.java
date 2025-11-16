@@ -10,16 +10,13 @@ import net.minecraft.world.level.block.ShulkerBoxBlock;
 /**
  * Author: MrCrayfish
  */
-public class PortableSlot extends Slot
-{
-    public PortableSlot(Container container, int index, int x, int y)
-    {
+public class PortableSlot extends Slot {
+    public PortableSlot(Container container, int index, int x, int y) {
         super(container, index, x, y);
     }
 
     @Override
-    public boolean mayPlace(ItemStack stack)
-    {
+    public boolean mayPlace(ItemStack stack) {
         Block block = Block.byItem(stack.getItem());
         return !(block instanceof IPortableInventory || block instanceof ShulkerBoxBlock);
     }

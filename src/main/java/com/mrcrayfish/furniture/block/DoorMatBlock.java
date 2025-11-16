@@ -19,28 +19,22 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Author: MrCrayfish
  */
-public class DoorMatBlock extends FurnitureHorizontalBlock implements EntityBlock
-{
+public class DoorMatBlock extends FurnitureHorizontalBlock implements EntityBlock {
     public final ImmutableMap<BlockState, VoxelShape> SHAPES;
 
-    public DoorMatBlock(Properties properties)
-    {
+    public DoorMatBlock(Properties properties) {
         super(properties);
         SHAPES = this.generateShapes(this.getStateDefinition().getPossibleStates());
     }
 
-    private ImmutableMap<BlockState, VoxelShape> generateShapes(ImmutableList<BlockState> states)
-    {
+    private ImmutableMap<BlockState, VoxelShape> generateShapes(ImmutableList<BlockState> states) {
         ImmutableMap.Builder<BlockState, VoxelShape> builder = new ImmutableMap.Builder<>();
-        for(BlockState state : states)
-        {
+        for (BlockState state : states) {
             final VoxelShape[] BOXES = VoxelShapeHelper.getRotatedShapes(VoxelShapeHelper.rotate(Block.box(0, 0, 2, 16, 1, 14), Direction.SOUTH));
             List<VoxelShape> shapes = new ArrayList<>();
             shapes.add(BOXES[state.getValue(DIRECTION).get2DDataValue()]);
@@ -50,33 +44,28 @@ public class DoorMatBlock extends FurnitureHorizontalBlock implements EntityBloc
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext context)
-    {
+    public VoxelShape getShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext context) {
         return SHAPES.get(state);
     }
 
     @Override
-    public VoxelShape getOcclusionShape(BlockState state, BlockGetter reader, BlockPos pos)
-    {
+    public VoxelShape getOcclusionShape(BlockState state, BlockGetter reader, BlockPos pos) {
         return SHAPES.get(state);
     }
 
     @Override
-    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor level, BlockPos currentPos, BlockPos facingPos)
-    {
+    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor level, BlockPos currentPos, BlockPos facingPos) {
         return !stateIn.canSurvive(level, currentPos) ? Blocks.AIR.defaultBlockState() : super.updateShape(stateIn, facing, facingState, level, currentPos, facingPos);
     }
 
     @Override
-    public boolean canSurvive(BlockState state, LevelReader reader, BlockPos pos)
-    {
+    public boolean canSurvive(BlockState state, LevelReader reader, BlockPos pos) {
         return !reader.isEmptyBlock(pos.below());
     }
 
     @Nullable
     @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState state)
-    {
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new DoorMatBlockEntity(pos, state);
     }
 }

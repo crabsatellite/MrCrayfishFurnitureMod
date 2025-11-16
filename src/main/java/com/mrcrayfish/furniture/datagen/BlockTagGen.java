@@ -10,25 +10,22 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagBuilder;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
-import net.minecraftforge.common.data.BlockTagsProvider;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.common.data.BlockTagsProvider;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 import java.util.concurrent.CompletableFuture;
 
 /**
  * @author Ocelot
  */
-public class BlockTagGen extends BlockTagsProvider
-{
-    public BlockTagGen(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper existingFileHelper)
-    {
+public class BlockTagGen extends BlockTagsProvider {
+    public BlockTagGen(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, ExistingFileHelper existingFileHelper) {
         super(output, lookupProvider, Reference.MOD_ID, existingFileHelper);
     }
 
     @Override
-    protected void addTags(HolderLookup.Provider provider)
-    {
+    protected void addTags(HolderLookup.Provider provider) {
         // Picket fences connect to other picket fences
         this.tag(ModTags.Blocks.PICKET_FENCES)
                 .add(ModBlocks.PICKET_FENCE_WHITE.get())
@@ -80,22 +77,18 @@ public class BlockTagGen extends BlockTagsProvider
 
         // Dynamically registers upgraded fences to the upgraded fences tag
         TagBuilder upgradedFences = this.getOrCreateRawBuilder(ModTags.Blocks.UPGRADED_FENCES).replace(false);
-        for(GeneratorData.Variant variant : GeneratorData.ALL_VARIANTS)
-        {
+        for (GeneratorData.Variant variant : GeneratorData.ALL_VARIANTS) {
             upgradedFences.addElement(GeneratorData.getResultBlock(GeneratorData.UPGRADED_FENCE, variant, false));
-            if(variant.strippedLog() != null)
-            {
+            if (variant.strippedLog() != null) {
                 upgradedFences.addElement(GeneratorData.getResultBlock(GeneratorData.UPGRADED_FENCE, variant, true));
             }
         }
 
         // Dynamically registers upgraded gates to the upgraded gates tag
         TagBuilder upgradedGates = this.getOrCreateRawBuilder(ModTags.Blocks.UPGRADED_FENCE_GATES).replace(false);
-        for(GeneratorData.Variant variant : GeneratorData.ALL_VARIANTS)
-        {
+        for (GeneratorData.Variant variant : GeneratorData.ALL_VARIANTS) {
             upgradedGates.addElement(GeneratorData.getResultBlock(GeneratorData.UPGRADED_GATE, variant, false));
-            if(variant.strippedLog() != null)
-            {
+            if (variant.strippedLog() != null) {
                 upgradedGates.addElement(GeneratorData.getResultBlock(GeneratorData.UPGRADED_GATE, variant, true));
             }
         }
@@ -121,3 +114,4 @@ public class BlockTagGen extends BlockTagsProvider
                 .forEach(mineableWithPickaxe::add);
     }
 }
+

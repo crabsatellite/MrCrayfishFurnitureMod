@@ -15,20 +15,19 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.minecraftforge.fluids.FluidStack;
+import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.fluids.FluidStack;
 import org.joml.Matrix4f;
 
 /**
  * Author: MrCrayfish
  */
-public class KitchenSinkBlockEntityRenderer implements BlockEntityRenderer<KitchenSinkBlockEntity>
-{
-    public KitchenSinkBlockEntityRenderer(BlockEntityRendererProvider.Context context) {}
+public class KitchenSinkBlockEntityRenderer implements BlockEntityRenderer<KitchenSinkBlockEntity> {
+    public KitchenSinkBlockEntityRenderer(BlockEntityRendererProvider.Context context) {
+    }
 
     @Override
-    public void render(KitchenSinkBlockEntity tileEntity, float partialTicks, PoseStack poseStack, MultiBufferSource source, int light, int overlay)
-    {
+    public void render(KitchenSinkBlockEntity tileEntity, float partialTicks, PoseStack poseStack, MultiBufferSource source, int light, int overlay) {
         poseStack.pushPose();
         poseStack.translate(0.5, 0.5, 0.5);
         Direction direction = tileEntity.getBlockState().getValue(FurnitureHorizontalBlock.DIRECTION);
@@ -38,11 +37,10 @@ public class KitchenSinkBlockEntityRenderer implements BlockEntityRenderer<Kitch
         poseStack.popPose();
     }
 
-    private void drawFluid(KitchenSinkBlockEntity te, PoseStack poseStack, MultiBufferSource source, float x, float y, float z, float width, float height, float depth, int light)
-    {
+    private void drawFluid(KitchenSinkBlockEntity te, PoseStack poseStack, MultiBufferSource source, float x, float y, float z, float width, float height, float depth, int light) {
         FluidStack fluidStack = te.getTank().getFluid();
         Fluid fluid = fluidStack.getFluid();
-        if(fluid == Fluids.EMPTY)
+        if (fluid == Fluids.EMPTY)
             return;
 
         IClientFluidTypeExtensions fluidType = IClientFluidTypeExtensions.of(fluid);
@@ -67,3 +65,4 @@ public class KitchenSinkBlockEntityRenderer implements BlockEntityRenderer<Kitch
         consumer.vertex(matrix, x + width, y + height, z).color(red, green, blue, 1.0F).uv(maxU, maxV).uv2(light).normal(0.0F, 1.0F, 0.0F).endVertex();
     }
 }
+

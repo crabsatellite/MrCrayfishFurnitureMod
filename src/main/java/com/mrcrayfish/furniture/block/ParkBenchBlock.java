@@ -28,21 +28,18 @@ import java.util.List;
 /**
  * Author: MrCrayfish
  */
-public class ParkBenchBlock extends FurnitureHorizontalBlock
-{
+public class ParkBenchBlock extends FurnitureHorizontalBlock {
     public static final EnumProperty<Type> TYPE = EnumProperty.create("type", Type.class);
 
     public final ImmutableMap<BlockState, VoxelShape> SHAPES;
 
-    public ParkBenchBlock(Properties properties)
-    {
+    public ParkBenchBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.getStateDefinition().any().setValue(DIRECTION, Direction.NORTH).setValue(TYPE, Type.SINGLE));
         SHAPES = this.generateShapes(this.getStateDefinition().getPossibleStates());
     }
 
-    private ImmutableMap<BlockState, VoxelShape> generateShapes(ImmutableList<BlockState> states)
-    {
+    private ImmutableMap<BlockState, VoxelShape> generateShapes(ImmutableList<BlockState> states) {
         final VoxelShape[] SEAT = VoxelShapeHelper.getRotatedShapes(VoxelShapeHelper.rotate(Block.box(0, 8, 3, 16, 9, 16), Direction.SOUTH));
         final VoxelShape[] BACKREST = VoxelShapeHelper.getRotatedShapes(VoxelShapeHelper.rotate(Block.box(0, 9, 1, 16, 20, 5), Direction.SOUTH));
         final VoxelShape[] BACK_LEFT_LEG = VoxelShapeHelper.getRotatedShapes(VoxelShapeHelper.rotate(Block.box(1, 0, 3, 4, 8, 6), Direction.SOUTH));
@@ -55,8 +52,7 @@ public class ParkBenchBlock extends FurnitureHorizontalBlock
         final VoxelShape[] BACK_SUPPORT = VoxelShapeHelper.getRotatedShapes(VoxelShapeHelper.rotate(Block.box(1, 6, 3, 15, 8, 6), Direction.SOUTH));
 
         ImmutableMap.Builder<BlockState, VoxelShape> builder = new ImmutableMap.Builder<>();
-        for(BlockState state : states)
-        {
+        for (BlockState state : states) {
             Direction direction = state.getValue(DIRECTION);
             Type type = state.getValue(TYPE);
 
@@ -66,8 +62,7 @@ public class ParkBenchBlock extends FurnitureHorizontalBlock
             shapes.add(FRONT_SUPPORT[direction.get2DDataValue()]);
             shapes.add(BACK_SUPPORT[direction.get2DDataValue()]);
 
-            switch(type)
-            {
+            switch (type) {
                 case SINGLE:
                     shapes.add(BACK_LEFT_LEG[direction.get2DDataValue()]);
                     shapes.add(FRONT_LEFT_LEG[direction.get2DDataValue()]);
@@ -94,60 +89,47 @@ public class ParkBenchBlock extends FurnitureHorizontalBlock
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext context)
-    {
+    public VoxelShape getShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext context) {
         return SHAPES.get(state);
     }
 
     @Override
-    public VoxelShape getOcclusionShape(BlockState state, BlockGetter reader, BlockPos pos)
-    {
+    public VoxelShape getOcclusionShape(BlockState state, BlockGetter reader, BlockPos pos) {
         return SHAPES.get(state);
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player playerEntity, InteractionHand hand, BlockHitResult result)
-    {
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player playerEntity, InteractionHand hand, BlockHitResult result) {
         return SeatEntity.create(level, pos, 0.3375, playerEntity, state.getValue(DIRECTION));
     }
 
     @Override
-    public BlockState getStateForPlacement(BlockPlaceContext context)
-    {
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
         BlockState state = super.getStateForPlacement(context);
         return this.getBenchState(state, context.getLevel(), context.getClickedPos(), state.getValue(DIRECTION));
     }
 
     @Override
-    public BlockState updateShape(BlockState state, Direction direction, BlockState newState, LevelAccessor level, BlockPos pos, BlockPos newPos)
-    {
+    public BlockState updateShape(BlockState state, Direction direction, BlockState newState, LevelAccessor level, BlockPos pos, BlockPos newPos) {
         return this.getBenchState(state, level, pos, state.getValue(DIRECTION));
     }
 
-    private BlockState getBenchState(BlockState state, LevelAccessor level, BlockPos pos, Direction dir)
-    {
+    private BlockState getBenchState(BlockState state, LevelAccessor level, BlockPos pos, Direction dir) {
         boolean left = this.isBench(level, pos, dir.getCounterClockWise(), dir);
         boolean right = this.isBench(level, pos, dir.getClockWise(), dir);
-        if(left && right)
-        {
+        if (left && right) {
             return state.setValue(TYPE, Type.MIDDLE);
-        }
-        else if(left)
-        {
+        } else if (left) {
             return state.setValue(TYPE, Type.RIGHT);
-        }
-        else if(right)
-        {
+        } else if (right) {
             return state.setValue(TYPE, Type.LEFT);
         }
         return state.setValue(TYPE, Type.SINGLE);
     }
 
-    private boolean isBench(LevelAccessor level, BlockPos source, Direction direction, Direction targetDirection)
-    {
+    private boolean isBench(LevelAccessor level, BlockPos source, Direction direction, Direction targetDirection) {
         BlockState state = level.getBlockState(source.relative(direction));
-        if(state.getBlock() == this)
-        {
+        if (state.getBlock() == this) {
             Direction sofaDirection = state.getValue(DIRECTION);
             return sofaDirection.equals(targetDirection);
         }
@@ -155,14 +137,12 @@ public class ParkBenchBlock extends FurnitureHorizontalBlock
     }
 
     @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder)
-    {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
         builder.add(TYPE);
     }
 
-    public enum Type implements StringRepresentable
-    {
+    public enum Type implements StringRepresentable {
         SINGLE("single"),
         LEFT("left"),
         RIGHT("right"),
@@ -170,20 +150,17 @@ public class ParkBenchBlock extends FurnitureHorizontalBlock
 
         private final String id;
 
-        Type(String id)
-        {
+        Type(String id) {
             this.id = id;
         }
 
         @Override
-        public String getSerializedName()
-        {
+        public String getSerializedName() {
             return id;
         }
 
         @Override
-        public String toString()
-        {
+        public String toString() {
             return id;
         }
     }

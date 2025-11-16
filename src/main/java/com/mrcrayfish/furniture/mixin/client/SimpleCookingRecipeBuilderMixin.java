@@ -15,17 +15,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * Author: MrCrayfish
  */
 @Mixin(SimpleCookingRecipeBuilder.class)
-public class SimpleCookingRecipeBuilderMixin
-{
+public class SimpleCookingRecipeBuilderMixin {
     @Inject(method = "determineRecipeCategory", at = @At(value = "HEAD"), cancellable = true)
-    private static void cfmRecipeCategory(RecipeSerializer<? extends AbstractCookingRecipe> serializer, ItemLike like, CallbackInfoReturnable<CookingBookCategory> cir)
-    {
-        if(serializer == ModRecipeSerializers.GRILL_COOKING.get())
-        {
+    private static void cfmRecipeCategory(RecipeSerializer<? extends AbstractCookingRecipe> serializer, ItemLike like, CallbackInfoReturnable<CookingBookCategory> cir) {
+        if (serializer == ModRecipeSerializers.GRILL_COOKING.get()) {
             cir.setReturnValue(CookingBookCategory.FOOD);
-        }
-        else if(serializer == ModRecipeSerializers.FREEZER_SOLIDIFY.get())
-        {
+        } else if (serializer == ModRecipeSerializers.FREEZER_SOLIDIFY.get()) {
             cir.setReturnValue(CookingBookCategory.MISC);
         }
     }

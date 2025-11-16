@@ -16,10 +16,8 @@ import net.minecraft.world.level.pathfinder.PathComputationType;
 
 import javax.annotation.Nullable;
 
-public abstract class FurnitureBlock extends Block
-{
-    public FurnitureBlock(Properties properties)
-    {
+public abstract class FurnitureBlock extends Block {
+    public FurnitureBlock(Properties properties) {
         super(properties);
     }
 
@@ -30,24 +28,19 @@ public abstract class FurnitureBlock extends Block
     }*/
 
     @Override
-    public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos)
-    {
+    public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
         return AbstractContainerMenu.getRedstoneSignalFromBlockEntity(level.getBlockEntity(pos));
     }
 
     @Override
-    public boolean hasAnalogOutputSignal(BlockState state)
-    {
+    public boolean hasAnalogOutputSignal(BlockState state) {
         return state.getBlock() instanceof EntityBlock;
     }
 
     @Override
-    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving)
-    {
-        if(state.getBlock() != newState.getBlock())
-        {
-            if(level.getBlockEntity(pos) instanceof Container container)
-            {
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (state.getBlock() != newState.getBlock()) {
+            if (level.getBlockEntity(pos) instanceof Container container) {
                 Containers.dropContents(level, pos, container);
                 level.updateNeighbourForOutputSignal(pos, this);
             }
@@ -56,22 +49,19 @@ public abstract class FurnitureBlock extends Block
     }
 
     @Override
-    public boolean triggerEvent(BlockState state, Level level, BlockPos pos, int id, int type)
-    {
+    public boolean triggerEvent(BlockState state, Level level, BlockPos pos, int id, int type) {
         super.triggerEvent(state, level, pos, id, type);
         BlockEntity blockEntity = level.getBlockEntity(pos);
         return blockEntity != null && blockEntity.triggerEvent(id, type);
     }
 
     @Nullable
-    protected static <E extends BlockEntity, A extends BlockEntity> BlockEntityTicker<A> createTickerHelper(BlockEntityType<A> type1, BlockEntityType<E> type2, BlockEntityTicker<? super E> ticker)
-    {
+    protected static <E extends BlockEntity, A extends BlockEntity> BlockEntityTicker<A> createTickerHelper(BlockEntityType<A> type1, BlockEntityType<E> type2, BlockEntityTicker<? super E> ticker) {
         return type2 == type1 ? (BlockEntityTicker<A>) ticker : null;
     }
 
     @Override
-    public boolean isPathfindable(BlockState state, BlockGetter getter, BlockPos pos, PathComputationType type)
-    {
+    public boolean isPathfindable(BlockState state, BlockGetter getter, BlockPos pos, PathComputationType type) {
         return false;
     }
 }

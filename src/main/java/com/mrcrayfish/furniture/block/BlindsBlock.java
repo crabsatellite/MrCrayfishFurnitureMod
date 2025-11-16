@@ -28,26 +28,22 @@ import java.util.List;
 /**
  * Author: MrCrayfish
  */
-public class BlindsBlock extends FurnitureHorizontalBlock
-{
+public class BlindsBlock extends FurnitureHorizontalBlock {
     public static final BooleanProperty OPEN = BooleanProperty.create("open");
     public static final BooleanProperty EXTENSION = BooleanProperty.create("extension");
 
     public final ImmutableMap<BlockState, VoxelShape> SHAPES;
 
-    public BlindsBlock(Properties properties)
-    {
+    public BlindsBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.getStateDefinition().any().setValue(DIRECTION, Direction.NORTH).setValue(OPEN, true).setValue(EXTENSION, false));
         SHAPES = this.generateShapes(this.getStateDefinition().getPossibleStates());
     }
 
-    private ImmutableMap<BlockState, VoxelShape> generateShapes(ImmutableList<BlockState> states)
-    {
+    private ImmutableMap<BlockState, VoxelShape> generateShapes(ImmutableList<BlockState> states) {
         final VoxelShape[] BOX = VoxelShapeHelper.getRotatedShapes(VoxelShapeHelper.rotate(Block.box(0, 0, 0, 16, 16, 3), Direction.SOUTH));
         ImmutableMap.Builder<BlockState, VoxelShape> builder = new ImmutableMap.Builder<>();
-        for(BlockState state : states)
-        {
+        for (BlockState state : states) {
             Direction direction = state.getValue(DIRECTION);
             List<VoxelShape> shapes = new ArrayList<>();
             shapes.add(BOX[direction.get2DDataValue()]);
@@ -57,52 +53,44 @@ public class BlindsBlock extends FurnitureHorizontalBlock
     }
 
     @Override
-    public boolean hasDynamicShape()
-    {
+    public boolean hasDynamicShape() {
         return true;
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext context)
-    {
+    public VoxelShape getShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext context) {
         return SHAPES.get(state);
     }
 
     @Override
-    public VoxelShape getOcclusionShape(BlockState state, BlockGetter reader, BlockPos pos)
-    {
+    public VoxelShape getOcclusionShape(BlockState state, BlockGetter reader, BlockPos pos) {
         return SHAPES.get(state);
     }
 
     @Override
-    public VoxelShape getCollisionShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context)
-    {
+    public VoxelShape getCollisionShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
         return VoxelShapeHelper.rotate(VoxelShapeHelper.rotate(Block.box(0, 1, 0, 16, 16, 3), Direction.SOUTH), state.getValue(DIRECTION));
     }
 
     @Override
-    public BlockState getStateForPlacement(BlockPlaceContext context)
-    {
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
         BlockState state = super.getStateForPlacement(context);
         return this.getBlindState(state, context.getLevel(), context.getClickedPos());
     }
 
     @Override
-    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor level, BlockPos currentPos, BlockPos facingPos)
-    {
+    public BlockState updateShape(BlockState stateIn, Direction facing, BlockState facingState, LevelAccessor level, BlockPos currentPos, BlockPos facingPos) {
         return this.getBlindState(stateIn, level, currentPos);
     }
 
-    private BlockState getBlindState(BlockState state, LevelAccessor level, BlockPos pos)
-    {
+    private BlockState getBlindState(BlockState state, LevelAccessor level, BlockPos pos) {
         BlockState aboveState = level.getBlockState(pos.above());
         boolean isExtension = aboveState.getBlock() == this && aboveState.getValue(DIRECTION) == state.getValue(DIRECTION);
         return state.setValue(EXTENSION, isExtension);
     }
 
     @Override
-    public boolean useShapeForLightOcclusion(BlockState state)
-    {
+    public boolean useShapeForLightOcclusion(BlockState state) {
         return !state.getValue(OPEN);
     }
 
@@ -113,35 +101,27 @@ public class BlindsBlock extends FurnitureHorizontalBlock
     }*/
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result)
-    {
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
         this.toggleBlinds(level, pos, !state.getValue(OPEN), state.getValue(DIRECTION), 5);
-        if(!level.isClientSide())
-        {
-            if(state.getValue(OPEN))
-            {
+        if (!level.isClientSide()) {
+            if (state.getValue(OPEN)) {
                 level.playSound(null, pos, ModSounds.BLOCK_BLINDS_CLOSE.get(), SoundSource.BLOCKS, 0.5F, level.random.nextFloat() * 0.1F + 0.8F);
-            }
-            else
-            {
+            } else {
                 level.playSound(null, pos, ModSounds.BLOCK_BLINDS_OPEN.get(), SoundSource.BLOCKS, 0.5F, level.random.nextFloat() * 0.1F + 0.9F);
             }
         }
         return InteractionResult.SUCCESS;
     }
 
-    private void toggleBlinds(Level level, BlockPos pos, boolean targetOpen, Direction targetDirection, int depth)
-    {
-        if(depth <= 0)
+    private void toggleBlinds(Level level, BlockPos pos, boolean targetOpen, Direction targetDirection, int depth) {
+        if (depth <= 0)
             return;
 
         BlockState state = level.getBlockState(pos);
-        if(state.getBlock() == this)
-        {
+        if (state.getBlock() == this) {
             boolean open = state.getValue(OPEN);
             Direction direction = state.getValue(DIRECTION);
-            if(open != targetOpen && direction.equals(targetDirection))
-            {
+            if (open != targetOpen && direction.equals(targetDirection)) {
                 level.setBlock(pos, state.setValue(OPEN, targetOpen), 3);
                 this.toggleBlinds(level, pos.relative(targetDirection.getClockWise()), targetOpen, targetDirection, depth - 1);
                 this.toggleBlinds(level, pos.relative(targetDirection.getCounterClockWise()), targetOpen, targetDirection, depth - 1);
@@ -152,8 +132,7 @@ public class BlindsBlock extends FurnitureHorizontalBlock
     }
 
     @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder)
-    {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
         builder.add(OPEN);
         builder.add(EXTENSION);

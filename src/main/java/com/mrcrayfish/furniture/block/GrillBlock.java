@@ -35,34 +35,27 @@ import java.util.Optional;
 /**
  * Author: MrCrayfish
  */
-public class GrillBlock extends FurnitureWaterloggedBlock implements EntityBlock
-{
+public class GrillBlock extends FurnitureWaterloggedBlock implements EntityBlock {
     public static final VoxelShape SHAPE = VoxelShapeHelper.combineAll(Arrays.asList(Block.box(0.0, 11.0, 0.0, 16.0, 16.0, 16.0), Block.box(1.5, 0.0, 1.5, 14.5, 11.0, 14.5)));
 
-    public GrillBlock(Properties properties)
-    {
+    public GrillBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.getStateDefinition().any().setValue(WATERLOGGED, false));
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context)
-    {
+    public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
         return SHAPE;
     }
 
-    public float getShadeBrightness(BlockState state, BlockGetter worldIn, BlockPos pos)
-    {
+    public float getShadeBrightness(BlockState state, BlockGetter worldIn, BlockPos pos) {
         return 1.0F;
     }
 
     @Override
-    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving)
-    {
-        if(state.getBlock() != newState.getBlock())
-        {
-            if(level.getBlockEntity(pos) instanceof GrillBlockEntity blockEntity)
-            {
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (state.getBlock() != newState.getBlock()) {
+            if (level.getBlockEntity(pos) instanceof GrillBlockEntity blockEntity) {
                 Containers.dropContents(level, pos, blockEntity.getGrill());
                 Containers.dropContents(level, pos, blockEntity.getFuel());
             }
@@ -71,42 +64,28 @@ public class GrillBlock extends FurnitureWaterloggedBlock implements EntityBlock
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result)
-    {
-        if(!level.isClientSide() && result.getDirection() == Direction.UP)
-        {
-            if(level.getBlockEntity(pos) instanceof GrillBlockEntity blockEntity)
-            {
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
+        if (!level.isClientSide() && result.getDirection() == Direction.UP) {
+            if (level.getBlockEntity(pos) instanceof GrillBlockEntity blockEntity) {
                 ItemStack stack = player.getItemInHand(hand);
-                if(stack.getItem() == ModItems.SPATULA.get())
-                {
+                if (stack.getItem() == ModItems.SPATULA.get()) {
                     blockEntity.flipItem(this.getPosition(result, pos));
-                }
-                else if(stack.getItem() == Items.COAL || stack.getItem() == Items.CHARCOAL)
-                {
-                    if(blockEntity.addFuel(stack))
-                    {
+                } else if (stack.getItem() == Items.COAL || stack.getItem() == Items.CHARCOAL) {
+                    if (blockEntity.addFuel(stack)) {
                         stack.shrink(1);
                         level.playSound(null, pos, SoundEvents.ANCIENT_DEBRIS_HIT, SoundSource.BLOCKS, 1.0F, 1.5F);
                     }
-                }
-                else if(!stack.isEmpty())
-                {
+                } else if (!stack.isEmpty()) {
                     Optional<GrillCookingRecipe> optional = blockEntity.findMatchingRecipe(stack);
-                    if(optional.isPresent())
-                    {
+                    if (optional.isPresent()) {
                         GrillCookingRecipe recipe = optional.get();
-                        if(blockEntity.addItem(stack, this.getPosition(result, pos), recipe.getCookingTime(), recipe.getExperience(), (byte) player.getDirection().get2DDataValue()))
-                        {
-                            if(!player.getAbilities().instabuild)
-                            {
+                        if (blockEntity.addItem(stack, this.getPosition(result, pos), recipe.getCookingTime(), recipe.getExperience(), (byte) player.getDirection().get2DDataValue())) {
+                            if (!player.getAbilities().instabuild) {
                                 stack.shrink(1);
                             }
                         }
                     }
-                }
-                else
-                {
+                } else {
                     blockEntity.removeItem(this.getPosition(result, pos));
                 }
             }
@@ -114,37 +93,30 @@ public class GrillBlock extends FurnitureWaterloggedBlock implements EntityBlock
         return InteractionResult.SUCCESS;
     }
 
-    private int getPosition(BlockHitResult hit, BlockPos pos)
-    {
+    private int getPosition(BlockHitResult hit, BlockPos pos) {
         Vec3 hitVec = hit.getLocation().subtract(pos.getX(), pos.getY(), pos.getZ());
         int position = 0;
-        if(hitVec.x() > 0.5) position += 1;
-        if(hitVec.z() > 0.5) position += 2;
+        if (hitVec.x() > 0.5) position += 1;
+        if (hitVec.z() > 0.5) position += 2;
         return position;
     }
 
     @Nullable
     @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState state)
-    {
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new GrillBlockEntity(pos, state);
     }
 
     @Nullable
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type)
-    {
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         return createMailBoxTicker(level, type, ModBlockEntities.GRILL.get());
     }
 
     @Nullable
-    protected static <T extends BlockEntity> BlockEntityTicker<T> createMailBoxTicker(Level level, BlockEntityType<T> blockEntityType, BlockEntityType<? extends GrillBlockEntity> grillBlockEntity)
-    {
-        if(level.isClientSide())
-        {
+    protected static <T extends BlockEntity> BlockEntityTicker<T> createMailBoxTicker(Level level, BlockEntityType<T> blockEntityType, BlockEntityType<? extends GrillBlockEntity> grillBlockEntity) {
+        if (level.isClientSide()) {
             return createTickerHelper(blockEntityType, grillBlockEntity, GrillBlockEntity::clientTick);
-        }
-        else
-        {
+        } else {
             return createTickerHelper(blockEntityType, grillBlockEntity, GrillBlockEntity::serverTick);
         }
     }

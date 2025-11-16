@@ -28,7 +28,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.neoforge.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -39,25 +39,21 @@ import java.util.function.Supplier;
 /**
  * Author: MrCrayfish
  */
-public class MailBoxBlock extends FurnitureHorizontalBlock implements EntityBlock
-{
+public class MailBoxBlock extends FurnitureHorizontalBlock implements EntityBlock {
     public final ImmutableMap<BlockState, VoxelShape> SHAPES;
 
-    public MailBoxBlock(Properties properties)
-    {
+    public MailBoxBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.getStateDefinition().any().setValue(DIRECTION, Direction.NORTH));
         SHAPES = this.generateShapes(this.getStateDefinition().getPossibleStates());
     }
 
-    private ImmutableMap<BlockState, VoxelShape> generateShapes(ImmutableList<BlockState> states)
-    {
+    private ImmutableMap<BlockState, VoxelShape> generateShapes(ImmutableList<BlockState> states) {
         final VoxelShape[] POST = VoxelShapeHelper.getRotatedShapes(VoxelShapeHelper.rotate(Block.box(6.5, 0, 6.5, 9.5, 13, 9.5), Direction.SOUTH));
         final VoxelShape[] BOX = VoxelShapeHelper.getRotatedShapes(VoxelShapeHelper.rotate(Block.box(4, 13, 2, 12, 22, 14), Direction.SOUTH));
 
         ImmutableMap.Builder<BlockState, VoxelShape> builder = new ImmutableMap.Builder<>();
-        for(BlockState state : states)
-        {
+        for (BlockState state : states) {
             Direction direction = state.getValue(DIRECTION);
             List<VoxelShape> shapes = new ArrayList<>();
             shapes.add(POST[direction.get2DDataValue()]);
@@ -68,25 +64,19 @@ public class MailBoxBlock extends FurnitureHorizontalBlock implements EntityBloc
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext context)
-    {
+    public VoxelShape getShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext context) {
         return SHAPES.get(state);
     }
 
     @Override
-    public VoxelShape getOcclusionShape(BlockState state, BlockGetter reader, BlockPos pos)
-    {
+    public VoxelShape getOcclusionShape(BlockState state, BlockGetter reader, BlockPos pos) {
         return SHAPES.get(state);
     }
 
     @Override
-    public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack stack)
-    {
-        if(entity instanceof ServerPlayer)
-        {
-            if(level.getBlockEntity(pos) instanceof MailBoxBlockEntity blockEntity)
-            {
-                ServerPlayer serverPlayer = (ServerPlayer) entity;
+    public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack stack) {
+        if (entity instanceof ServerPlayer serverPlayer) {
+            if (level.getBlockEntity(pos) instanceof MailBoxBlockEntity blockEntity) {
                 blockEntity.setId(UUID.randomUUID());
                 blockEntity.setOwner(serverPlayer);
                 blockEntity.setMailBoxName("Mail Box");
@@ -97,22 +87,16 @@ public class MailBoxBlock extends FurnitureHorizontalBlock implements EntityBloc
     }
 
     @Override
-    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving)
-    {
-        if(!level.isClientSide())
-        {
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (!level.isClientSide()) {
             BlockEntity tileEntity = level.getBlockEntity(pos);
-            if(tileEntity instanceof MailBoxBlockEntity)
-            {
-                MailBoxBlockEntity mailBox = (MailBoxBlockEntity) tileEntity;
-                if(mailBox.getId() != null && mailBox.getOwnerId() != null)
-                {
+            if (tileEntity instanceof MailBoxBlockEntity mailBox) {
+                if (mailBox.getId() != null && mailBox.getOwnerId() != null) {
                     /* Drops all items that were queue to be inserted into mail box */
                     Supplier<Mail> supplier = PostOffice.getMailForPlayerMailBox(mailBox.getOwnerId(), mailBox.getId());
-                    while(true)
-                    {
+                    while (true) {
                         Mail mail = supplier.get();
-                        if(mail == null) break;
+                        if (mail == null) break;
                         Containers.dropItemStack(level, pos.getX(), pos.getY(), pos.getZ(), mail.getStack());
                     }
 
@@ -125,12 +109,9 @@ public class MailBoxBlock extends FurnitureHorizontalBlock implements EntityBloc
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result)
-    {
-        if(!level.isClientSide())
-        {
-            if(level.getBlockEntity(pos) instanceof MailBoxBlockEntity blockEntity)
-            {
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
+        if (!level.isClientSide()) {
+            if (level.getBlockEntity(pos) instanceof MailBoxBlockEntity blockEntity) {
                 ServerPlayer serverPlayer = (ServerPlayer) player;
                 blockEntity.updateIdAndAttemptClaim(serverPlayer);
                 blockEntity.updateOwnerName(serverPlayer);
@@ -143,20 +124,18 @@ public class MailBoxBlock extends FurnitureHorizontalBlock implements EntityBloc
 
     @Nullable
     @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState state)
-    {
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new MailBoxBlockEntity(pos, state);
     }
 
     @Nullable
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type)
-    {
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
         return createMailBoxTicker(level, type, ModBlockEntities.MAIL_BOX.get());
     }
 
     @Nullable
-    protected static <T extends BlockEntity> BlockEntityTicker<T> createMailBoxTicker(Level level, BlockEntityType<T> blockEntityType, BlockEntityType<? extends MailBoxBlockEntity> mailBoxBlockEntityType)
-    {
+    protected static <T extends BlockEntity> BlockEntityTicker<T> createMailBoxTicker(Level level, BlockEntityType<T> blockEntityType, BlockEntityType<? extends MailBoxBlockEntity> mailBoxBlockEntityType) {
         return level.isClientSide() ? null : createTickerHelper(blockEntityType, mailBoxBlockEntityType, MailBoxBlockEntity::serverTick);
     }
 }
+

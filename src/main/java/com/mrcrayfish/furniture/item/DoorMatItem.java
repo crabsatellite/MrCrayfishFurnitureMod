@@ -15,19 +15,15 @@ import javax.annotation.Nullable;
 /**
  * Author: MrCrayfish
  */
-public class DoorMatItem extends BlockItem
-{
-    public DoorMatItem(Block blockIn, Item.Properties builder)
-    {
+public class DoorMatItem extends BlockItem {
+    public DoorMatItem(Block blockIn, Item.Properties builder) {
         super(blockIn, builder);
     }
 
     @Override
-    protected boolean updateCustomBlockEntityTag(BlockPos pos, Level level, @Nullable Player player, ItemStack stack, BlockState state)
-    {
+    protected boolean updateCustomBlockEntityTag(BlockPos pos, Level level, @Nullable Player player, ItemStack stack, BlockState state) {
         boolean placedBlockEntity = super.updateCustomBlockEntityTag(pos, level, player, stack, state);
-        if(level.isClientSide() && !placedBlockEntity && player != null)
-        {
+        if (level.isClientSide() && !placedBlockEntity && player != null) {
             ClientHandler.showDoorMatScreen(level, pos);
         }
         return placedBlockEntity;

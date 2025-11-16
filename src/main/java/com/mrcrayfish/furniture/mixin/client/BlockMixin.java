@@ -16,13 +16,10 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
  * Author: MrCrayfish
  */
 @Mixin(Block.class)
-public class BlockMixin
-{
+public class BlockMixin {
     @Inject(method = "shouldRenderFace", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/world/phys/shapes/Shapes;joinIsNotEmpty(Lnet/minecraft/world/phys/shapes/VoxelShape;Lnet/minecraft/world/phys/shapes/VoxelShape;Lnet/minecraft/world/phys/shapes/BooleanOp;)Z"), locals = LocalCapture.CAPTURE_FAILHARD, cancellable = true)
-    private static void shouldRenderSideWithBlinds(BlockState state, BlockGetter getter, BlockPos pos, Direction direction, BlockPos offsetPos, CallbackInfoReturnable<Boolean> cir, BlockState offsetState)
-    {
-        if(offsetState.getBlock() instanceof BlindsBlock)
-        {
+    private static void shouldRenderSideWithBlinds(BlockState state, BlockGetter getter, BlockPos pos, Direction direction, BlockPos offsetPos, CallbackInfoReturnable<Boolean> cir, BlockState offsetState) {
+        if (offsetState.getBlock() instanceof BlindsBlock) {
             cir.setReturnValue(true);
         }
     }

@@ -31,21 +31,18 @@ import java.util.List;
 /**
  * Author: MrCrayfish
  */
-public class SofaBlock extends FurnitureHorizontalBlock
-{
+public class SofaBlock extends FurnitureHorizontalBlock {
     public static final EnumProperty<Type> TYPE = EnumProperty.create("type", Type.class);
 
     public final ImmutableMap<BlockState, VoxelShape> SHAPES;
 
-    public SofaBlock(Properties properties)
-    {
+    public SofaBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.getStateDefinition().any().setValue(DIRECTION, Direction.NORTH).setValue(TYPE, Type.SINGLE));
         SHAPES = this.generateShapes(this.getStateDefinition().getPossibleStates());
     }
 
-    private ImmutableMap<BlockState, VoxelShape> generateShapes(ImmutableList<BlockState> states)
-    {
+    private ImmutableMap<BlockState, VoxelShape> generateShapes(ImmutableList<BlockState> states) {
         final VoxelShape BASE = Block.box(0, 3, 0, 16, 10, 16);
         final VoxelShape[] LEG_BACK_LEFT = VoxelShapeHelper.getRotatedShapes(VoxelShapeHelper.rotate(Block.box(0, 0, 0, 3, 3, 3), Direction.SOUTH));
         final VoxelShape[] LEG_FRONT_LEFT = VoxelShapeHelper.getRotatedShapes(VoxelShapeHelper.rotate(Block.box(0, 0, 13, 3, 3, 16), Direction.SOUTH));
@@ -58,15 +55,13 @@ public class SofaBlock extends FurnitureHorizontalBlock
         final VoxelShape[] RIGHT_ARM_REST = VoxelShapeHelper.getRotatedShapes(VoxelShapeHelper.rotate(Block.box(14, 9, 1, 18, 14, 16), Direction.SOUTH));
 
         ImmutableMap.Builder<BlockState, VoxelShape> builder = new ImmutableMap.Builder<>();
-        for(BlockState state : states)
-        {
+        for (BlockState state : states) {
             Direction direction = state.getValue(DIRECTION);
             Type type = state.getValue(TYPE);
             List<VoxelShape> shapes = new ArrayList<>();
             shapes.add(BASE);
             shapes.add(BACK_REST[direction.get2DDataValue()]);
-            switch(type)
-            {
+            switch (type) {
                 case SINGLE:
                     shapes.add(LEG_BACK_LEFT[direction.get2DDataValue()]);
                     shapes.add(LEG_FRONT_LEFT[direction.get2DDataValue()]);
@@ -100,34 +95,27 @@ public class SofaBlock extends FurnitureHorizontalBlock
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext context)
-    {
+    public VoxelShape getShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext context) {
         return SHAPES.get(state);
     }
 
     @Override
-    public VoxelShape getOcclusionShape(BlockState state, BlockGetter reader, BlockPos pos)
-    {
+    public VoxelShape getOcclusionShape(BlockState state, BlockGetter reader, BlockPos pos) {
         return SHAPES.get(state);
     }
 
     @Override
-    public BlockState getStateForPlacement(BlockPlaceContext context)
-    {
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
         BlockState state = super.getStateForPlacement(context);
         return this.getSofaState(state, context.getLevel(), context.getClickedPos(), state.getValue(DIRECTION));
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player playerEntity, InteractionHand hand, BlockHitResult result)
-    {
-        if(!level.isClientSide())
-        {
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player playerEntity, InteractionHand hand, BlockHitResult result) {
+        if (!level.isClientSide()) {
             ItemStack stack = playerEntity.getItemInHand(hand);
-            if(stack.getItem() == Items.NAME_TAG && this != ModBlocks.SOFA_RAINBOW.get())
-            {
-                if(stack.getHoverName().getString().equals("jeb_"))
-                {
+            if (stack.getItem() == Items.NAME_TAG && this != ModBlocks.SOFA_RAINBOW.get()) {
+                if (stack.getHoverName().getString().equals("jeb_")) {
                     BlockState rainbowSofaState = ModBlocks.SOFA_RAINBOW.get().defaultBlockState().setValue(DIRECTION, state.getValue(DIRECTION)).setValue(TYPE, state.getValue(TYPE));
                     level.setBlock(pos, rainbowSofaState, 3);
                     return InteractionResult.SUCCESS;
@@ -139,46 +127,33 @@ public class SofaBlock extends FurnitureHorizontalBlock
     }
 
     @Override
-    public BlockState updateShape(BlockState state, Direction direction, BlockState newState, LevelAccessor level, BlockPos pos, BlockPos newPos)
-    {
+    public BlockState updateShape(BlockState state, Direction direction, BlockState newState, LevelAccessor level, BlockPos pos, BlockPos newPos) {
         return this.getSofaState(state, level, pos, state.getValue(DIRECTION));
     }
 
-    private BlockState getSofaState(BlockState state, LevelAccessor level, BlockPos pos, Direction dir)
-    {
+    private BlockState getSofaState(BlockState state, LevelAccessor level, BlockPos pos, Direction dir) {
         boolean left = this.isSofa(level, pos, dir.getCounterClockWise(), dir) || this.isSofa(level, pos, dir.getCounterClockWise(), dir.getCounterClockWise());
         boolean right = this.isSofa(level, pos, dir.getClockWise(), dir) || this.isSofa(level, pos, dir.getClockWise(), dir.getClockWise());
         boolean cornerLeft = this.isSofa(level, pos, dir.getOpposite(), dir.getCounterClockWise());
         boolean cornerRight = this.isSofa(level, pos, dir.getOpposite(), dir.getClockWise());
 
-        if(cornerLeft)
-        {
+        if (cornerLeft) {
             return state.setValue(TYPE, Type.CORNER_LEFT);
-        }
-        else if(cornerRight)
-        {
+        } else if (cornerRight) {
             return state.setValue(TYPE, Type.CORNER_RIGHT);
-        }
-        else if(left && right)
-        {
+        } else if (left && right) {
             return state.setValue(TYPE, Type.MIDDLE);
-        }
-        else if(left)
-        {
+        } else if (left) {
             return state.setValue(TYPE, Type.RIGHT);
-        }
-        else if(right)
-        {
+        } else if (right) {
             return state.setValue(TYPE, Type.LEFT);
         }
         return state.setValue(TYPE, Type.SINGLE);
     }
 
-    private boolean isSofa(LevelAccessor level, BlockPos source, Direction direction, Direction targetDirection)
-    {
+    private boolean isSofa(LevelAccessor level, BlockPos source, Direction direction, Direction targetDirection) {
         BlockState state = level.getBlockState(source.relative(direction));
-        if(state.getBlock() == this)
-        {
+        if (state.getBlock() == this) {
             Direction sofaDirection = state.getValue(DIRECTION);
             return sofaDirection.equals(targetDirection);
         }
@@ -186,14 +161,12 @@ public class SofaBlock extends FurnitureHorizontalBlock
     }
 
     @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder)
-    {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
         builder.add(TYPE);
     }
 
-    public enum Type implements StringRepresentable
-    {
+    public enum Type implements StringRepresentable {
         SINGLE("single"),
         LEFT("left"),
         RIGHT("right"),
@@ -203,20 +176,17 @@ public class SofaBlock extends FurnitureHorizontalBlock
 
         private final String id;
 
-        Type(String id)
-        {
+        Type(String id) {
             this.id = id;
         }
 
         @Override
-        public String getSerializedName()
-        {
+        public String getSerializedName() {
             return id;
         }
 
         @Override
-        public String toString()
-        {
+        public String toString() {
             return id;
         }
     }

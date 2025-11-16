@@ -12,23 +12,20 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderHighlightEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.client.event.RenderHighlightEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
 /**
  * Author: MrCrayfish
  */
-@Mod.EventBusSubscriber(modid = Reference.MOD_ID, value = Dist.CLIENT)
-public class ClientEvents
-{
+@EventBusSubscriber(modid = Reference.MOD_ID, value = Dist.CLIENT)
+public class ClientEvents {
     @SubscribeEvent
-    public static void onRenderOutline(RenderHighlightEvent.Block event)
-    {
-        if(!FurnitureConfig.CLIENT.drawCollisionShapes.get())
-        {
+    public static void onRenderOutline(RenderHighlightEvent.Block event) {
+        if (!FurnitureConfig.CLIENT.drawCollisionShapes.get()) {
             return;
         }
 
@@ -46,8 +43,7 @@ public class ClientEvents
         drawShape(event.getPoseStack(), builder, collisionShape, -posX + pos.getX(), -posY + pos.getY(), -posZ + pos.getZ(), 0.0F, 1.0F, 0.0F, 1.0F);
     }
 
-    private static void drawShape(PoseStack poseStack, VertexConsumer consumer, VoxelShape voxelShape, double xIn, double yIn, double zIn, float red, float green, float blue, float alpha)
-    {
+    private static void drawShape(PoseStack poseStack, VertexConsumer consumer, VoxelShape voxelShape, double xIn, double yIn, double zIn, float red, float green, float blue, float alpha) {
         Matrix4f matrix4f = poseStack.last().pose();
         Matrix3f matrix3f = poseStack.last().normal();
         voxelShape.forAllEdges((x1, y1, z1, x2, y2, z2) ->
@@ -57,3 +53,6 @@ public class ClientEvents
         });
     }
 }
+
+
+

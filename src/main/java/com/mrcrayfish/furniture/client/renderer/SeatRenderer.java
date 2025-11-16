@@ -11,19 +11,17 @@ import net.minecraft.resources.ResourceLocation;
 /**
  * Author: MrCrayfish
  */
-public class SeatRenderer extends EntityRenderer<SeatEntity>
-{
-    public SeatRenderer(EntityRendererProvider.Context context)
-    {
+public class SeatRenderer extends EntityRenderer<SeatEntity> {
+    public SeatRenderer(EntityRendererProvider.Context context) {
         super(context);
     }
 
     @Override
-    public ResourceLocation getTextureLocation(SeatEntity seatEntity)
-    {
+    public ResourceLocation getTextureLocation(SeatEntity seatEntity) {
         return null;
     }
 
     @Override
-    protected void renderNameTag(SeatEntity entity, Component component, PoseStack stack, MultiBufferSource source, int light) {}
+    protected void renderNameTag(SeatEntity entity, Component component, PoseStack stack, MultiBufferSource source, int light) {
+    }
 }

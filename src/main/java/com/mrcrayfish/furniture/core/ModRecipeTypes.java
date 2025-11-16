@@ -3,31 +3,28 @@ package com.mrcrayfish.furniture.core;
 import com.mrcrayfish.furniture.Reference;
 import com.mrcrayfish.furniture.item.crafting.FreezerSolidifyRecipe;
 import com.mrcrayfish.furniture.item.crafting.GrillCookingRecipe;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 /**
  * Author: MrCrayfish
  */
-public class ModRecipeTypes
-{
-    public static final DeferredRegister<RecipeType<?>> REGISTER = DeferredRegister.create(ForgeRegistries.RECIPE_TYPES, Reference.MOD_ID);
+public class ModRecipeTypes {
+    public static final DeferredRegister<RecipeType<?>> REGISTER = DeferredRegister.create(Registries.RECIPE_TYPE, Reference.MOD_ID);
 
-    public static final RegistryObject<RecipeType<GrillCookingRecipe>> GRILL_COOKING = create("grill_cooking");
-    public static final RegistryObject<RecipeType<FreezerSolidifyRecipe>> FREEZER_SOLIDIFY = create("freezer_solidify");
+    public static final DeferredHolder<RecipeType<GrillCookingRecipe>> GRILL_COOKING = create("grill_cooking");
+    public static final DeferredHolder<RecipeType<FreezerSolidifyRecipe>> FREEZER_SOLIDIFY = create("freezer_solidify");
 
-    private static <T extends Recipe<?>> RegistryObject<RecipeType<T>> create(String name)
-    {
-        return REGISTER.register(name, () -> new RecipeType<>()
-        {
+    private static <T extends Recipe<?>> DeferredHolder<RecipeType<T>> create(String name) {
+        return REGISTER.register(name, () -> new RecipeType<>() {
             @Override
-            public String toString()
-            {
+            public String toString() {
                 return name;
             }
         });
     }
 }
+

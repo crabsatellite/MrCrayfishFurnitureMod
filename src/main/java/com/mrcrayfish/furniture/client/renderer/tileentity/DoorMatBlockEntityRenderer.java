@@ -17,23 +17,18 @@ import java.util.List;
 /**
  * Author: MrCrayfish
  */
-public class DoorMatBlockEntityRenderer implements BlockEntityRenderer<DoorMatBlockEntity>
-{
+public class DoorMatBlockEntityRenderer implements BlockEntityRenderer<DoorMatBlockEntity> {
     private final Font font;
 
-    public DoorMatBlockEntityRenderer(BlockEntityRendererProvider.Context context)
-    {
+    public DoorMatBlockEntityRenderer(BlockEntityRendererProvider.Context context) {
         this.font = context.getFont();
     }
 
     @Override
-    public void render(DoorMatBlockEntity tileEntity, float partialTicks, PoseStack poseStack, MultiBufferSource source, int light, int overlay)
-    {
-        if(tileEntity.getMessage() != null)
-        {
+    public void render(DoorMatBlockEntity tileEntity, float partialTicks, PoseStack poseStack, MultiBufferSource source, int light, int overlay) {
+        if (tileEntity.getMessage() != null) {
             BlockState state = tileEntity.getBlockState();
-            if(state.getBlock() instanceof DoorMatBlock)
-            {
+            if (state.getBlock() instanceof DoorMatBlock) {
                 poseStack.pushPose(); //Push
 
                 poseStack.translate(0.5, 0.0626, 0.5);
@@ -49,8 +44,7 @@ public class DoorMatBlockEntityRenderer implements BlockEntityRenderer<DoorMatBl
                 poseStack.translate(0.0, -(lines.size() * this.font.lineHeight - 1.0) / 2.0, 0);
 
                 //TODO test
-                for(int j = 0; j < lines.size(); j++)
-                {
+                for (int j = 0; j < lines.size(); j++) {
                     poseStack.pushPose();
                     poseStack.translate(-this.font.width(lines.get(j)) / 2.0, (j * this.font.lineHeight), 0.0);
                     this.font.drawInBatch(lines.get(j), 0, 0, overlay, false, poseStack.last().pose(), source, Font.DisplayMode.NORMAL, 0, light);

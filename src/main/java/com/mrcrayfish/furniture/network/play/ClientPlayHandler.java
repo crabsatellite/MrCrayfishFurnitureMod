@@ -8,13 +8,10 @@ import net.minecraft.world.level.Level;
 /**
  * Author: MrCrayfish
  */
-public class ClientPlayHandler
-{
-    public static void handleFlipGrillMessage(S2CMessageFlipGrill message)
-    {
+public class ClientPlayHandler {
+    public static void handleFlipGrillMessage(S2CMessageFlipGrill message) {
         Level level = Minecraft.getInstance().level;
-        if(level != null && level.getBlockEntity(message.getPos()) instanceof GrillBlockEntity grill)
-        {
+        if (level != null && level.getBlockEntity(message.getPos()) instanceof GrillBlockEntity grill) {
             grill.setFlipping(message.getPosition());
         }
     }

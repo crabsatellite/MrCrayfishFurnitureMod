@@ -4,7 +4,7 @@ import com.mrcrayfish.furniture.core.ModBlocks;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 import javax.annotation.Nullable;
 import java.util.function.Supplier;
@@ -12,8 +12,7 @@ import java.util.function.Supplier;
 /**
  * Author: MrCrayfish
  */
-public class GeneratorData
-{
+public class GeneratorData {
     public static final FurnitureType TABLE = new FurnitureType("table", "TableBlock", new String[]{"Block.Properties.from(Blocks.OAK_PLANKS)"});
     public static final FurnitureType CHAIR = new FurnitureType("chair", "ChairBlock", new String[]{"Block.Properties.from(Blocks.OAK_PLANKS)"});
     public static final FurnitureType COFFEE_TABLE = new FurnitureType("coffee_table", "CoffeeTableBlock", new String[]{"Block.Properties.from(Blocks.OAK_PLANKS)"});
@@ -44,38 +43,35 @@ public class GeneratorData
     public static final Variant MANGROVE = new Variant("mangrove", () -> Blocks.MANGROVE_PLANKS, () -> Blocks.MANGROVE_LOG, () -> Blocks.STRIPPED_MANGROVE_LOG, false);
     public static final Variant[] ALL_VARIANTS = {OAK, BIRCH, SPRUCE, JUNGLE, ACACIA, DARK_OAK, CRIMSON, WARPED, MANGROVE};
 
-    public record FurnitureType(String id, String className, String[] args) {}
-    public record Variant(String id, Supplier<Block> planks, Supplier<Block> log, @Nullable Supplier<Block> strippedLog, boolean stem) {}
+    public record FurnitureType(String id, String className, String[] args) {
+    }
+
+    public record Variant(String id, Supplier<Block> planks, Supplier<Block> log, @Nullable Supplier<Block> strippedLog,
+                          boolean stem) {
+    }
 
     @SuppressWarnings("unchecked")
-    public static ResourceLocation getResultBlock(FurnitureType type, Variant variant, boolean stripped)
-    {
-        try
-        {
+    public static ResourceLocation getResultBlock(FurnitureType type, Variant variant, boolean stripped) {
+        try {
             String fieldFormat = stripped ? "%s_STRIPPED_%s" : "%s_%s";
             String fieldName = String.format(fieldFormat, type.id().toUpperCase(), variant.id().toUpperCase());
             RegistryObject<Block> block = (RegistryObject<Block>) ModBlocks.class.getField(fieldName).get(null);
             return block.getId();
-        }
-        catch(NoSuchFieldException | IllegalAccessException e)
-        {
+        } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException("Failed to find field");
         }
     }
 
     @SuppressWarnings("unchecked")
-    public static ResourceLocation getUpgradedFence(Variant variant, boolean stripped)
-    {
-        try
-        {
+    public static ResourceLocation getUpgradedFence(Variant variant, boolean stripped) {
+        try {
             String fieldFormat = stripped ? "UPGRADED_FENCE_STRIPPED_%s" : "UPGRADED_FENCE_%s";
             String fieldName = String.format(fieldFormat, variant.id().toUpperCase());
             RegistryObject<Block> block = (RegistryObject<Block>) ModBlocks.class.getField(fieldName).get(null);
             return block.getId();
-        }
-        catch(NoSuchFieldException | IllegalAccessException e)
-        {
+        } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException("Failed to find field");
         }
     }
 }
+

@@ -7,7 +7,6 @@ import com.mrcrayfish.furniture.tileentity.CrateBlockEntity;
 import com.mrcrayfish.furniture.util.VoxelShapeHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
@@ -28,47 +27,39 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.network.NetworkHooks;
+import net.neoforged.neoforge.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Author: MrCrayfish
  */
-public class CrateBlock extends FurnitureHorizontalBlock implements IPortableInventory, EntityBlock
-{
+public class CrateBlock extends FurnitureHorizontalBlock implements IPortableInventory, EntityBlock {
     public static final BooleanProperty OPEN = BlockStateProperties.OPEN;
 
     public final ImmutableMap<BlockState, VoxelShape> SHAPES;
 
-    public CrateBlock(Properties properties)
-    {
+    public CrateBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.getStateDefinition().any().setValue(OPEN, false).setValue(DIRECTION, Direction.NORTH));
         SHAPES = this.generateShapes(this.getStateDefinition().getPossibleStates());
     }
 
-    private ImmutableMap<BlockState, VoxelShape> generateShapes(ImmutableList<BlockState> states)
-    {
+    private ImmutableMap<BlockState, VoxelShape> generateShapes(ImmutableList<BlockState> states) {
         final VoxelShape[] OPEN_LID = VoxelShapeHelper.getRotatedShapes(VoxelShapeHelper.rotate(Block.box(0, 13, -2, 16, 29, 1), Direction.SOUTH));
 
         ImmutableMap.Builder<BlockState, VoxelShape> builder = new ImmutableMap.Builder<>();
-        for(BlockState state : states)
-        {
+        for (BlockState state : states) {
             Direction direction = state.getValue(DIRECTION);
             boolean open = state.getValue(OPEN);
 
             List<VoxelShape> shapes = new ArrayList<>();
-            if(open)
-            {
+            if (open) {
                 shapes.add(Block.box(0, 0, 0, 16, 13, 16));
                 shapes.add(OPEN_LID[direction.get2DDataValue()]);
-            }
-            else
-            {
+            } else {
                 shapes.add(Shapes.block());
             }
             builder.put(state, VoxelShapeHelper.combineAll(shapes));
@@ -78,24 +69,19 @@ public class CrateBlock extends FurnitureHorizontalBlock implements IPortableInv
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext context)
-    {
+    public VoxelShape getShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext context) {
         return SHAPES.get(state);
     }
 
     @Override
-    public VoxelShape getOcclusionShape(BlockState state, BlockGetter reader, BlockPos pos)
-    {
+    public VoxelShape getOcclusionShape(BlockState state, BlockGetter reader, BlockPos pos) {
         return SHAPES.get(state);
     }
 
     @Override
-    public float getDestroyProgress(BlockState state, Player player, BlockGetter reader, BlockPos pos)
-    {
-        if(reader.getBlockEntity(pos) instanceof CrateBlockEntity blockEntity)
-        {
-            if(blockEntity.isLocked() && !player.getUUID().equals(blockEntity.getOwner()))
-            {
+    public float getDestroyProgress(BlockState state, Player player, BlockGetter reader, BlockPos pos) {
+        if (reader.getBlockEntity(pos) instanceof CrateBlockEntity blockEntity) {
+            if (blockEntity.isLocked() && !player.getUUID().equals(blockEntity.getOwner())) {
                 return 0.0005F;
             }
         }
@@ -103,12 +89,9 @@ public class CrateBlock extends FurnitureHorizontalBlock implements IPortableInv
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result)
-    {
-        if(!level.isClientSide())
-        {
-            if(level.getBlockEntity(pos) instanceof CrateBlockEntity blockEntity)
-            {
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
+        if (!level.isClientSide()) {
+            if (level.getBlockEntity(pos) instanceof CrateBlockEntity blockEntity) {
                 NetworkHooks.openScreen((ServerPlayer) player, blockEntity, pos);
             }
         }
@@ -116,34 +99,29 @@ public class CrateBlock extends FurnitureHorizontalBlock implements IPortableInv
     }
 
     @Override
-    public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random)
-    {
-        if(level.getBlockEntity(pos) instanceof BasicLootBlockEntity blockEntity)
-        {
+    public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
+        if (level.getBlockEntity(pos) instanceof BasicLootBlockEntity blockEntity) {
             blockEntity.updateOpenerCount();
         }
     }
 
     @Override
-    public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack stack)
-    {
-        if(entity != null && level.getBlockEntity(pos) instanceof CrateBlockEntity blockEntity)
-        {
+    public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack stack) {
+        if (entity != null && level.getBlockEntity(pos) instanceof CrateBlockEntity blockEntity) {
             blockEntity.setOwner(entity.getUUID());
         }
     }
 
     @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder)
-    {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
         builder.add(OPEN);
     }
 
     @Nullable
     @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState state)
-    {
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new CrateBlockEntity(pos, state);
     }
 }
+

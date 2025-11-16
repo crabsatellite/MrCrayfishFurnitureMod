@@ -11,18 +11,15 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 /**
  * Author: MrCrayfish
  */
-public class CommonHandler
-{
-    public static void setup()
-    {
+public class CommonHandler {
+    public static void setup() {
         PacketHandler.init();
         DispenserBlock.registerBehavior(ModItems.SPATULA::get, (source, stack) ->
         {
             Direction direction = source.getBlockState().getValue(DispenserBlock.FACING);
             BlockPos pos = source.getPos().relative(direction).below();
             BlockEntity tileEntity = source.getLevel().getBlockEntity(pos);
-            if(tileEntity instanceof GrillBlockEntity)
-            {
+            if (tileEntity instanceof GrillBlockEntity) {
                 ((GrillBlockEntity) tileEntity).flipItems();
             }
             return stack;

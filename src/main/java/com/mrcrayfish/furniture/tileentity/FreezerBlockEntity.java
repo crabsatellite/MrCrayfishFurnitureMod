@@ -29,12 +29,12 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.wrapper.SidedInvWrapper;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.capabilities.Capability;
+import net.neoforged.neoforge.capabilities.ForgeCapabilities;
+import net.neoforged.neoforge.common.util.LazyOptional;
+import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.wrapper.SidedInvWrapper;
 
 import javax.annotation.Nullable;
 import java.util.Map;
@@ -42,8 +42,7 @@ import java.util.Map;
 /**
  * Author: MrCrayfish
  */
-public class FreezerBlockEntity extends BasicLootBlockEntity
-{
+public class FreezerBlockEntity extends BasicLootBlockEntity {
     private static final int[] SLOTS_SOURCE = new int[]{0};
     private static final int[] SLOTS_FUEL = new int[]{1};
     private static final int[] SLOTS_RESULT = new int[]{2};
@@ -55,13 +54,10 @@ public class FreezerBlockEntity extends BasicLootBlockEntity
 
     private LazyOptional<? extends IItemHandler>[] handlers = SidedInvWrapper.create(this, Direction.UP, Direction.DOWN, Direction.NORTH);
 
-    protected final SimpleContainerData freezerData = new SimpleContainerData(4)
-    {
+    protected final SimpleContainerData freezerData = new SimpleContainerData(4) {
         @Override
-        public int get(int index)
-        {
-            switch(index)
-            {
+        public int get(int index) {
+            switch (index) {
                 case 0:
                     return fuelTime;
                 case 1:
@@ -76,10 +72,8 @@ public class FreezerBlockEntity extends BasicLootBlockEntity
         }
 
         @Override
-        public void set(int index, int value)
-        {
-            switch(index)
-            {
+        public void set(int index, int value) {
+            switch (index) {
                 case 0:
                     fuelTime = value;
                     break;
@@ -99,100 +93,73 @@ public class FreezerBlockEntity extends BasicLootBlockEntity
 
     private final Map<ResourceLocation, Integer> usedRecipeCount = Maps.newHashMap();
 
-    protected FreezerBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state)
-    {
+    protected FreezerBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
     }
 
-    public FreezerBlockEntity(BlockPos pos, BlockState state)
-    {
+    public FreezerBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.FREEZER.get(), pos, state);
     }
-    
-    public static void serverTick(Level level, BlockPos pos, BlockState state, FreezerBlockEntity blockEntity)
-    {
+
+    public static void serverTick(Level level, BlockPos pos, BlockState state, FreezerBlockEntity blockEntity) {
         boolean freezing = blockEntity.isFreezing();
         boolean shouldMarkDirty = false;
 
-        if(blockEntity.isFreezing())
-        {
+        if (blockEntity.isFreezing()) {
             --blockEntity.fuelTime;
         }
 
         ItemStack fuelStack = blockEntity.items.get(1);
-        if(blockEntity.isFreezing() || !fuelStack.isEmpty() && !blockEntity.items.get(0).isEmpty())
-        {
+        if (blockEntity.isFreezing() || !fuelStack.isEmpty() && !blockEntity.items.get(0).isEmpty()) {
             Recipe<?> recipe = level.getRecipeManager().getRecipeFor(ModRecipeTypes.FREEZER_SOLIDIFY.get(), blockEntity, level).orElse(null);
-            if(!blockEntity.isFreezing() && blockEntity.canFreeze(recipe))
-            {
+            if (!blockEntity.isFreezing() && blockEntity.canFreeze(recipe)) {
                 blockEntity.fuelTime = blockEntity.getFreezeTime(fuelStack);
                 blockEntity.fuelTimeTotal = blockEntity.fuelTime;
-                if(blockEntity.isFreezing())
-                {
+                if (blockEntity.isFreezing()) {
                     shouldMarkDirty = true;
-                    if(fuelStack.hasCraftingRemainingItem())
-                    {
+                    if (fuelStack.hasCraftingRemainingItem()) {
                         blockEntity.items.set(1, fuelStack.getCraftingRemainingItem());
-                    }
-                    else if(!fuelStack.isEmpty())
-                    {
+                    } else if (!fuelStack.isEmpty()) {
                         fuelStack.shrink(1);
-                        if(fuelStack.isEmpty())
-                        {
+                        if (fuelStack.isEmpty()) {
                             blockEntity.items.set(1, fuelStack.getCraftingRemainingItem());
                         }
                     }
                 }
             }
 
-            if(blockEntity.isFreezing() && blockEntity.canFreeze(recipe))
-            {
+            if (blockEntity.isFreezing() && blockEntity.canFreeze(recipe)) {
                 ++blockEntity.freezeTime;
-                if(blockEntity.freezeTime == blockEntity.freezeTimeTotal)
-                {
+                if (blockEntity.freezeTime == blockEntity.freezeTimeTotal) {
                     blockEntity.freezeTime = 0;
                     blockEntity.freezeTimeTotal = blockEntity.getFreezeTime();
                     blockEntity.freeze(recipe);
                     shouldMarkDirty = true;
                 }
-            }
-            else
-            {
+            } else {
                 blockEntity.freezeTime = 0;
             }
-        }
-        else if(blockEntity.freezeTime > 0)
-        {
+        } else if (blockEntity.freezeTime > 0) {
             blockEntity.freezeTime = Mth.clamp(blockEntity.freezeTime - 2, 0, blockEntity.freezeTimeTotal);
         }
 
-        if(shouldMarkDirty)
-        {
+        if (shouldMarkDirty) {
             blockEntity.setChanged();
         }
     }
 
-    private boolean isFreezing()
-    {
+    private boolean isFreezing() {
         return this.fuelTime > 0;
     }
 
-    public int getFreezeTime(ItemStack stack)
-    {
-        if(stack.isEmpty())
-        {
+    public int getFreezeTime(ItemStack stack) {
+        if (stack.isEmpty()) {
             return 0;
-        }
-        else if(stack.getItem() == Items.ICE)
-        {
+        } else if (stack.getItem() == Items.ICE) {
             return 2000;
-        }
-        else if(stack.getItem() == Items.BLUE_ICE)
-        {
+        } else if (stack.getItem() == Items.BLUE_ICE) {
             return 162000;
-        }
-        else if(stack.getItem() == Items.PACKED_ICE)
-        {
+        } else if (stack.getItem() == Items.PACKED_ICE) {
             return 18000;
         }
         FreezerFuelTimeEvent event = new FreezerFuelTimeEvent(stack);
@@ -200,115 +167,87 @@ public class FreezerBlockEntity extends BasicLootBlockEntity
         return event.getFuelTime();
     }
 
-    private boolean canFreeze(@Nullable Recipe<?> recipe)
-    {
-        if(!this.items.get(0).isEmpty() && recipe != null)
-        {
+    private boolean canFreeze(@Nullable Recipe<?> recipe) {
+        if (!this.items.get(0).isEmpty() && recipe != null) {
             ItemStack outputStack = recipe.getResultItem(this.level.registryAccess());
-            if(outputStack.isEmpty())
-            {
+            if (outputStack.isEmpty()) {
                 return false;
             }
 
             ItemStack resultStack = this.items.get(2);
-            if(resultStack.isEmpty())
-            {
+            if (resultStack.isEmpty()) {
                 return true;
-            }
-            else if(!ItemStack.isSameItem(resultStack, outputStack))
-            {
+            } else if (!ItemStack.isSameItem(resultStack, outputStack)) {
                 return false;
-            }
-            else if(resultStack.getCount() + outputStack.getCount() <= this.getMaxStackSize() && resultStack.getCount() + outputStack.getCount() <= resultStack.getMaxStackSize())
-            {
+            } else if (resultStack.getCount() + outputStack.getCount() <= this.getMaxStackSize() && resultStack.getCount() + outputStack.getCount() <= resultStack.getMaxStackSize()) {
                 return true;
-            }
-            else
-            {
+            } else {
                 return resultStack.getCount() + outputStack.getCount() <= outputStack.getMaxStackSize();
             }
         }
         return false;
     }
 
-    private void freeze(@Nullable Recipe<?> recipe)
-    {
-        if(recipe != null && this.canFreeze(recipe))
-        {
+    private void freeze(@Nullable Recipe<?> recipe) {
+        if (recipe != null && this.canFreeze(recipe)) {
             ItemStack sourceStack = this.items.get(0);
             ItemStack outputStack = recipe.getResultItem(this.level.registryAccess());
             ItemStack resultStack = this.items.get(2);
-            if(resultStack.isEmpty())
-            {
+            if (resultStack.isEmpty()) {
                 this.items.set(2, outputStack.copy());
-            }
-            else if(resultStack.getItem() == outputStack.getItem())
-            {
+            } else if (resultStack.getItem() == outputStack.getItem()) {
                 resultStack.grow(outputStack.getCount());
             }
 
-            if(!this.level.isClientSide)
-            {
+            if (!this.level.isClientSide) {
                 this.addRecipeUsed(recipe);
             }
 
-            if(sourceStack.hasCraftingRemainingItem())
-            {
+            if (sourceStack.hasCraftingRemainingItem()) {
                 this.items.set(0, sourceStack.getCraftingRemainingItem());
-            }
-            else
-            {
+            } else {
                 sourceStack.shrink(1);
             }
         }
     }
 
     @Override
-    public int getContainerSize()
-    {
+    public int getContainerSize() {
         return 3;
     }
 
     @Override
-    public void setItem(int index, ItemStack stack)
-    {
+    public void setItem(int index, ItemStack stack) {
         super.setItem(index, stack);
-        if(index == 0)
-        {
+        if (index == 0) {
             this.freezeTimeTotal = this.getFreezeTime();
             this.freezeTime = 0;
             this.setChanged();
         }
     }
 
-    protected int getFreezeTime()
-    {
+    protected int getFreezeTime() {
         return this.level.getRecipeManager().getRecipeFor(ModRecipeTypes.FREEZER_SOLIDIFY.get(), this, this.level).map(AbstractCookingRecipe::getCookingTime).orElse(300);
     }
 
     @Override
-    protected Component getDefaultName()
-    {
+    protected Component getDefaultName() {
         return Component.translatable("container.cfm.freezer");
     }
 
     @Override
-    protected AbstractContainerMenu createMenu(int windowId, Inventory playerInventory)
-    {
+    protected AbstractContainerMenu createMenu(int windowId, Inventory playerInventory) {
         return new FreezerMenu(windowId, playerInventory, this);
     }
 
     @Override
-    public boolean isMatchingContainerMenu(AbstractContainerMenu menu)
-    {
+    public boolean isMatchingContainerMenu(AbstractContainerMenu menu) {
         return menu instanceof FreezerMenu freezerMenu && freezerMenu.getBlockEntity() == this;
     }
 
     @Override
-    public int[] getSlotsForFace(Direction direction)
-    {
-        switch(direction)
-        {
+    public int[] getSlotsForFace(Direction direction) {
+        switch (direction) {
             case UP:
                 return SLOTS_SOURCE;
             case DOWN:
@@ -318,18 +257,14 @@ public class FreezerBlockEntity extends BasicLootBlockEntity
         }
     }
 
-    private void addRecipeUsed(@Nullable Recipe<?> recipe)
-    {
-        if(recipe != null)
-        {
+    private void addRecipeUsed(@Nullable Recipe<?> recipe) {
+        if (recipe != null) {
             this.usedRecipeCount.compute(recipe.getId(), (id, count) -> 1 + (count == null ? 0 : count));
         }
     }
 
-    public void spawnExperience(Player player)
-    {
-        for(Map.Entry<ResourceLocation, Integer> entry : this.usedRecipeCount.entrySet())
-        {
+    public void spawnExperience(Player player) {
+        for (Map.Entry<ResourceLocation, Integer> entry : this.usedRecipeCount.entrySet()) {
             player.level().getRecipeManager().byKey(entry.getKey()).ifPresent((recipe) ->
             {
                 spawnExperienceOrbs(player, entry.getValue(), ((AbstractCookingRecipe) recipe).getExperience());
@@ -338,24 +273,18 @@ public class FreezerBlockEntity extends BasicLootBlockEntity
         this.usedRecipeCount.clear();
     }
 
-    private static void spawnExperienceOrbs(Player player, int count, float exp)
-    {
-        if(exp == 0.0F)
-        {
+    private static void spawnExperienceOrbs(Player player, int count, float exp) {
+        if (exp == 0.0F) {
             count = 0;
-        }
-        else if(exp < 1.0F)
-        {
+        } else if (exp < 1.0F) {
             int totalExp = Mth.floor((float) count * exp);
-            if(totalExp < Mth.ceil((float) count * exp) && Math.random() < (double) ((float) count * exp - (float) totalExp))
-            {
+            if (totalExp < Mth.ceil((float) count * exp) && Math.random() < (double) ((float) count * exp - (float) totalExp)) {
                 ++totalExp;
             }
             count = totalExp;
         }
 
-        while(count > 0)
-        {
+        while (count > 0) {
             int splitExp = ExperienceOrb.getExperienceValue(count);
             count -= splitExp;
             player.level().addFreshEntity(new ExperienceOrb(player.level(), player.getX(), player.getY() + 0.5, player.getZ(), splitExp));
@@ -363,42 +292,34 @@ public class FreezerBlockEntity extends BasicLootBlockEntity
     }
 
     @Override
-    public boolean canPlaceItemThroughFace(int index, ItemStack stack, @Nullable Direction direction)
-    {
+    public boolean canPlaceItemThroughFace(int index, ItemStack stack, @Nullable Direction direction) {
         return this.canPlaceItem(index, stack);
     }
 
     @Override
-    public boolean canTakeItemThroughFace(int index, ItemStack stack, Direction direction)
-    {
+    public boolean canTakeItemThroughFace(int index, ItemStack stack, Direction direction) {
         return index == 2;
     }
 
     @Override
-    public boolean canPlaceItem(int index, ItemStack stack)
-    {
-        if(index == 2)
-        {
+    public boolean canPlaceItem(int index, ItemStack stack) {
+        if (index == 2) {
             return false;
-        }
-        else if(index != 1)
-        {
+        } else if (index != 1) {
             return true;
         }
         return this.getFreezeTime(stack) > 0;
     }
 
     @Override
-    public void load(CompoundTag compound)
-    {
+    public void load(CompoundTag compound) {
         super.load(compound);
         this.freezeTime = compound.getInt("FreezeTime");
         this.freezeTimeTotal = compound.getInt("FreezeTimeTotal");
         this.fuelTime = compound.getInt("FuelTime");
         this.fuelTimeTotal = this.getFreezeTime(this.items.get(1));
         int recipesUsedSize = compound.getShort("RecipesUsedSize");
-        for(int i = 0; i < recipesUsedSize; ++i)
-        {
+        for (int i = 0; i < recipesUsedSize; ++i) {
             ResourceLocation resourcelocation = new ResourceLocation(compound.getString("RecipeLocation" + i));
             int amount = compound.getInt("RecipeAmount" + i);
             this.usedRecipeCount.put(resourcelocation, amount);
@@ -406,78 +327,62 @@ public class FreezerBlockEntity extends BasicLootBlockEntity
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag)
-    {
+    protected void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
         tag.putInt("FreezeTime", this.freezeTime);
         tag.putInt("FreezeTimeTotal", this.freezeTimeTotal);
         tag.putInt("FuelTime", this.fuelTime);
-        tag.putShort("RecipesUsedSize", (short)this.usedRecipeCount.size());
+        tag.putShort("RecipesUsedSize", (short) this.usedRecipeCount.size());
         int i = 0;
-        for(Map.Entry<ResourceLocation, Integer> entry : this.usedRecipeCount.entrySet())
-        {
+        for (Map.Entry<ResourceLocation, Integer> entry : this.usedRecipeCount.entrySet()) {
             tag.putString("RecipeLocation" + i, entry.getKey().toString());
             tag.putInt("RecipeAmount" + i, entry.getValue());
             i++;
         }
     }
 
-    public ContainerData getFreezerData()
-    {
+    public ContainerData getFreezerData() {
         return this.freezerData;
     }
 
     @Override
-    public void onOpen(Level level, BlockPos pos, BlockState state)
-    {
+    public void onOpen(Level level, BlockPos pos, BlockState state) {
         this.playDoorSound(state, ModSounds.BLOCK_FRIDGE_OPEN.get());
         this.setDoorState(state, true);
     }
 
     @Override
-    public void onClose(Level level, BlockPos pos, BlockState state)
-    {
+    public void onClose(Level level, BlockPos pos, BlockState state) {
         this.playDoorSound(state, ModSounds.BLOCK_FRIDGE_CLOSE.get());
         this.setDoorState(state, false);
     }
 
-    private void playDoorSound(BlockState state, SoundEvent event)
-    {
+    private void playDoorSound(BlockState state, SoundEvent event) {
         Vec3i directionVec = state.getValue(FreezerBlock.DIRECTION).getOpposite().getNormal();
         double x = this.worldPosition.getX() + 0.5D + directionVec.getX() / 2.0D;
         double y = this.worldPosition.getY() + 0.5D + directionVec.getY() / 2.0D;
         double z = this.worldPosition.getZ() + 0.5D + directionVec.getZ() / 2.0D;
         Level level = this.getLevel();
-        if(level != null)
-        {
+        if (level != null) {
             level.playSound(null, x, y, z, event, SoundSource.BLOCKS, 1.0F, 1.0F);
         }
     }
 
-    private void setDoorState(BlockState state, boolean open)
-    {
+    private void setDoorState(BlockState state, boolean open) {
         Level level = this.getLevel();
-        if(level != null)
-        {
+        if (level != null) {
             level.setBlock(this.getBlockPos(), state.setValue(FreezerBlock.OPEN, open), 3);
         }
     }
 
     @Override
-    public <T> LazyOptional<T> getCapability(Capability<T> capability, @Nullable Direction facing)
-    {
-        if(!this.remove && facing != null && capability == ForgeCapabilities.ITEM_HANDLER)
-        {
-            if(facing == Direction.UP)
-            {
+    public <T> LazyOptional<T> getCapability(Capability<T> capability, @Nullable Direction facing) {
+        if (!this.remove && facing != null && capability == ForgeCapabilities.ITEM_HANDLER) {
+            if (facing == Direction.UP) {
                 return this.handlers[0].cast();
-            }
-            else if(facing == Direction.DOWN)
-            {
+            } else if (facing == Direction.DOWN) {
                 return this.handlers[1].cast();
-            }
-            else
-            {
+            } else {
                 return this.handlers[2].cast();
             }
         }
@@ -485,19 +390,18 @@ public class FreezerBlockEntity extends BasicLootBlockEntity
     }
 
     @Override
-    public void invalidateCaps()
-    {
+    public void invalidateCaps() {
         super.invalidateCaps();
-        for(LazyOptional<? extends IItemHandler> handler : this.handlers)
-        {
+        for (LazyOptional<? extends IItemHandler> handler : this.handlers) {
             handler.invalidate();
         }
     }
 
     @Override
-    public void reviveCaps()
-    {
+    public void reviveCaps() {
         super.reviveCaps();
         this.handlers = SidedInvWrapper.create(this, Direction.UP, Direction.DOWN, Direction.NORTH);
     }
 }
+
+

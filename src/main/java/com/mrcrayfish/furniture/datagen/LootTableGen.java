@@ -8,7 +8,6 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.loot.LootPool;
@@ -22,7 +21,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePropertyCondition;
 import net.minecraft.world.level.storage.loot.providers.nbt.ContextNbtProvider;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 
 import java.util.List;
 import java.util.Map;
@@ -34,26 +33,22 @@ import java.util.stream.Collectors;
 /**
  * @author Ocelot
  */
-public class LootTableGen extends LootTableProvider
-{
-    public LootTableGen(PackOutput output)
-    {
+public class LootTableGen extends LootTableProvider {
+    public LootTableGen(PackOutput output) {
         super(output, Set.of(), List.of(new SubProviderEntry(BlockProvider::new, LootContextParamSets.BLOCK)));
     }
 
     @Override
-    protected void validate(Map<ResourceLocation, LootTable> map, ValidationContext context) {}
+    protected void validate(Map<ResourceLocation, LootTable> map, ValidationContext context) {
+    }
 
-    private static class BlockProvider extends BlockLootSubProvider
-    {
-        protected BlockProvider()
-        {
+    private static class BlockProvider extends BlockLootSubProvider {
+        protected BlockProvider() {
             super(Set.of(), FeatureFlags.REGISTRY.allFlags());
         }
 
         @Override
-        public void generate()
-        {
+        public void generate() {
             this.dropSelf(ModBlocks.SOFA_WHITE.get());
             this.dropSelf(ModBlocks.SOFA_ORANGE.get());
             this.dropSelf(ModBlocks.SOFA_MAGENTA.get());
@@ -203,35 +198,28 @@ public class LootTableGen extends LootTableProvider
             this.dropOther(ModBlocks.FREEZER_DARK.get(), ModBlocks.FRIDGE_DARK.get());
 
             // Dynamically registers drops for wooden furniture
-            for(GeneratorData.FurnitureType type : GeneratorData.ALL_TYPES)
-            {
-                for(GeneratorData.Variant variant : GeneratorData.ALL_VARIANTS)
-                {
+            for (GeneratorData.FurnitureType type : GeneratorData.ALL_TYPES) {
+                for (GeneratorData.Variant variant : GeneratorData.ALL_VARIANTS) {
                     Consumer<Block> register = type == GeneratorData.COFFEE_TABLE ? this::registerCoffeeTable : this::dropSelf;
                     register.accept(ForgeRegistries.BLOCKS.getValue(GeneratorData.getResultBlock(type, variant, false)));
-                    if(variant.strippedLog() != null)
-                    {
+                    if (variant.strippedLog() != null) {
                         register.accept(ForgeRegistries.BLOCKS.getValue(GeneratorData.getResultBlock(type, variant, true)));
                     }
                 }
             }
         }
 
-        public void registerCoffeeTable(Block block)
-        {
+        public void registerCoffeeTable(Block block) {
             this.add(block, coffeeTable -> LootTable.lootTable().withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1)).add(applyExplosionCondition(block, LootItem.lootTableItem(coffeeTable).apply(SetItemCountFunction.setCount(ConstantValue.exactly(2)).when(LootItemBlockStatePropertyCondition.hasBlockStateProperties(coffeeTable).setProperties(StatePropertiesPredicate.Builder.properties().hasProperty(CoffeeTableBlock.TALL, true))))))));
         }
 
-        public void registerTrampoline(Block block)
-        {
+        public void registerTrampoline(Block block) {
             this.add(block, trampoline -> LootTable.lootTable().withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1)).add(LootItem.lootTableItem(trampoline).apply(CopyNameFunction.copyName(CopyNameFunction.NameSource.BLOCK_ENTITY)).apply(CopyNbtFunction.copyData(ContextNbtProvider.BLOCK_ENTITY).copy("BlockEntityTag.Count", "")))));
         }
 
 
-
         @Override
-        protected Iterable<Block> getKnownBlocks()
-        {
+        protected Iterable<Block> getKnownBlocks() {
             return ForgeRegistries.BLOCKS.getValues().stream().filter(block -> Reference.MOD_ID.equals(Objects.requireNonNull(ForgeRegistries.BLOCKS.getKey(block)).getNamespace())).collect(Collectors.toSet());
         }
     }

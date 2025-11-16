@@ -10,33 +10,28 @@ import java.util.function.Supplier;
 /**
  * Author: MrCrayfish
  */
-public class BlockSupplierItem extends BlockItem
-{
+public class BlockSupplierItem extends BlockItem {
     private final Block block;
     private final Supplier<Block> supplier;
 
-    public BlockSupplierItem(Item.Properties properties, Block block, Supplier<Block> supplier)
-    {
+    public BlockSupplierItem(Item.Properties properties, Block block, Supplier<Block> supplier) {
         super(block, properties);
         this.block = block;
         this.supplier = supplier;
     }
 
     @Override
-    public String getDescriptionId()
-    {
+    public String getDescriptionId() {
         return this.block.getDescriptionId();
     }
 
     @Override
-    public Block getBlock()
-    {
+    public Block getBlock() {
         return this.supplier.get();
     }
 
     @Override
-    public void registerBlocks(Map<Block, Item> map, Item item)
-    {
+    public void registerBlocks(Map<Block, Item> map, Item item) {
         map.put(this.block, item);
     }
 }

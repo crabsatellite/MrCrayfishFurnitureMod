@@ -18,18 +18,15 @@ import java.util.List;
 /**
  * Author: MrCrayfish
  */
-public class BlockEntityUtil
-{
+public class BlockEntityUtil {
     /**
      * Sends an update packet to clients tracking a tile entity.
      *
      * @param tileEntity the tile entity to update
      */
-    public static void sendUpdatePacket(BlockEntity tileEntity)
-    {
+    public static void sendUpdatePacket(BlockEntity tileEntity) {
         Packet<ClientGamePacketListener> packet = tileEntity.getUpdatePacket();
-        if(packet != null)
-        {
+        if (packet != null) {
             sendUpdatePacket(tileEntity.getLevel(), tileEntity.getBlockPos(), packet);
         }
     }
@@ -39,15 +36,13 @@ public class BlockEntityUtil
      *
      * @param blockEntity the tile entity to update
      */
-    public static void sendUpdatePacket(BlockEntity blockEntity, CompoundTag compound)
-    {
+    public static void sendUpdatePacket(BlockEntity blockEntity, CompoundTag compound) {
         addIdAndPosition(blockEntity, compound);
         ClientboundBlockEntityDataPacket packet = ClientboundBlockEntityDataPacket.create(blockEntity, e -> compound);
         sendUpdatePacket(blockEntity.getLevel(), blockEntity.getBlockPos(), packet);
     }
 
-    public static void sendUpdatePacketSimple(BlockEntity blockEntity, CompoundTag compound)
-    {
+    public static void sendUpdatePacketSimple(BlockEntity blockEntity, CompoundTag compound) {
         ResourceLocation id = BlockEntityType.getKey(blockEntity.getType());
         compound.putString("id", id.toString());
         compound.putInt("x", blockEntity.getBlockPos().getX());
@@ -57,20 +52,16 @@ public class BlockEntityUtil
         sendUpdatePacket(blockEntity.getLevel(), blockEntity.getBlockPos(), packet);
     }
 
-    private static void sendUpdatePacket(Level level, BlockPos pos, Packet<ClientGamePacketListener> packet)
-    {
-        if(level instanceof ServerLevel server)
-        {
+    private static void sendUpdatePacket(Level level, BlockPos pos, Packet<ClientGamePacketListener> packet) {
+        if (level instanceof ServerLevel server) {
             List<ServerPlayer> players = server.getChunkSource().chunkMap.getPlayers(new ChunkPos(pos), false);
             players.forEach(player -> player.connection.send(packet));
         }
     }
 
-    private static void addIdAndPosition(BlockEntity blockEntity, CompoundTag tag)
-    {
+    private static void addIdAndPosition(BlockEntity blockEntity, CompoundTag tag) {
         ResourceLocation id = BlockEntityType.getKey(blockEntity.getType());
-        if(id != null)
-        {
+        if (id != null) {
             tag.putString("id", id.toString());
             tag.putInt("x", blockEntity.getBlockPos().getX());
             tag.putInt("y", blockEntity.getBlockPos().getY());

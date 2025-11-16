@@ -7,10 +7,8 @@ import net.minecraft.client.Minecraft;
 /**
  * Author: MrCrayfish
  */
-public class RenderUtil
-{
-    public static void scissor(int x, int y, int width, int height)
-    {
+public class RenderUtil {
+    public static void scissor(int x, int y, int width, int height) {
         Minecraft mc = Minecraft.getInstance();
         Window window = mc.getWindow();
         double scale = window.getGuiScale();
@@ -21,13 +19,11 @@ public class RenderUtil
         RenderSystem.enableScissor(boxX, boxY, boxWidth, boxHeight);
     }
 
-    public static void endScissor()
-    {
+    public static void endScissor() {
         RenderSystem.disableScissor();
     }
 
-    public static boolean isMouseInArea(int mouseX, int mouseY, int x, int y, int width, int height)
-    {
+    public static boolean isMouseInArea(int mouseX, int mouseY, int x, int y, int width, int height) {
         return mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height;
     }
 }

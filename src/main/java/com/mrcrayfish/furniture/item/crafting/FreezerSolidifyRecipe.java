@@ -13,28 +13,23 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 /**
  * Author: MrCrayfish
  */
-public class FreezerSolidifyRecipe extends AbstractCookingRecipe
-{
-    public FreezerSolidifyRecipe(ResourceLocation id, String group, CookingBookCategory category, Ingredient ingredient, ItemStack stack, float experience, int freezeTime)
-    {
+public class FreezerSolidifyRecipe extends AbstractCookingRecipe {
+    public FreezerSolidifyRecipe(ResourceLocation id, String group, CookingBookCategory category, Ingredient ingredient, ItemStack stack, float experience, int freezeTime) {
         super(ModRecipeTypes.FREEZER_SOLIDIFY.get(), id, group, category, ingredient, stack, experience, freezeTime);
     }
 
     @Override
-    public ItemStack getToastSymbol()
-    {
+    public ItemStack getToastSymbol() {
         return new ItemStack(ModBlocks.FREEZER_LIGHT.get());
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer()
-    {
+    public RecipeSerializer<?> getSerializer() {
         return ModRecipeSerializers.FREEZER_SOLIDIFY.get();
     }
 
     @Override
-    public boolean isSpecial()
-    {
+    public boolean isSpecial() {
         return true;
     }
 }

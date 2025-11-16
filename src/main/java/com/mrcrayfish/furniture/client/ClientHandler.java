@@ -25,24 +25,21 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.FoliageColor;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.event.ModelEvent;
-import net.minecraftforge.client.event.RegisterColorHandlersEvent;
-import net.minecraftforge.common.MinecraftForge;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.ModelEvent;
+import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
+import net.neoforged.neoforge.common.NeoForge;
 
 /**
  * Author: MrCrayfish
  */
-public class ClientHandler
-{
-    public static void setup()
-    {
+public class ClientHandler {
+    public static void setup() {
         MenuScreens.register(ModContainers.CRATE.get(), CrateScreen::new);
         MenuScreens.register(ModContainers.POST_BOX.get(), PostBoxScreen::new);
         MenuScreens.register(ModContainers.MAIL_BOX.get(), MailBoxScreen::new);
@@ -50,16 +47,13 @@ public class ClientHandler
         MinecraftForge.EVENT_BUS.register(new CreativeScreenEvents());
     }
 
-    public static void showDoorMatScreen(Level level, BlockPos pos)
-    {
-        if(level.getBlockEntity(pos) instanceof DoorMatBlockEntity blockEntity)
-        {
+    public static void showDoorMatScreen(Level level, BlockPos pos) {
+        if (level.getBlockEntity(pos) instanceof DoorMatBlockEntity blockEntity) {
             Minecraft.getInstance().setScreen(new DoorMatScreen(blockEntity));
         }
     }
 
-    public static void onRegisterBlockColors(RegisterColorHandlersEvent.Block event)
-    {
+    public static void onRegisterBlockColors(RegisterColorHandlersEvent.Block event) {
         event.register((state, reader, pos, i) -> i == 1 ? 0xFFCCCCCC : 0xFFFFFFFF,
                 ModBlocks.PICKET_FENCE_WHITE.get(),
                 ModBlocks.PICKET_FENCE_ORANGE.get(),
@@ -180,11 +174,9 @@ public class ClientHandler
 
         event.register((state, reader, pos, i) ->
         {
-            if(reader != null && pos != null)
-            {
+            if (reader != null && pos != null) {
                 BlockEntity tileEntity = reader.getBlockEntity(pos);
-                if(tileEntity instanceof TrampolineBlockEntity)
-                {
+                if (tileEntity instanceof TrampolineBlockEntity) {
                     return ((TrampolineBlockEntity) tileEntity).getColour().getMapColor().col;
                 }
             }
@@ -192,8 +184,7 @@ public class ClientHandler
         }, ModBlocks.TRAMPOLINE.get());
     }
 
-    public static void onRegisterItemColors(RegisterColorHandlersEvent.Item event)
-    {
+    public static void onRegisterItemColors(RegisterColorHandlersEvent.Item event) {
         event.register((stack, i) -> i == 1 ? 0xCCCCCC : 0xFFFFFFFF,
                 ModBlocks.PICKET_FENCE_WHITE.get(),
                 ModBlocks.PICKET_FENCE_ORANGE.get(),
@@ -298,18 +289,16 @@ public class ClientHandler
         );
 
         event.register((stack, i) -> {
-            BlockState state = ((BlockItem)stack.getItem()).getBlock().defaultBlockState();
+            BlockState state = ((BlockItem) stack.getItem()).getBlock().defaultBlockState();
             return Minecraft.getInstance().getBlockColors().getColor(state, null, null, i);
         }, ModBlocks.HEDGE_OAK.get(), ModBlocks.HEDGE_SPRUCE.get(), ModBlocks.HEDGE_BIRCH.get(), ModBlocks.HEDGE_JUNGLE.get(), ModBlocks.HEDGE_ACACIA.get(), ModBlocks.HEDGE_DARK_OAK.get(), ModBlocks.HEDGE_MANGROVE.get());
 
         event.register((stack, i) ->
         {
             CompoundTag tag = stack.getTag();
-            if(tag != null)
-            {
+            if (tag != null) {
                 CompoundTag blockEntityTag = tag.getCompound("BlockEntityTag");
-                if(blockEntityTag.contains("Color", Tag.TAG_INT))
-                {
+                if (blockEntityTag.contains("Color", Tag.TAG_INT)) {
                     return DyeColor.byId(blockEntityTag.getInt("Color")).getMapColor().col;
                 }
             }
@@ -317,19 +306,19 @@ public class ClientHandler
         }, ModBlocks.TRAMPOLINE.get());
     }
 
-    public static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event)
-    {
+    public static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(ModEntities.SEAT.get(), SeatRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.GRILL.get(), GrillBlockEntityRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.DOOR_MAT.get(), DoorMatBlockEntityRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.KITCHEN_SINK.get(), KitchenSinkBlockEntityRenderer::new);
     }
 
-    public static void onRegisterGeometryLoaders(ModelEvent.ModifyBakingResult event)
-    {
+    public static void onRegisterGeometryLoaders(ModelEvent.ModifyBakingResult event) {
         // Patches hedge models to have a predicate render type.
         event.getModels().entrySet().stream()
-            .filter(entry -> entry.getKey().getNamespace().equals(Reference.MOD_ID) && entry.getKey().getPath().contains("hedge"))
-            .forEach(entry -> event.getModels().put(entry.getKey(), new FancyModel(entry.getValue())));
+                .filter(entry -> entry.getKey().getNamespace().equals(Reference.MOD_ID) && entry.getKey().getPath().contains("hedge"))
+                .forEach(entry -> event.getModels().put(entry.getKey(), new FancyModel(entry.getValue())));
     }
 }
+
+

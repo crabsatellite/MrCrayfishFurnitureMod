@@ -7,7 +7,6 @@ import com.mrcrayfish.furniture.tileentity.CoolerBlockEntity;
 import com.mrcrayfish.furniture.util.VoxelShapeHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -27,31 +26,26 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Author: MrCrayfish
  */
-public class CoolerBlock extends FurnitureHorizontalBlock implements EntityBlock
-{
+public class CoolerBlock extends FurnitureHorizontalBlock implements EntityBlock {
     public static final BooleanProperty OPEN = BooleanProperty.create("open");
 
     public final ImmutableMap<BlockState, VoxelShape> SHAPES;
 
-    public CoolerBlock(Properties properties)
-    {
+    public CoolerBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.getStateDefinition().any().setValue(OPEN, false).setValue(DIRECTION, Direction.NORTH));
         SHAPES = this.generateShapes(this.getStateDefinition().getPossibleStates());
     }
 
-    private ImmutableMap<BlockState, VoxelShape> generateShapes(ImmutableList<BlockState> states)
-    {
+    private ImmutableMap<BlockState, VoxelShape> generateShapes(ImmutableList<BlockState> states) {
         final VoxelShape[] COOLER_CLOSED = VoxelShapeHelper.getRotatedShapes(VoxelShapeHelper.rotate(Block.box(0, 0, 2, 16, 12, 14), Direction.SOUTH));
         final VoxelShape[] COOLER_OPEN = VoxelShapeHelper.getRotatedShapes(VoxelShapeHelper.rotate(Block.box(0, 0, 2, 16, 16, 14), Direction.SOUTH));
         ImmutableMap.Builder<BlockState, VoxelShape> builder = new ImmutableMap.Builder<>();
-        for(BlockState state : states)
-        {
+        for (BlockState state : states) {
             Direction direction = state.getValue(DIRECTION);
             boolean open = state.getValue(OPEN);
             List<VoxelShape> shapes = new ArrayList<>();
@@ -62,33 +56,26 @@ public class CoolerBlock extends FurnitureHorizontalBlock implements EntityBlock
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext context)
-    {
+    public VoxelShape getShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext context) {
         return SHAPES.get(state);
     }
 
     @Override
-    public VoxelShape getOcclusionShape(BlockState state, BlockGetter reader, BlockPos pos)
-    {
+    public VoxelShape getOcclusionShape(BlockState state, BlockGetter reader, BlockPos pos) {
         return SHAPES.get(state);
     }
 
     @Override
-    public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random)
-    {
-        if(level.getBlockEntity(pos) instanceof BasicLootBlockEntity blockEntity)
-        {
+    public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
+        if (level.getBlockEntity(pos) instanceof BasicLootBlockEntity blockEntity) {
             blockEntity.updateOpenerCount();
         }
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result)
-    {
-        if(!level.isClientSide())
-        {
-            if(level.getBlockEntity(pos) instanceof CoolerBlockEntity blockEntity)
-            {
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result) {
+        if (!level.isClientSide()) {
+            if (level.getBlockEntity(pos) instanceof CoolerBlockEntity blockEntity) {
                 player.openMenu(blockEntity);
             }
         }
@@ -96,16 +83,14 @@ public class CoolerBlock extends FurnitureHorizontalBlock implements EntityBlock
     }
 
     @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder)
-    {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
         builder.add(OPEN);
     }
 
     @Nullable
     @Override
-    public BlockEntity newBlockEntity(BlockPos pos, BlockState state)
-    {
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new CoolerBlockEntity(pos, state);
     }
 }
