@@ -13,9 +13,8 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
-import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.LogicalSide;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
@@ -211,14 +210,13 @@ public class PostOffice extends SavedData {
      * Cleans up invalid mail boxes or mail boxes removed by other means than a player.
      */
     @SubscribeEvent
-    public static void onTick(TickEvent.LevelTickEvent event) {
-        if (event.phase != TickEvent.Phase.START)
+    public static void onTick(LevelTickEvent.Post event) {
+        // LevelTickEvent.Post is server-side only and fires at the end of each level tick
+        Level level = event.getLevel();
+        if (level.isClientSide())
             return;
 
-        if (event.side != LogicalSide.SERVER)
-            return;
-
-        MinecraftServer server = event.level.getServer();
+        MinecraftServer server = level.getServer();
         if (server != null && server.getTickCount() % 1200 == 0) {
             PostOffice office = get(server);
             office.playerMailboxMap.values().forEach(map ->
@@ -226,10 +224,10 @@ public class PostOffice extends SavedData {
                 Predicate<MailBox> removePredicate = mailBox ->
                 {
                     BlockPos pos = mailBox.getPos();
-                    ServerLevel level = server.getLevel(mailBox.getLevelResourceKey());
-                    if (level != null) {
-                        if (level.isLoaded(pos)) {
-                            if (level.getBlockEntity(pos) instanceof MailBoxBlockEntity mailBoxBlockEntity) {
+                    ServerLevel serverLevel = server.getLevel(mailBox.getLevelResourceKey());
+                    if (serverLevel != null) {
+                        if (serverLevel.isLoaded(pos)) {
+                            if (serverLevel.getBlockEntity(pos) instanceof MailBoxBlockEntity mailBoxBlockEntity) {
                                 return mailBoxBlockEntity.getId() == null || !Objects.equals(mailBoxBlockEntity.getId(), mailBox.getId());
                             }
                             return true;

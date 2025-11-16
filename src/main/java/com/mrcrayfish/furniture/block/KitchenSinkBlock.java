@@ -16,7 +16,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -29,7 +29,6 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.capabilities.ForgeCapabilities;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.fluids.FluidUtil;
@@ -80,7 +79,6 @@ public class KitchenSinkBlock extends FurnitureHorizontalBlock implements Entity
         return SHAPES.get(state);
     }
 
-    @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player playerEntity, InteractionHand hand, BlockHitResult result) {
         if (!level.isClientSide()) {
             ItemStack heldItem = playerEntity.getItemInHand(hand);
@@ -88,7 +86,8 @@ public class KitchenSinkBlock extends FurnitureHorizontalBlock implements Entity
                 IFluidHandler handler = FluidUtil.getFluidHandler(level, pos, null).orElse(null);
                 if (handler.getFluidInTank(0).getAmount() > 0 && !level.isClientSide()) {
                     if (!playerEntity.getAbilities().instabuild) {
-                        ItemStack waterPotion = PotionContents.setPotion(new ItemStack(Items.POTION), Potions.WATER);
+                        // Create water potion using Minecraft 1.21.1 API
+                        ItemStack waterPotion = net.minecraft.world.item.alchemy.PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.WATER);
                         heldItem.shrink(1);
                         if (heldItem.isEmpty()) {
                             playerEntity.setItemInHand(hand, waterPotion);
@@ -105,7 +104,8 @@ public class KitchenSinkBlock extends FurnitureHorizontalBlock implements Entity
                 return InteractionResult.sidedSuccess(level.isClientSide());
             }
 
-            if (!heldItem.isEmpty() && heldItem.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).isPresent()) {
+            // Check if item can interact with fluid handler using FluidUtil
+            if (!heldItem.isEmpty() && FluidUtil.getFluidHandler(heldItem).isPresent()) {
                 return FluidUtil.interactWithFluidHandler(playerEntity, hand, level, pos, result.getDirection()) ? InteractionResult.SUCCESS : InteractionResult.PASS;
             }
 
