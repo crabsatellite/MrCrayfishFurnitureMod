@@ -27,13 +27,12 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.capabilities.Capability;
-import net.neoforged.neoforge.capabilities.ForgeCapabilities;
-import net.neoforged.neoforge.common.util.LazyOptional;
 import net.neoforged.neoforge.items.IItemHandler;
+import net.neoforged.neoforge.items.ItemStackHandler;
 import net.neoforged.neoforge.items.wrapper.SidedInvWrapper;
 
 import javax.annotation.Nullable;
@@ -51,8 +50,6 @@ public class FreezerBlockEntity extends BasicLootBlockEntity {
     private int fuelTimeTotal;
     private int freezeTime;
     private int freezeTimeTotal;
-
-    private LazyOptional<? extends IItemHandler>[] handlers = SidedInvWrapper.create(this, Direction.UP, Direction.DOWN, Direction.NORTH);
 
     protected final SimpleContainerData freezerData = new SimpleContainerData(4) {
         @Override
@@ -111,7 +108,8 @@ public class FreezerBlockEntity extends BasicLootBlockEntity {
 
         ItemStack fuelStack = blockEntity.items.get(1);
         if (blockEntity.isFreezing() || !fuelStack.isEmpty() && !blockEntity.items.get(0).isEmpty()) {
-            Recipe<?> recipe = level.getRecipeManager().getRecipeFor(ModRecipeTypes.FREEZER_SOLIDIFY.get(), blockEntity, level).orElse(null);
+            SimpleContainer inv = new SimpleContainer(blockEntity.items.get(0));
+            Recipe<?> recipe = level.getRecipeManager().getRecipeFor(ModRecipeTypes.FREEZER_SOLIDIFY.get(), inv, level).orElse(null);
             if (!blockEntity.isFreezing() && blockEntity.canFreeze(recipe)) {
                 blockEntity.fuelTime = blockEntity.getFreezeTime(fuelStack);
                 blockEntity.fuelTimeTotal = blockEntity.fuelTime;
@@ -163,7 +161,7 @@ public class FreezerBlockEntity extends BasicLootBlockEntity {
             return 18000;
         }
         FreezerFuelTimeEvent event = new FreezerFuelTimeEvent(stack);
-        MinecraftForge.EVENT_BUS.post(event);
+        NeoForge.EVENT_BUS.post(event);
         return event.getFuelTime();
     }
 
@@ -227,7 +225,10 @@ public class FreezerBlockEntity extends BasicLootBlockEntity {
     }
 
     protected int getFreezeTime() {
-        return this.level.getRecipeManager().getRecipeFor(ModRecipeTypes.FREEZER_SOLIDIFY.get(), this, this.level).map(AbstractCookingRecipe::getCookingTime).orElse(300);
+        SimpleContainer inv = new SimpleContainer(this.items.get(0));
+        return this.level.getRecipeManager().getRecipeFor(ModRecipeTypes.FREEZER_SOLIDIFY.get(), inv, this.level)
+            .map(AbstractCookingRecipe::getCookingTime)
+            .orElse(300);
     }
 
     @Override
@@ -259,7 +260,15 @@ public class FreezerBlockEntity extends BasicLootBlockEntity {
 
     private void addRecipeUsed(@Nullable Recipe<?> recipe) {
         if (recipe != null) {
-            this.usedRecipeCount.compute(recipe.getId(), (id, count) -> 1 + (count == null ? 0 : count));
+            ResourceLocation recipeId = this.level.getRecipeManager().getAllRecipesFor(ModRecipeTypes.FREEZER_SOLIDIFY.get())
+                .stream()
+                .filter(r -> r.equals(recipe))
+                .findFirst()
+                .map(Recipe::getId)
+                .orElse(null);
+            if (recipeId != null) {
+                this.usedRecipeCount.compute(recipeId, (id, count) -> 1 + (count == null ? 0 : count));
+            }
         }
     }
 
@@ -267,7 +276,9 @@ public class FreezerBlockEntity extends BasicLootBlockEntity {
         for (Map.Entry<ResourceLocation, Integer> entry : this.usedRecipeCount.entrySet()) {
             player.level().getRecipeManager().byKey(entry.getKey()).ifPresent((recipe) ->
             {
-                spawnExperienceOrbs(player, entry.getValue(), ((AbstractCookingRecipe) recipe).getExperience());
+                if (recipe instanceof AbstractCookingRecipe cookingRecipe) {
+                    spawnExperienceOrbs(player, entry.getValue(), cookingRecipe.getExperience());
+                }
             });
         }
         this.usedRecipeCount.clear();
@@ -320,9 +331,12 @@ public class FreezerBlockEntity extends BasicLootBlockEntity {
         this.fuelTimeTotal = this.getFreezeTime(this.items.get(1));
         int recipesUsedSize = compound.getShort("RecipesUsedSize");
         for (int i = 0; i < recipesUsedSize; ++i) {
-            ResourceLocation resourcelocation = new ResourceLocation(compound.getString("RecipeLocation" + i));
-            int amount = compound.getInt("RecipeAmount" + i);
-            this.usedRecipeCount.put(resourcelocation, amount);
+            String locationStr = compound.getString("RecipeLocation" + i);
+            ResourceLocation resourcelocation = ResourceLocation.tryParse(locationStr);
+            if (resourcelocation != null) {
+                int amount = compound.getInt("RecipeAmount" + i);
+                this.usedRecipeCount.put(resourcelocation, amount);
+            }
         }
     }
 
@@ -375,33 +389,6 @@ public class FreezerBlockEntity extends BasicLootBlockEntity {
         }
     }
 
-    @Override
-    public <T> LazyOptional<T> getCapability(Capability<T> capability, @Nullable Direction facing) {
-        if (!this.remove && facing != null && capability == ForgeCapabilities.ITEM_HANDLER) {
-            if (facing == Direction.UP) {
-                return this.handlers[0].cast();
-            } else if (facing == Direction.DOWN) {
-                return this.handlers[1].cast();
-            } else {
-                return this.handlers[2].cast();
-            }
-        }
-        return super.getCapability(capability, facing);
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        for (LazyOptional<? extends IItemHandler> handler : this.handlers) {
-            handler.invalidate();
-        }
-    }
-
-    @Override
-    public void reviveCaps() {
-        super.reviveCaps();
-        this.handlers = SidedInvWrapper.create(this, Direction.UP, Direction.DOWN, Direction.NORTH);
-    }
 }
 
 
