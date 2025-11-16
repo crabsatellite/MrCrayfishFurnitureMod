@@ -4,6 +4,7 @@ import com.mrcrayfish.furniture.Reference;
 import com.mrcrayfish.furniture.block.CoffeeTableBlock;
 import com.mrcrayfish.furniture.core.ModBlocks;
 import net.minecraft.advancements.critereon.StatePropertiesPredicate;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.BlockLootSubProvider;
 import net.minecraft.data.loot.LootTableProvider;
@@ -200,9 +201,9 @@ public class LootTableGen extends LootTableProvider {
             for (GeneratorData.FurnitureType type : GeneratorData.ALL_TYPES) {
                 for (GeneratorData.Variant variant : GeneratorData.ALL_VARIANTS) {
                     Consumer<Block> register = type == GeneratorData.COFFEE_TABLE ? this::registerCoffeeTable : this::dropSelf;
-                    register.accept(ForgeRegistries.BLOCKS.getValue(GeneratorData.getResultBlock(type, variant, false)));
+                    register.accept(BuiltInRegistries.BLOCK.get(GeneratorData.getResultBlock(type, variant, false)));
                     if (variant.strippedLog() != null) {
-                        register.accept(ForgeRegistries.BLOCKS.getValue(GeneratorData.getResultBlock(type, variant, true)));
+                        register.accept(BuiltInRegistries.BLOCK.get(GeneratorData.getResultBlock(type, variant, true)));
                     }
                 }
             }
@@ -219,7 +220,7 @@ public class LootTableGen extends LootTableProvider {
 
         @Override
         protected Iterable<Block> getKnownBlocks() {
-            return ForgeRegistries.BLOCKS.getValues().stream().filter(block -> Reference.MOD_ID.equals(Objects.requireNonNull(ForgeRegistries.BLOCKS.getKey(block)).getNamespace())).collect(Collectors.toSet());
+            return BuiltInRegistries.BLOCK.stream().filter(block -> Reference.MOD_ID.equals(Objects.requireNonNull(BuiltInRegistries.BLOCK.getKey(block)).getNamespace())).collect(Collectors.toSet());
         }
     }
 }
