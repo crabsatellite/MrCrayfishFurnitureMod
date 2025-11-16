@@ -18,7 +18,7 @@ import org.joml.Matrix4f;
  * Author: MrCrayfish
  */
 public class TagButton extends Button {
-    private static final ResourceLocation TABS = new ResourceLocation("textures/gui/container/creative_inventory/tabs.png");
+    private static final ResourceLocation TABS = ResourceLocation.fromNamespaceAndPath("textures/gui/container/creative_inventory/tabs.png");
 
     private final CreativeScreenEvents.TagFilter category;
     private final ItemStack stack;

@@ -26,7 +26,7 @@ public class ModTags {
         public static final TagKey<Item> TRAMPOLINE = tag("trampoline");
 
         private static TagKey<Item> tag(String name) {
-            return TagKey.create(Registries.ITEM, new ResourceLocation(Reference.MOD_ID, name));
+            return TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, name));
         }
     }
 
@@ -38,7 +38,7 @@ public class ModTags {
         public static final TagKey<Block> HEDGES = tag("fences/hedge");
 
         private static TagKey<Block> tag(String name) {
-            return TagKey.create(Registries.BLOCK, new ResourceLocation(Reference.MOD_ID, name));
+            return TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, name));
         }
     }
 }

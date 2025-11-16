@@ -99,10 +99,10 @@ public class ForgeShapedRecipeBuilder extends ShapedRecipeBuilder {
 
     public void build(Consumer<RecipeOutput> consumerIn, String save) {
         ResourceLocation resourcelocation = BuiltInRegistries.ITEM.getKey(this.result.getItem());
-        if ((new ResourceLocation(save)).equals(resourcelocation)) {
+        if ((ResourceLocation.fromNamespaceAndPath(save)).equals(resourcelocation)) {
             throw new IllegalStateException("Shaped Recipe " + save + " should remove its 'save' argument");
         } else {
-            this.build(consumerIn, new ResourceLocation(save));
+            this.build(consumerIn, ResourceLocation.fromNamespaceAndPath(save));
         }
     }
 
@@ -111,7 +111,7 @@ public class ForgeShapedRecipeBuilder extends ShapedRecipeBuilder {
      */
     public void build(Consumer<RecipeOutput> consumerIn, ResourceLocation id) {
         this.validate(id);
-        this.advancementBuilder.parent(new ResourceLocation("recipes/root")).addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(id)).rewards(AdvancementRewards.Builder.recipe(id)).requirements(AdvancementRequirements.OR);
+        this.advancementBuilder.parent(ResourceLocation.fromNamespaceAndPath("recipes/root")).addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(id)).rewards(AdvancementRewards.Builder.recipe(id)).requirements(AdvancementRequirements.OR);
         consumerIn.accept(new Result(this.key, id, this.result, this.group == null ? "" : this.group, determineBookCategory(this.category), this.pattern, this.ingredientMap, this.advancementBuilder, id.withPrefix("recipes/" + this.category.getFolderName() + "/"), this.showNotification));
     }
 
@@ -210,7 +210,7 @@ public class ForgeShapedRecipeBuilder extends ShapedRecipeBuilder {
         }
 
         public ResourceLocation getId() {
-            return new ResourceLocation(this.id.getNamespace(), this.key);
+            return ResourceLocation.fromNamespaceAndPath(this.id.getNamespace(), this.key);
         }
 
         @Nullable

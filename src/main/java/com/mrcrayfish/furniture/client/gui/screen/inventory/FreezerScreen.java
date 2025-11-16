@@ -13,7 +13,7 @@ import net.minecraft.world.entity.player.Inventory;
  * Author: MrCrayfish
  */
 public class FreezerScreen extends AbstractContainerScreen<FreezerMenu> {
-    private static final ResourceLocation FREEZER_GUI_TEXTURES = new ResourceLocation(Reference.MOD_ID, "textures/gui/container/freezer.png");
+    private static final ResourceLocation FREEZER_GUI_TEXTURES = ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "textures/gui/container/freezer.png");
 
     public FreezerScreen(FreezerMenu container, Inventory playerInventory, Component title) {
         super(container, playerInventory, title);

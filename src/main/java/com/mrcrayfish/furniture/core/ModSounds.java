@@ -27,7 +27,7 @@ public class ModSounds {
     public static final DeferredHolder<SoundEvent, SoundEvent> BLOCK_FRIDGE_CLOSE = register("block.fridge.close");
 
     private static DeferredHolder<SoundEvent, SoundEvent> register(String name) {
-        return REGISTER.register(name, () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(Reference.MOD_ID, name)));
+        return REGISTER.register(name, () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, name)));
     }
 }
 

@@ -19,8 +19,8 @@ import java.util.UUID;
  * Author: MrCrayfish
  */
 public class MailBoxScreen extends AbstractContainerScreen<MailBoxMenu> {
-    private static final ResourceLocation GUI_TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/gui/container/mail_box.png");
-    private static final ResourceLocation ICONS_TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/gui/icons.png");
+    private static final ResourceLocation GUI_TEXTURE = ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "textures/gui/container/mail_box.png");
+    private static final ResourceLocation ICONS_TEXTURE = ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "textures/gui/icons.png");
     private Button settingsButton;
     private final UUID playerId;
 

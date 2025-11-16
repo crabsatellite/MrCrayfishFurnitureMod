@@ -489,7 +489,7 @@ public class RecipeGen extends RecipeProvider {
                 .group("picket_fence")
                 .unlockedBy("has_fence", has(ModBlocks.PICKET_FENCE_WHITE.get()))
                 .unlockedBy("has_dye", has(dye))
-                .save(recipeConsumer, new ResourceLocation(registryName.getNamespace(), "dye_" + registryName.getPath()));
+                .save(recipeConsumer, ResourceLocation.fromNamespaceAndPath(registryName.getNamespace(), "dye_" + registryName.getPath()));
     }
 
     private static void picketGate(Consumer<RecipeOutput> recipeConsumer, ItemLike gate, ItemLike concrete, TagKey<Item> dye) {
@@ -513,7 +513,7 @@ public class RecipeGen extends RecipeProvider {
                 .group("picket_fence")
                 .unlockedBy("has_gate", has(ModBlocks.PICKET_GATE_WHITE.get()))
                 .unlockedBy("has_dye", has(dye))
-                .save(recipeConsumer, new ResourceLocation(registryName.getNamespace(), "dye_" + registryName.getPath()));
+                .save(recipeConsumer, ResourceLocation.fromNamespaceAndPath(registryName.getNamespace(), "dye_" + registryName.getPath()));
     }
 
     private static void crate(Consumer<RecipeOutput> recipeConsumer, ItemLike crate, ItemLike log, ItemLike planks) {
@@ -581,7 +581,7 @@ public class RecipeGen extends RecipeProvider {
                 .setGroup("trampoline")
                 .addCriterion("has_wool", has(wool))
                 .addCriterion("has_iron", has(Tags.Items.INGOTS_IRON))
-                .build(recipeConsumer, new ResourceLocation(Reference.MOD_ID, color.getName() + "_trampoline"));
+                .build(recipeConsumer, ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, color.getName() + "_trampoline"));
     }
 
     private static void cooler(Consumer<RecipeOutput> recipeConsumer, ItemLike cooler, ItemLike terracotta) {

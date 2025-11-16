@@ -19,8 +19,8 @@ import java.util.UUID;
  * Author: MrCrayfish
  */
 public class CrateScreen extends AbstractContainerScreen<CrateMenu> {
-    private static final ResourceLocation GUI_TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/gui/container/crate.png");
-    private static final ResourceLocation ICONS_TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/gui/icons.png");
+    private static final ResourceLocation GUI_TEXTURE = ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "textures/gui/container/crate.png");
+    private static final ResourceLocation ICONS_TEXTURE = ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "textures/gui/icons.png");
 
     private IconButton button;
     private boolean locked;

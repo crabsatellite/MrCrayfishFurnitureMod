@@ -18,7 +18,7 @@ import net.minecraft.resources.ResourceLocation;
  * Author: MrCrayfish
  */
 public class DoorMatScreen extends Screen {
-    private static final ResourceLocation GUI_TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/gui/mail_box_settings.png");
+    private static final ResourceLocation GUI_TEXTURE = ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "textures/gui/mail_box_settings.png");
 
     private final int xSize = 176;
     private final int ySize = 69;

@@ -43,7 +43,7 @@ public class SimpleCookingSerializer<T extends AbstractCookingRecipe> extends ne
         if (object.get("result").isJsonObject())
             return ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(object, "result"));
         String rawResult = GsonHelper.getAsString(object, "result");
-        ResourceLocation resultId = new ResourceLocation(rawResult);
+        ResourceLocation resultId = ResourceLocation.fromNamespaceAndPath(rawResult);
         return new ItemStack(BuiltInRegistries.ITEM.getOptional(resultId).orElseThrow(() -> new IllegalStateException("Item: " + rawResult + " does not exist")));
     }
 

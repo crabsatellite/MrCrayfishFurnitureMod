@@ -34,8 +34,8 @@ import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_LEFT;
  * Author: MrCrayfish
  */
 public class PostBoxScreen extends AbstractContainerScreen<PostBoxMenu> {
-    private static final ResourceLocation GUI_TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/gui/container/post_box.png");
-    private static final ResourceLocation ICONS_TEXTURE = new ResourceLocation(Reference.MOD_ID, "textures/gui/icons.png");
+    private static final ResourceLocation GUI_TEXTURE = ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "textures/gui/container/post_box.png");
+    private static final ResourceLocation ICONS_TEXTURE = ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, "textures/gui/icons.png");
     private static final int LIST_WIDTH = 116;
     private static final int LIST_HEIGHT = 57;
     private static final int SCROLL_BAR_WIDTH = 12;

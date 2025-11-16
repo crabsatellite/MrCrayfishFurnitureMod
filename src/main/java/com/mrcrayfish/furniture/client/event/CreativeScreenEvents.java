@@ -38,6 +38,17 @@ public class CreativeScreenEvents {
     private static int startIndex;
     private static CreativeModeTab lastTab = CreativeModeTabs.getDefaultTab();
 
+    // Helper method to access the private selectedTab field using reflection
+    private static CreativeModeTab getSelectedTab(CreativeModeInventoryScreen screen) {
+        try {
+            java.lang.reflect.Field field = CreativeModeInventoryScreen.class.getDeclaredField("selectedTab");
+            field.setAccessible(true);
+            return (CreativeModeTab) field.get(null);
+        } catch (Exception e) {
+            return CreativeModeTabs.getDefaultTab();
+        }
+    }
+
     private List<TagFilter> filters;
     private List<TagButton> buttons;
     private Button btnScrollUp;
@@ -94,7 +105,7 @@ public class CreativeScreenEvents {
             }, ICONS, 112, 0));
             this.btnDisableAll.setTooltip(Tooltip.create(Component.translatable("gui.button.cfm.disable_filters")));
 
-            this.onSwitchCreativeTab(CreativeModeInventoryScreen.selectedTab, creativeScreen);
+            this.onSwitchCreativeTab(getSelectedTab(creativeScreen), creativeScreen);
         }
     }
 
@@ -104,7 +115,7 @@ public class CreativeScreenEvents {
             this.guiCenterX = creativeScreen.getGuiLeft();
             this.guiCenterY = creativeScreen.getGuiTop();
 
-            CreativeModeTab tab = CreativeModeInventoryScreen.selectedTab;
+            CreativeModeTab tab = getSelectedTab(creativeScreen);
             if (lastTab != tab) {
                 this.onSwitchCreativeTab(tab, creativeScreen);
                 lastTab = tab;
@@ -189,10 +200,10 @@ public class CreativeScreenEvents {
                 new TagFilter(ModTags.Items.ITEMS, new ItemStack(ModItems.SPATULA.get()))
         };
 
-        ForgeRegistries.ITEMS.getValues().stream()
-                .filter(item -> Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(item)).getNamespace().equals(Reference.MOD_ID))
+        BuiltInRegistries.ITEM.stream()
+                .filter(item -> Objects.requireNonNull(BuiltInRegistries.ITEM.getKey(item)).getNamespace().equals(Reference.MOD_ID))
                 .forEach(item -> {
-                    ForgeRegistries.ITEMS.getHolder(item).ifPresent(holder -> {
+                    BuiltInRegistries.ITEM.getHolder(BuiltInRegistries.ITEM.getId(item)).ifPresent(holder -> {
                         holder.tags().forEach(tagKey -> {
                             for (TagFilter filter : filters) {
                                 if (tagKey == filter.getTag()) {

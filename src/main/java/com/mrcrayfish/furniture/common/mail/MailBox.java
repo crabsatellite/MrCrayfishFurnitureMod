@@ -116,7 +116,7 @@ public class MailBox implements INBTSerializable<CompoundTag> {
         this.ownerId = compound.getUUID("OwnerUUID");
         this.ownerName = compound.getString("OwnerName");
         this.pos = BlockPos.of(compound.getLong("Pos"));
-        this.levelResourceKey = ResourceKey.create(Registries.DIMENSION, new ResourceLocation(compound.getString("World")));
+        this.levelResourceKey = ResourceKey.create(Registries.DIMENSION, ResourceLocation.fromNamespaceAndPath(compound.getString("World")));
 
         if (compound.contains("MailStorage", Tag.TAG_LIST)) {
             ListTag mailStorageList = compound.getList("MailStorage", Tag.TAG_COMPOUND);
