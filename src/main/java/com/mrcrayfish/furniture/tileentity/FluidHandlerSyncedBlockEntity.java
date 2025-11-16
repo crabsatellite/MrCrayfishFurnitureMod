@@ -41,13 +41,13 @@ public abstract class FluidHandlerSyncedBlockEntity extends BlockEntity {
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         //TODO may need to implement fluid fix from Vehicle Mod. See FluidUtils#fixEmptyTag(NBTTagCompound tag)
         super.loadAdditional(tag, registries);
-        this.tank.readFromNBT(tag);
+        this.tank.readFromNBT(registries, tag);
     }
 
     @Override
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.saveAdditional(tag, registries);
-        this.tank.writeToNBT(tag);
+        this.tank.writeToNBT(registries, tag);
     }
 
     @Override
