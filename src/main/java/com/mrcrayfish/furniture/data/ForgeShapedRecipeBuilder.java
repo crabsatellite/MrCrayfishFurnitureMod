@@ -8,11 +8,11 @@ import com.google.gson.JsonObject;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementRewards;
 import net.minecraft.advancements.CriterionTriggerInstance;
-import net.minecraft.advancements.RequirementsStrategy;
+import net.minecraft.advancements.AdvancementRequirements;
 import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.data.recipes.CraftingRecipeBuilder;
-import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -35,7 +35,7 @@ import java.util.function.Consumer;
  * <p>
  * Author: MrCrayfish
  */
-public class ForgeShapedRecipeBuilder extends CraftingRecipeBuilder {
+public class ForgeShapedRecipeBuilder extends ShapedRecipeBuilder {
     private final RecipeCategory category;
     private final String key;
     private final ItemStack result;
@@ -93,11 +93,11 @@ public class ForgeShapedRecipeBuilder extends CraftingRecipeBuilder {
         return this;
     }
 
-    public void build(Consumer<FinishedRecipe> consumerIn) {
+    public void build(Consumer<RecipeOutput> consumerIn) {
         this.build(consumerIn, BuiltInRegistries.ITEM.getKey(this.result.getItem()));
     }
 
-    public void build(Consumer<FinishedRecipe> consumerIn, String save) {
+    public void build(Consumer<RecipeOutput> consumerIn, String save) {
         ResourceLocation resourcelocation = BuiltInRegistries.ITEM.getKey(this.result.getItem());
         if ((new ResourceLocation(save)).equals(resourcelocation)) {
             throw new IllegalStateException("Shaped Recipe " + save + " should remove its 'save' argument");
@@ -107,11 +107,11 @@ public class ForgeShapedRecipeBuilder extends CraftingRecipeBuilder {
     }
 
     /**
-     * Builds this recipe into an {@link FinishedRecipe}.
+     * Builds this recipe into an {@link RecipeOutput}.
      */
-    public void build(Consumer<FinishedRecipe> consumerIn, ResourceLocation id) {
+    public void build(Consumer<RecipeOutput> consumerIn, ResourceLocation id) {
         this.validate(id);
-        this.advancementBuilder.parent(new ResourceLocation("recipes/root")).addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(id)).rewards(AdvancementRewards.Builder.recipe(id)).requirements(RequirementsStrategy.OR);
+        this.advancementBuilder.parent(new ResourceLocation("recipes/root")).addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(id)).rewards(AdvancementRewards.Builder.recipe(id)).requirements(AdvancementRequirements.OR);
         consumerIn.accept(new Result(this.key, id, this.result, this.group == null ? "" : this.group, determineBookCategory(this.category), this.pattern, this.ingredientMap, this.advancementBuilder, id.withPrefix("recipes/" + this.category.getFolderName() + "/"), this.showNotification));
     }
 
@@ -146,7 +146,7 @@ public class ForgeShapedRecipeBuilder extends CraftingRecipeBuilder {
         }
     }
 
-    public static class Result extends CraftingRecipeBuilder.CraftingResult {
+    public static class Result extends ShapedRecipeBuilder.CraftingResult {
         private final String key;
         private final ResourceLocation id;
         private final ItemStack result;
@@ -224,3 +224,4 @@ public class ForgeShapedRecipeBuilder extends CraftingRecipeBuilder {
         }
     }
 }
+

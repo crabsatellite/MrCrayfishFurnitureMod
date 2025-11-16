@@ -32,7 +32,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.network.NetworkHooks;
+
 import net.neoforged.neoforge.registries.DeferredHolder;
 
 import javax.annotation.Nullable;
@@ -47,9 +47,9 @@ public class FreezerBlock extends FurnitureHorizontalBlock implements EntityBloc
     public static final BooleanProperty OPEN = BooleanProperty.create("open");
 
     public final ImmutableMap<BlockState, VoxelShape> SHAPES;
-    private final Supplier<RegistryObject<Block>> fridge;
+    private final Supplier<DeferredHolder<Block, Block>> fridge;
 
-    public FreezerBlock(Properties properties, Supplier<RegistryObject<Block>> fridge) {
+    public FreezerBlock(Properties properties, Supplier<DeferredHolder<Block, Block>> fridge) {
         super(properties);
         this.fridge = fridge;
         this.registerDefaultState(this.getStateDefinition().any().setValue(DIRECTION, Direction.NORTH).setValue(OPEN, false));
@@ -152,5 +152,6 @@ public class FreezerBlock extends FurnitureHorizontalBlock implements EntityBloc
         return this.fridge.get().get().asItem();
     }
 }
+
 
 

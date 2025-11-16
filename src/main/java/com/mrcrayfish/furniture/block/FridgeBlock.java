@@ -39,9 +39,9 @@ public class FridgeBlock extends FurnitureHorizontalBlock implements EntityBlock
     public static final BooleanProperty OPEN = BooleanProperty.create("open");
 
     public final ImmutableMap<BlockState, VoxelShape> SHAPES;
-    private final Supplier<RegistryObject<Block>> freezer;
+    private final Supplier<DeferredHolder<Block, Block>> freezer;
 
-    public FridgeBlock(Properties properties, Supplier<RegistryObject<Block>> freezer) {
+    public FridgeBlock(Properties properties, Supplier<DeferredHolder<Block, Block>> freezer) {
         super(properties);
         this.freezer = freezer;
         this.registerDefaultState(this.getStateDefinition().any().setValue(DIRECTION, Direction.NORTH).setValue(OPEN, false));
@@ -124,4 +124,5 @@ public class FridgeBlock extends FurnitureHorizontalBlock implements EntityBlock
         return new FridgeBlockEntity(pos, state);
     }
 }
+
 

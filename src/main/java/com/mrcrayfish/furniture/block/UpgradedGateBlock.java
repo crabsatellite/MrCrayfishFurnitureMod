@@ -20,7 +20,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.DoorHingeSide;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -263,8 +263,8 @@ public class UpgradedGateBlock extends FurnitureHorizontalBlock {
 
     @Nullable
     @Override
-    public BlockPathTypes getBlockPathType(BlockState state, BlockGetter world, BlockPos pos, @Nullable Mob entity) {
-        return !state.getValue(OPEN) ? BlockPathTypes.FENCE : BlockPathTypes.OPEN;
+    public PathType getBlockPathType(BlockState state, BlockGetter world, BlockPos pos, @Nullable Mob entity) {
+        return !state.getValue(OPEN) ? PathType.FENCE : PathType.OPEN;
     }
 
     @Override
@@ -280,3 +280,4 @@ public class UpgradedGateBlock extends FurnitureHorizontalBlock {
         }
     }
 }
+

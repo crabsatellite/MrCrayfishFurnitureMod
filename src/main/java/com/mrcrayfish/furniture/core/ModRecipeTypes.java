@@ -15,10 +15,10 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public class ModRecipeTypes {
     public static final DeferredRegister<RecipeType<?>> REGISTER = DeferredRegister.create(Registries.RECIPE_TYPE, Reference.MOD_ID);
 
-    public static final DeferredHolder<RecipeType<GrillCookingRecipe>> GRILL_COOKING = create("grill_cooking");
-    public static final DeferredHolder<RecipeType<FreezerSolidifyRecipe>> FREEZER_SOLIDIFY = create("freezer_solidify");
+    public static final DeferredHolder<RecipeType<?>, RecipeType<GrillCookingRecipe>> GRILL_COOKING = create("grill_cooking");
+    public static final DeferredHolder<RecipeType<?>, RecipeType<FreezerSolidifyRecipe>> FREEZER_SOLIDIFY = create("freezer_solidify");
 
-    private static <T extends Recipe<?>> DeferredHolder<RecipeType<T>> create(String name) {
+    private static <T extends Recipe<?>> DeferredHolder<RecipeType<?>, RecipeType<T>> create(String name) {
         return REGISTER.register(name, () -> new RecipeType<>() {
             @Override
             public String toString() {

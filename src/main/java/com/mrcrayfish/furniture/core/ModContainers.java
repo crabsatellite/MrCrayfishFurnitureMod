@@ -31,12 +31,12 @@ public class ModContainers {
     public static final DeferredRegister<MenuType<?>> REGISTER = DeferredRegister.create(Registries.MENU, Reference.MOD_ID);
 
     @SuppressWarnings("ConstantConditions")
-    public static final DeferredHolder<MenuType<CrateMenu>> CRATE = register("crate", (IContainerFactory<CrateMenu>) (windowId, playerInventory, data) -> {
+    public static final DeferredHolder<MenuType<?>, MenuType<CrateMenu>> CRATE = register("crate", (IContainerFactory<CrateMenu>) (windowId, playerInventory, data) -> {
         CrateBlockEntity crateBlockEntity = (CrateBlockEntity) playerInventory.player.level().getBlockEntity(data.readBlockPos());
         return new CrateMenu(windowId, playerInventory, crateBlockEntity, crateBlockEntity.isLocked());
     });
 
-    public static final DeferredHolder<MenuType<PostBoxMenu>> POST_BOX = register("post_box", (IContainerFactory<PostBoxMenu>) (windowId, playerInventory, data) -> {
+    public static final DeferredHolder<MenuType<?>, MenuType<PostBoxMenu>> POST_BOX = register("post_box", (IContainerFactory<PostBoxMenu>) (windowId, playerInventory, data) -> {
         CompoundTag compound = Objects.requireNonNull(data.readNbt());
         List<MailBoxEntry> entries = new ArrayList<>();
         ListTag mailBoxList = compound.getList("MailBoxes", Tag.TAG_COMPOUND);
@@ -44,17 +44,17 @@ public class ModContainers {
         return new PostBoxMenu(windowId, playerInventory, entries);
     });
 
-    public static final DeferredHolder<MenuType<MailBoxMenu>> MAIL_BOX = register("mail_box", (IContainerFactory<MailBoxMenu>) (windowId, playerInventory, data) -> {
+    public static final DeferredHolder<MenuType<?>, MenuType<MailBoxMenu>> MAIL_BOX = register("mail_box", (IContainerFactory<MailBoxMenu>) (windowId, playerInventory, data) -> {
         MailBoxBlockEntity mailBoxBlockEntity = (MailBoxBlockEntity) playerInventory.player.level().getBlockEntity(data.readBlockPos());
         return new MailBoxMenu(windowId, playerInventory, mailBoxBlockEntity);
     });
 
-    public static final DeferredHolder<MenuType<FreezerMenu>> FREEZER = register("freezer", (IContainerFactory<FreezerMenu>) (windowId, playerInventory, data) -> {
+    public static final DeferredHolder<MenuType<?>, MenuType<FreezerMenu>> FREEZER = register("freezer", (IContainerFactory<FreezerMenu>) (windowId, playerInventory, data) -> {
         FreezerBlockEntity freezerBlockEntity = (FreezerBlockEntity) playerInventory.player.level().getBlockEntity(data.readBlockPos());
         return new FreezerMenu(windowId, playerInventory, freezerBlockEntity);
     });
 
-    private static <T extends AbstractContainerMenu> DeferredHolder<MenuType<T>> register(String key, MenuType.MenuSupplier<T> supplier) {
+    private static <T extends AbstractContainerMenu> DeferredHolder<MenuType<?>, MenuType<T>> register(String key, MenuType.MenuSupplier<T> supplier) {
         return REGISTER.register(key, () -> new MenuType<>(supplier, FeatureFlags.DEFAULT_FLAGS));
     }
 }

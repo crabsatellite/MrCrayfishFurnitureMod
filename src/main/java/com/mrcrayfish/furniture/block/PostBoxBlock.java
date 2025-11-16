@@ -24,7 +24,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.network.NetworkHooks;
+
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -88,4 +88,5 @@ public class PostBoxBlock extends FurnitureHorizontalBlock {
         }, TITLE);
     }
 }
+
 

@@ -16,7 +16,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -88,7 +88,7 @@ public class KitchenSinkBlock extends FurnitureHorizontalBlock implements Entity
                 IFluidHandler handler = FluidUtil.getFluidHandler(level, pos, null).orElse(null);
                 if (handler.getFluidInTank(0).getAmount() > 0 && !level.isClientSide()) {
                     if (!playerEntity.getAbilities().instabuild) {
-                        ItemStack waterPotion = PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.WATER);
+                        ItemStack waterPotion = PotionContents.setPotion(new ItemStack(Items.POTION), Potions.WATER);
                         heldItem.shrink(1);
                         if (heldItem.isEmpty()) {
                             playerEntity.setItemInHand(hand, waterPotion);
@@ -147,5 +147,6 @@ public class KitchenSinkBlock extends FurnitureHorizontalBlock implements Entity
         return new KitchenSinkBlockEntity(pos, state);
     }
 }
+
 
 

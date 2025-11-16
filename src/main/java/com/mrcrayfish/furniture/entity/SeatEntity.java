@@ -15,7 +15,7 @@ import net.minecraft.world.entity.vehicle.DismountHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.NetworkHooks;
+
 
 import java.util.List;
 
@@ -123,4 +123,5 @@ public class SeatEntity extends Entity {
         passenger.setYHeadRot(passenger.getYRot());
     }
 }
+
 
