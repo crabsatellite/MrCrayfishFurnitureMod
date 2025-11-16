@@ -25,6 +25,7 @@ import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.minecraft.world.item.crafting.ShapedRecipePattern;
 import net.minecraft.world.level.ItemLike;
 
 import javax.annotation.Nullable;
@@ -123,10 +124,11 @@ public class ForgeShapedRecipeBuilder extends ShapedRecipeBuilder {
         
         // Build the shaped recipe
         CraftingBookCategory craftingCategory = this.determineBookCategory(this.category);
+        ShapedRecipePattern recipePattern = ShapedRecipePattern.of(this.ingredientMap, this.pattern);
         ShapedRecipe recipe = new ShapedRecipe(
             this.group == null ? "" : this.group,
             craftingCategory,
-            ShapedRecipe.pattern(this.pattern, this.ingredientMap),
+            recipePattern,
             this.result
         );
         
@@ -232,7 +234,7 @@ public class ForgeShapedRecipeBuilder extends ShapedRecipeBuilder {
             JsonObject jsonobject = new JsonObject();
 
             for (Map.Entry<Character, Ingredient> entry : this.ingredientMap.entrySet()) {
-                jsonobject.add(String.valueOf(entry.getKey()), entry.getValue().toJson(true));
+                jsonobject.add(String.valueOf(entry.getKey()), entry.getValue().toJson());
             }
 
             json.add("key", jsonobject);
