@@ -5,6 +5,7 @@ import com.mrcrayfish.furniture.core.ModBlocks;
 import com.mrcrayfish.furniture.core.ModItems;
 import com.mrcrayfish.furniture.core.ModRecipeSerializers;
 import com.mrcrayfish.furniture.data.ForgeShapedRecipeBuilder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.*;
 import net.minecraft.nbt.CompoundTag;
@@ -35,42 +36,42 @@ public class RecipeGen extends RecipeProvider {
     protected void buildRecipes(Consumer<RecipeOutput> consumer) {
         // Dynamically generates all recipes for wooden furniture
         for (GeneratorData.Variant variant : GeneratorData.ALL_VARIANTS) {
-            table(consumer, ForgeRegistries.BLOCKS.getValue(GeneratorData.getResultBlock(GeneratorData.TABLE, variant, false)), variant.log().get(), variant.planks().get());
-            chair(consumer, ForgeRegistries.BLOCKS.getValue(GeneratorData.getResultBlock(GeneratorData.CHAIR, variant, false)), variant.log().get(), variant.planks().get());
-            coffeeTable(consumer, ForgeRegistries.BLOCKS.getValue(GeneratorData.getResultBlock(GeneratorData.COFFEE_TABLE, variant, false)), variant.log().get(), variant.planks().get());
-            cabinet(consumer, ForgeRegistries.BLOCKS.getValue(GeneratorData.getResultBlock(GeneratorData.CABINET, variant, false)), variant.log().get(), variant.planks().get());
-            bedsideCabinet(consumer, ForgeRegistries.BLOCKS.getValue(GeneratorData.getResultBlock(GeneratorData.BEDSIDE_CABINET, variant, false)), variant.log().get(), variant.planks().get());
-            desk(consumer, ForgeRegistries.BLOCKS.getValue(GeneratorData.getResultBlock(GeneratorData.DESK, variant, false)), variant.log().get(), variant.planks().get());
-            deskCabinet(consumer, ForgeRegistries.BLOCKS.getValue(GeneratorData.getResultBlock(GeneratorData.DESK_CABINET, variant, false)), variant.log().get(), variant.planks().get());
-            blinds(consumer, ForgeRegistries.BLOCKS.getValue(GeneratorData.getResultBlock(GeneratorData.BLINDS, variant, false)), variant.log().get());
-            upgradedFence(consumer, ForgeRegistries.BLOCKS.getValue(GeneratorData.getResultBlock(GeneratorData.UPGRADED_FENCE, variant, false)), variant.log().get());
-            upgradedGate(consumer, ForgeRegistries.BLOCKS.getValue(GeneratorData.getResultBlock(GeneratorData.UPGRADED_GATE, variant, false)), variant.log().get());
-            crate(consumer, ForgeRegistries.BLOCKS.getValue(GeneratorData.getResultBlock(GeneratorData.CRATE, variant, false)), variant.log().get(), variant.planks().get());
-            parkBench(consumer, ForgeRegistries.BLOCKS.getValue(GeneratorData.getResultBlock(GeneratorData.PARK_BENCH, variant, false)), variant.log().get(), variant.planks().get());
-            kitchenCounter(consumer, ForgeRegistries.BLOCKS.getValue(GeneratorData.getResultBlock(GeneratorData.KITCHEN_COUNTER, variant, false)), variant.log().get(), variant.planks().get());
-            kitchenDrawer(consumer, ForgeRegistries.BLOCKS.getValue(GeneratorData.getResultBlock(GeneratorData.KITCHEN_DRAWER, variant, false)), variant.log().get(), variant.planks().get());
-            kitchenSink(consumer, ForgeRegistries.BLOCKS.getValue(GeneratorData.getResultBlock(GeneratorData.KITCHEN_SINK_LIGHT, variant, false)), Blocks.WHITE_CONCRETE, variant.planks().get());
-            kitchenSink(consumer, ForgeRegistries.BLOCKS.getValue(GeneratorData.getResultBlock(GeneratorData.KITCHEN_SINK_DARK, variant, false)), Blocks.GRAY_CONCRETE, variant.planks().get());
-            mailBox(consumer, ForgeRegistries.BLOCKS.getValue(GeneratorData.getResultBlock(GeneratorData.MAIL_BOX, variant, false)), ForgeRegistries.BLOCKS.getValue(GeneratorData.getUpgradedFence(variant, false)));
+            table(consumer, BuiltInRegistries.BLOCK.get(GeneratorData.getResultBlock(GeneratorData.TABLE, variant, false)), variant.log().get(), variant.planks().get());
+            chair(consumer, BuiltInRegistries.BLOCK.get(GeneratorData.getResultBlock(GeneratorData.CHAIR, variant, false)), variant.log().get(), variant.planks().get());
+            coffeeTable(consumer, BuiltInRegistries.BLOCK.get(GeneratorData.getResultBlock(GeneratorData.COFFEE_TABLE, variant, false)), variant.log().get(), variant.planks().get());
+            cabinet(consumer, BuiltInRegistries.BLOCK.get(GeneratorData.getResultBlock(GeneratorData.CABINET, variant, false)), variant.log().get(), variant.planks().get());
+            bedsideCabinet(consumer, BuiltInRegistries.BLOCK.get(GeneratorData.getResultBlock(GeneratorData.BEDSIDE_CABINET, variant, false)), variant.log().get(), variant.planks().get());
+            desk(consumer, BuiltInRegistries.BLOCK.get(GeneratorData.getResultBlock(GeneratorData.DESK, variant, false)), variant.log().get(), variant.planks().get());
+            deskCabinet(consumer, BuiltInRegistries.BLOCK.get(GeneratorData.getResultBlock(GeneratorData.DESK_CABINET, variant, false)), variant.log().get(), variant.planks().get());
+            blinds(consumer, BuiltInRegistries.BLOCK.get(GeneratorData.getResultBlock(GeneratorData.BLINDS, variant, false)), variant.log().get());
+            upgradedFence(consumer, BuiltInRegistries.BLOCK.get(GeneratorData.getResultBlock(GeneratorData.UPGRADED_FENCE, variant, false)), variant.log().get());
+            upgradedGate(consumer, BuiltInRegistries.BLOCK.get(GeneratorData.getResultBlock(GeneratorData.UPGRADED_GATE, variant, false)), variant.log().get());
+            crate(consumer, BuiltInRegistries.BLOCK.get(GeneratorData.getResultBlock(GeneratorData.CRATE, variant, false)), variant.log().get(), variant.planks().get());
+            parkBench(consumer, BuiltInRegistries.BLOCK.get(GeneratorData.getResultBlock(GeneratorData.PARK_BENCH, variant, false)), variant.log().get(), variant.planks().get());
+            kitchenCounter(consumer, BuiltInRegistries.BLOCK.get(GeneratorData.getResultBlock(GeneratorData.KITCHEN_COUNTER, variant, false)), variant.log().get(), variant.planks().get());
+            kitchenDrawer(consumer, BuiltInRegistries.BLOCK.get(GeneratorData.getResultBlock(GeneratorData.KITCHEN_DRAWER, variant, false)), variant.log().get(), variant.planks().get());
+            kitchenSink(consumer, BuiltInRegistries.BLOCK.get(GeneratorData.getResultBlock(GeneratorData.KITCHEN_SINK_LIGHT, variant, false)), Blocks.WHITE_CONCRETE, variant.planks().get());
+            kitchenSink(consumer, BuiltInRegistries.BLOCK.get(GeneratorData.getResultBlock(GeneratorData.KITCHEN_SINK_DARK, variant, false)), Blocks.GRAY_CONCRETE, variant.planks().get());
+            mailBox(consumer, BuiltInRegistries.BLOCK.get(GeneratorData.getResultBlock(GeneratorData.MAIL_BOX, variant, false)), BuiltInRegistries.BLOCK.get(GeneratorData.getUpgradedFence(variant, false)));
 
             if (variant.strippedLog() != null) {
-                table(consumer, ForgeRegistries.BLOCKS.getValue(GeneratorData.getResultBlock(GeneratorData.TABLE, variant, true)), variant.strippedLog().get(), variant.log().get());
-                chair(consumer, ForgeRegistries.BLOCKS.getValue(GeneratorData.getResultBlock(GeneratorData.CHAIR, variant, true)), variant.strippedLog().get(), variant.log().get());
-                coffeeTable(consumer, ForgeRegistries.BLOCKS.getValue(GeneratorData.getResultBlock(GeneratorData.COFFEE_TABLE, variant, true)), variant.strippedLog().get(), variant.log().get());
-                cabinet(consumer, ForgeRegistries.BLOCKS.getValue(GeneratorData.getResultBlock(GeneratorData.CABINET, variant, true)), variant.log().get(), variant.strippedLog().get());
-                bedsideCabinet(consumer, ForgeRegistries.BLOCKS.getValue(GeneratorData.getResultBlock(GeneratorData.BEDSIDE_CABINET, variant, true)), variant.strippedLog().get(), variant.log().get());
-                desk(consumer, ForgeRegistries.BLOCKS.getValue(GeneratorData.getResultBlock(GeneratorData.DESK, variant, true)), variant.strippedLog().get(), variant.log().get());
-                deskCabinet(consumer, ForgeRegistries.BLOCKS.getValue(GeneratorData.getResultBlock(GeneratorData.DESK_CABINET, variant, true)), variant.strippedLog().get(), variant.log().get());
-                blinds(consumer, ForgeRegistries.BLOCKS.getValue(GeneratorData.getResultBlock(GeneratorData.BLINDS, variant, true)), variant.strippedLog().get());
-                upgradedFence(consumer, ForgeRegistries.BLOCKS.getValue(GeneratorData.getResultBlock(GeneratorData.UPGRADED_FENCE, variant, true)), variant.strippedLog().get());
-                upgradedGate(consumer, ForgeRegistries.BLOCKS.getValue(GeneratorData.getResultBlock(GeneratorData.UPGRADED_GATE, variant, true)), variant.strippedLog().get());
-                crate(consumer, ForgeRegistries.BLOCKS.getValue(GeneratorData.getResultBlock(GeneratorData.CRATE, variant, true)), variant.strippedLog().get(), variant.log().get());
-                parkBench(consumer, ForgeRegistries.BLOCKS.getValue(GeneratorData.getResultBlock(GeneratorData.PARK_BENCH, variant, true)), variant.log().get(), variant.strippedLog().get());
-                kitchenCounter(consumer, ForgeRegistries.BLOCKS.getValue(GeneratorData.getResultBlock(GeneratorData.KITCHEN_COUNTER, variant, true)), variant.log().get(), variant.strippedLog().get());
-                kitchenDrawer(consumer, ForgeRegistries.BLOCKS.getValue(GeneratorData.getResultBlock(GeneratorData.KITCHEN_DRAWER, variant, true)), variant.log().get(), variant.strippedLog().get());
-                kitchenSink(consumer, ForgeRegistries.BLOCKS.getValue(GeneratorData.getResultBlock(GeneratorData.KITCHEN_SINK_LIGHT, variant, true)), Blocks.WHITE_CONCRETE, variant.strippedLog().get());
-                kitchenSink(consumer, ForgeRegistries.BLOCKS.getValue(GeneratorData.getResultBlock(GeneratorData.KITCHEN_SINK_DARK, variant, true)), Blocks.GRAY_CONCRETE, variant.strippedLog().get());
-                mailBox(consumer, ForgeRegistries.BLOCKS.getValue(GeneratorData.getResultBlock(GeneratorData.MAIL_BOX, variant, true)), ForgeRegistries.BLOCKS.getValue(GeneratorData.getUpgradedFence(variant, true)));
+                table(consumer, BuiltInRegistries.BLOCK.get(GeneratorData.getResultBlock(GeneratorData.TABLE, variant, true)), variant.strippedLog().get(), variant.log().get());
+                chair(consumer, BuiltInRegistries.BLOCK.get(GeneratorData.getResultBlock(GeneratorData.CHAIR, variant, true)), variant.strippedLog().get(), variant.log().get());
+                coffeeTable(consumer, BuiltInRegistries.BLOCK.get(GeneratorData.getResultBlock(GeneratorData.COFFEE_TABLE, variant, true)), variant.strippedLog().get(), variant.log().get());
+                cabinet(consumer, BuiltInRegistries.BLOCK.get(GeneratorData.getResultBlock(GeneratorData.CABINET, variant, true)), variant.log().get(), variant.strippedLog().get());
+                bedsideCabinet(consumer, BuiltInRegistries.BLOCK.get(GeneratorData.getResultBlock(GeneratorData.BEDSIDE_CABINET, variant, true)), variant.strippedLog().get(), variant.log().get());
+                desk(consumer, BuiltInRegistries.BLOCK.get(GeneratorData.getResultBlock(GeneratorData.DESK, variant, true)), variant.strippedLog().get(), variant.log().get());
+                deskCabinet(consumer, BuiltInRegistries.BLOCK.get(GeneratorData.getResultBlock(GeneratorData.DESK_CABINET, variant, true)), variant.strippedLog().get(), variant.log().get());
+                blinds(consumer, BuiltInRegistries.BLOCK.get(GeneratorData.getResultBlock(GeneratorData.BLINDS, variant, true)), variant.strippedLog().get());
+                upgradedFence(consumer, BuiltInRegistries.BLOCK.get(GeneratorData.getResultBlock(GeneratorData.UPGRADED_FENCE, variant, true)), variant.strippedLog().get());
+                upgradedGate(consumer, BuiltInRegistries.BLOCK.get(GeneratorData.getResultBlock(GeneratorData.UPGRADED_GATE, variant, true)), variant.strippedLog().get());
+                crate(consumer, BuiltInRegistries.BLOCK.get(GeneratorData.getResultBlock(GeneratorData.CRATE, variant, true)), variant.strippedLog().get(), variant.log().get());
+                parkBench(consumer, BuiltInRegistries.BLOCK.get(GeneratorData.getResultBlock(GeneratorData.PARK_BENCH, variant, true)), variant.log().get(), variant.strippedLog().get());
+                kitchenCounter(consumer, BuiltInRegistries.BLOCK.get(GeneratorData.getResultBlock(GeneratorData.KITCHEN_COUNTER, variant, true)), variant.log().get(), variant.strippedLog().get());
+                kitchenDrawer(consumer, BuiltInRegistries.BLOCK.get(GeneratorData.getResultBlock(GeneratorData.KITCHEN_DRAWER, variant, true)), variant.log().get(), variant.strippedLog().get());
+                kitchenSink(consumer, BuiltInRegistries.BLOCK.get(GeneratorData.getResultBlock(GeneratorData.KITCHEN_SINK_LIGHT, variant, true)), Blocks.WHITE_CONCRETE, variant.strippedLog().get());
+                kitchenSink(consumer, BuiltInRegistries.BLOCK.get(GeneratorData.getResultBlock(GeneratorData.KITCHEN_SINK_DARK, variant, true)), Blocks.GRAY_CONCRETE, variant.strippedLog().get());
+                mailBox(consumer, BuiltInRegistries.BLOCK.get(GeneratorData.getResultBlock(GeneratorData.MAIL_BOX, variant, true)), BuiltInRegistries.BLOCK.get(GeneratorData.getUpgradedFence(variant, true)));
             }
         }
 
@@ -478,7 +479,7 @@ public class RecipeGen extends RecipeProvider {
                 .save(recipeConsumer);
         if (fence == ModBlocks.PICKET_FENCE_WHITE.get())
             return;
-        ResourceLocation registryName = ForgeRegistries.ITEMS.getKey(fence.asItem());
+        ResourceLocation registryName = BuiltInRegistries.ITEM.getKey(fence.asItem());
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, fence, 8)
                 .pattern("FFF")
                 .pattern("FDF")
@@ -502,7 +503,7 @@ public class RecipeGen extends RecipeProvider {
                 .save(recipeConsumer);
         if (gate == ModBlocks.PICKET_GATE_WHITE.get())
             return;
-        ResourceLocation registryName = ForgeRegistries.ITEMS.getKey(gate.asItem());
+        ResourceLocation registryName = BuiltInRegistries.ITEM.getKey(gate.asItem());
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, gate, 8)
                 .pattern("GGG")
                 .pattern("GDG")
