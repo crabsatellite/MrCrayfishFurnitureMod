@@ -5,6 +5,7 @@ import com.mrcrayfish.furniture.Reference;
 import com.mrcrayfish.furniture.tileentity.MailBoxBlockEntity;
 import com.mrcrayfish.furniture.util.BlockEntityUtil;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -32,13 +33,13 @@ public class PostOffice extends SavedData {
 
     private final Map<UUID, Map<UUID, MailBox>> playerMailboxMap = new HashMap<>();
 
-    public static PostOffice load(CompoundTag tag) {
+    public static PostOffice load(CompoundTag tag, HolderLookup.Provider provider) {
         PostOffice postOffice = new PostOffice();
-        postOffice.read(tag);
+        postOffice.read(tag, provider);
         return postOffice;
     }
 
-    public void read(CompoundTag compound) {
+    public void read(CompoundTag compound, HolderLookup.Provider provider) {
         this.playerMailboxMap.clear();
         if (compound.contains("PlayerMailBoxes", Tag.TAG_LIST)) {
             ListTag playerMailBoxesList = compound.getList("PlayerMailBoxes", Tag.TAG_COMPOUND);
@@ -54,7 +55,7 @@ public class PostOffice extends SavedData {
                     {
                         CompoundTag mailBoxCompound = (CompoundTag) nbt2;
                         UUID mailBoxId = mailBoxCompound.getUUID("MailBoxUUID");
-                        MailBox mailBox = new MailBox(mailBoxCompound.getCompound("MailBox"));
+                        MailBox mailBox = new MailBox(mailBoxCompound.getCompound("MailBox"), provider);
                         mailBoxMap.put(mailBoxId, mailBox);
                     });
                     this.playerMailboxMap.put(playerId, mailBoxMap);
@@ -64,7 +65,7 @@ public class PostOffice extends SavedData {
     }
 
     @Override
-    public CompoundTag save(CompoundTag compound) {
+    public CompoundTag save(CompoundTag compound, HolderLookup.Provider provider) {
         ListTag playerMailBoxesList = new ListTag();
         this.playerMailboxMap.forEach((playerId, mailStorage) ->
         {
@@ -77,7 +78,7 @@ public class PostOffice extends SavedData {
                 {
                     CompoundTag mailBoxCompound = new CompoundTag();
                     mailBoxCompound.putUUID("MailBoxUUID", mailBoxId);
-                    mailBoxCompound.put("MailBox", mailBox.serializeNBT());
+                    mailBoxCompound.put("MailBox", mailBox.serializeNBT(provider));
                     mailBoxList.add(mailBoxCompound);
                 });
                 playerMailBoxesCompound.put("MailBoxes", mailBoxList);
@@ -203,7 +204,7 @@ public class PostOffice extends SavedData {
 
     private static PostOffice get(MinecraftServer server) {
         ServerLevel level = server.getLevel(Level.OVERWORLD);
-        return Objects.requireNonNull(level).getDataStorage().computeIfAbsent(PostOffice::load, PostOffice::new, ID);
+        return Objects.requireNonNull(level).getDataStorage().computeIfAbsent(new SavedData.Factory<>(PostOffice::new, PostOffice::load), ID);
     }
 
     /*
