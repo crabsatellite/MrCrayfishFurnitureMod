@@ -33,17 +33,22 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.neoforged.neoforge.common.NeoForge;
 
 /**
  * Author: MrCrayfish
  */
 public class ClientHandler {
     public static void setup() {
-        MenuScreens.register(ModContainers.CRATE.get(), CrateScreen::new);
-        MenuScreens.register(ModContainers.POST_BOX.get(), PostBoxScreen::new);
-        MenuScreens.register(ModContainers.MAIL_BOX.get(), MailBoxScreen::new);
-        MenuScreens.register(ModContainers.FREEZER.get(), FreezerScreen::new);
-        MinecraftForge.EVENT_BUS.register(new CreativeScreenEvents());
+        NeoForge.EVENT_BUS.register(new CreativeScreenEvents());
+    }
+
+    public static void onRegisterMenuScreens(RegisterMenuScreensEvent event) {
+        event.register(ModContainers.CRATE.get(), CrateScreen::new);
+        event.register(ModContainers.POST_BOX.get(), PostBoxScreen::new);
+        event.register(ModContainers.MAIL_BOX.get(), MailBoxScreen::new);
+        event.register(ModContainers.FREEZER.get(), FreezerScreen::new);
     }
 
     public static void showDoorMatScreen(Level level, BlockPos pos) {
@@ -294,7 +299,7 @@ public class ClientHandler {
 
         event.register((stack, i) ->
         {
-            CompoundTag tag = stack.getTag();
+            CompoundTag tag = stack.getOrCreateTag();
             if (tag != null) {
                 CompoundTag blockEntityTag = tag.getCompound("BlockEntityTag");
                 if (blockEntityTag.contains("Color", Tag.TAG_INT)) {
@@ -315,7 +320,7 @@ public class ClientHandler {
     public static void onRegisterGeometryLoaders(ModelEvent.ModifyBakingResult event) {
         // Patches hedge models to have a predicate render type.
         event.getModels().entrySet().stream()
-                .filter(entry -> entry.getKey().getNamespace().equals(Reference.MOD_ID) && entry.getKey().getPath().contains("hedge"))
+                .filter(entry -> entry.getKey().id().getNamespace().equals(Reference.MOD_ID) && entry.getKey().id().getPath().contains("hedge"))
                 .forEach(entry -> event.getModels().put(entry.getKey(), new FancyModel(entry.getValue())));
     }
 }
