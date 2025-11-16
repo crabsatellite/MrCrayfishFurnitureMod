@@ -1,6 +1,7 @@
 package com.mrcrayfish.furniture.common.mail;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -35,8 +36,8 @@ public class MailBox implements INBTSerializable<CompoundTag> {
         this.levelResourceKey = levelResourceKey;
     }
 
-    public MailBox(CompoundTag compound) {
-        this.deserializeNBT(compound);
+    public MailBox(CompoundTag compound, HolderLookup.Provider provider) {
+        this.deserializeNBT(provider, compound);
     }
 
     public UUID getId() {
@@ -89,7 +90,7 @@ public class MailBox implements INBTSerializable<CompoundTag> {
     }
 
     @Override
-    public CompoundTag serializeNBT() {
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
         CompoundTag compound = new CompoundTag();
         compound.putUUID("MailBoxUUID", this.id);
         compound.putString("MailBoxName", this.name);
@@ -100,7 +101,7 @@ public class MailBox implements INBTSerializable<CompoundTag> {
 
         if (!this.mailStorage.isEmpty()) {
             ListTag mailStorageList = new ListTag();
-            this.mailStorage.forEach(mail -> mailStorageList.add(mail.serializeNBT()));
+            this.mailStorage.forEach(mail -> mailStorageList.add(mail.serializeNBT(provider)));
             compound.put("MailStorage", mailStorageList);
         }
 
@@ -108,7 +109,7 @@ public class MailBox implements INBTSerializable<CompoundTag> {
     }
 
     @Override
-    public void deserializeNBT(CompoundTag compound) {
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag compound) {
         this.mailStorage = new ArrayList<>();
 
         this.id = compound.getUUID("MailBoxUUID");
@@ -123,7 +124,7 @@ public class MailBox implements INBTSerializable<CompoundTag> {
             mailStorageList.forEach(nbt2 ->
             {
                 CompoundTag mailCompound = (CompoundTag) nbt2;
-                this.mailStorage.add(new Mail(mailCompound));
+                this.mailStorage.add(new Mail(mailCompound, provider));
             });
         }
     }

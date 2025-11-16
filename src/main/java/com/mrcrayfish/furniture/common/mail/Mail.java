@@ -1,5 +1,6 @@
 package com.mrcrayfish.furniture.common.mail;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.util.INBTSerializable;
@@ -18,8 +19,8 @@ public class Mail implements INBTSerializable<CompoundTag> {
         this.sender = sender;
     }
 
-    public Mail(CompoundTag compound) {
-        this.deserializeNBT(compound);
+    public Mail(CompoundTag compound, HolderLookup.Provider provider) {
+        this.deserializeNBT(provider, compound);
     }
 
     public String getNote() {
@@ -35,18 +36,18 @@ public class Mail implements INBTSerializable<CompoundTag> {
     }
 
     @Override
-    public CompoundTag serializeNBT() {
+    public CompoundTag serializeNBT(HolderLookup.Provider provider) {
         CompoundTag compound = new CompoundTag();
         compound.putString("Note", this.note);
-        compound.put("Item", this.stack.save(new CompoundTag()));
+        compound.put("Item", this.stack.save(provider));
         compound.putString("Sender", this.sender);
         return compound;
     }
 
     @Override
-    public void deserializeNBT(CompoundTag compound) {
+    public void deserializeNBT(HolderLookup.Provider provider, CompoundTag compound) {
         this.note = compound.getString("Note");
-        this.stack = ItemStack.of(compound.getCompound("Item"));
+        this.stack = ItemStack.parseOptional(provider, compound.getCompound("Item"));
         this.sender = compound.getString("Sender");
     }
 }
