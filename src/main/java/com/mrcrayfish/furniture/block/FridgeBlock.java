@@ -115,7 +115,7 @@ public class FridgeBlock extends FurnitureHorizontalBlock implements EntityBlock
 
     @Override
     public Item asItem() {
-        return this.freezer.get().get().asItem();
+        return super.asItem();
     }
 
     @Nullable
