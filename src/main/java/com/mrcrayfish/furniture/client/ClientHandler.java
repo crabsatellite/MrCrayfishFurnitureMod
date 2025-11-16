@@ -299,7 +299,7 @@ public class ClientHandler {
 
         event.register((stack, i) ->
         {
-            CompoundTag tag = stack.getOrCreateTag();
+            CompoundTag tag = stack.getTag();
             if (tag != null) {
                 CompoundTag blockEntityTag = tag.getCompound("BlockEntityTag");
                 if (blockEntityTag.contains("Color", Tag.TAG_INT)) {
