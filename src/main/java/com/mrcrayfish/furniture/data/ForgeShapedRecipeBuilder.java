@@ -27,7 +27,6 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
 
 /**
  * Since Forge allows NBT tag on the output of the crafting item, this builder allows you to set
@@ -94,33 +93,37 @@ public class ForgeShapedRecipeBuilder extends ShapedRecipeBuilder {
         return this;
     }
 
-    public void build(Consumer<RecipeOutput> consumerIn) {
-        this.build(consumerIn, BuiltInRegistries.ITEM.getKey(this.result.getItem()));
+    public void build(RecipeOutput output) {
+        this.build(output, BuiltInRegistries.ITEM.getKey(this.result.getItem()));
     }
 
-    public void build(Consumer<RecipeOutput> consumerIn, String save) {
+    public void build(RecipeOutput output, String save) {
         ResourceLocation resourcelocation = BuiltInRegistries.ITEM.getKey(this.result.getItem());
         ResourceLocation saveLocation = ResourceLocation.parse(save);
         if (saveLocation.equals(resourcelocation)) {
             throw new IllegalStateException("Shaped Recipe " + save + " should remove its 'save' argument");
         } else {
-            this.build(consumerIn, saveLocation);
+            this.build(output, saveLocation);
         }
     }
 
     /**
      * Builds this recipe into an {@link RecipeOutput}.
      */
-    public void build(Consumer<RecipeOutput> consumerIn, ResourceLocation id) {
+    public void build(RecipeOutput output, ResourceLocation id) {
         this.validate(id);
         this.advancementBuilder
             .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(id))
             .rewards(AdvancementRewards.Builder.recipe(id))
             .requirements(AdvancementRequirements.Strategy.OR);
-        consumerIn.accept(new Result(this.key, id, this.result, this.group == null ? "" : this.group, 
+        
+        Result result = new Result(this.key, id, this.result, this.group == null ? "" : this.group, 
             this.determineBookCategory(this.category), this.pattern, this.ingredientMap, 
             this.advancementBuilder, id.withPrefix("recipes/" + this.category.getFolderName() + "/"), 
-            this.showNotification));
+            this.showNotification);
+        
+        // RecipeOutput.accept() method signature in 1.21.1
+        output.accept(result.getId(), result, result.getAdvancementId());
     }
 
     private CraftingBookCategory determineBookCategory(RecipeCategory category) {

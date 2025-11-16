@@ -5,8 +5,12 @@ import com.mrcrayfish.furniture.core.ModBlocks;
 import com.mrcrayfish.furniture.core.ModItems;
 import com.mrcrayfish.furniture.core.ModRecipeSerializers;
 import com.mrcrayfish.furniture.data.ForgeShapedRecipeBuilder;
+import com.mrcrayfish.furniture.item.crafting.FreezerSolidifyRecipe;
+import com.mrcrayfish.furniture.item.crafting.GrillCookingRecipe;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
+import net.minecraft.core.HolderLookup;
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.data.recipes.*;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -17,23 +21,23 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.SimpleCookingSerializer;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.core.component.DataComponents;
 import net.neoforged.neoforge.common.Tags;
 
-import java.util.function.Consumer;
 
 /**
  * @author Ocelot
  */
 public class RecipeGen extends RecipeProvider {
-    public RecipeGen(PackOutput output) {
-        super(output);
+    public RecipeGen(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
+        super(output, registries);
     }
 
     @Override
-    protected void buildRecipes(Consumer<RecipeOutput> consumer) {
+    protected void buildRecipes(RecipeOutput consumer) {
         // Dynamically generates all recipes for wooden furniture
         for (GeneratorData.Variant variant : GeneratorData.ALL_VARIANTS) {
             table(consumer, BuiltInRegistries.BLOCK.get(GeneratorData.getResultBlock(GeneratorData.TABLE, variant, false)), variant.log().get(), variant.planks().get());
@@ -327,12 +331,12 @@ public class RecipeGen extends RecipeProvider {
         cookingRecipesForMethod(consumer, "grill_cooking", ModRecipeSerializers.GRILL_COOKING.get(), 600);
 
         // Freezing Recipes
-        SimpleCookingRecipeBuilder.generic(Ingredient.of(Items.WATER_BUCKET), RecipeCategory.MISC, Blocks.ICE, 1, 1000, ModRecipeSerializers.FREEZER_SOLIDIFY.get()).unlockedBy("has_water", has(Items.WATER_BUCKET)).save(consumer, "ice_from_freezing");
-        SimpleCookingRecipeBuilder.generic(Ingredient.of(Items.ICE), RecipeCategory.MISC, Blocks.PACKED_ICE, 1, 2000, ModRecipeSerializers.FREEZER_SOLIDIFY.get()).unlockedBy("has_ice", has(Items.ICE)).save(consumer, "packed_ice_from_freezing");
-        SimpleCookingRecipeBuilder.generic(Ingredient.of(Items.PACKED_ICE), RecipeCategory.MISC, Blocks.BLUE_ICE, 1, 4000, ModRecipeSerializers.FREEZER_SOLIDIFY.get()).unlockedBy("has_packed_ice", has(Items.PACKED_ICE)).save(consumer, "blue_ice_from_freezing");
+        SimpleCookingRecipeBuilder.generic(Ingredient.of(Items.WATER_BUCKET), RecipeCategory.MISC, Blocks.ICE, 1, 1000, ModRecipeSerializers.FREEZER_SOLIDIFY.get(), FreezerSolidifyRecipe::new).unlockedBy("has_water", has(Items.WATER_BUCKET)).save(consumer, "ice_from_freezing");
+        SimpleCookingRecipeBuilder.generic(Ingredient.of(Items.ICE), RecipeCategory.MISC, Blocks.PACKED_ICE, 1, 2000, ModRecipeSerializers.FREEZER_SOLIDIFY.get(), FreezerSolidifyRecipe::new).unlockedBy("has_ice", has(Items.ICE)).save(consumer, "packed_ice_from_freezing");
+        SimpleCookingRecipeBuilder.generic(Ingredient.of(Items.PACKED_ICE), RecipeCategory.MISC, Blocks.BLUE_ICE, 1, 4000, ModRecipeSerializers.FREEZER_SOLIDIFY.get(), FreezerSolidifyRecipe::new).unlockedBy("has_packed_ice", has(Items.PACKED_ICE)).save(consumer, "blue_ice_from_freezing");
     }
 
-    private static void table(Consumer<RecipeOutput> recipeConsumer, ItemLike table, ItemLike log, ItemLike planks) {
+    private static void table(RecipeOutput recipeConsumer, ItemLike table, ItemLike log, ItemLike planks) {
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, table, 4)
                 .pattern("LLL")
                 .pattern(" P ")
@@ -345,7 +349,7 @@ public class RecipeGen extends RecipeProvider {
                 .save(recipeConsumer);
     }
 
-    private static void chair(Consumer<RecipeOutput> recipeConsumer, ItemLike chair, ItemLike log, ItemLike planks) {
+    private static void chair(RecipeOutput recipeConsumer, ItemLike chair, ItemLike log, ItemLike planks) {
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, chair, 4)
                 .pattern("L  ")
                 .pattern("LLL")
@@ -358,7 +362,7 @@ public class RecipeGen extends RecipeProvider {
                 .save(recipeConsumer);
     }
 
-    private static void coffeeTable(Consumer<RecipeOutput> recipeConsumer, ItemLike table, ItemLike log, ItemLike planks) {
+    private static void coffeeTable(RecipeOutput recipeConsumer, ItemLike table, ItemLike log, ItemLike planks) {
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, table, 4)
                 .pattern("LLL")
                 .pattern("P P")
@@ -370,7 +374,7 @@ public class RecipeGen extends RecipeProvider {
                 .save(recipeConsumer);
     }
 
-    private static void cabinet(Consumer<RecipeOutput> recipeConsumer, ItemLike cabinet, ItemLike log, ItemLike planks) {
+    private static void cabinet(RecipeOutput recipeConsumer, ItemLike cabinet, ItemLike log, ItemLike planks) {
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, cabinet, 2)
                 .pattern("PPL")
                 .pattern("P L")
@@ -383,7 +387,7 @@ public class RecipeGen extends RecipeProvider {
                 .save(recipeConsumer);
     }
 
-    private static void bedsideCabinet(Consumer<RecipeOutput> recipeConsumer, ItemLike cabinet, ItemLike log, ItemLike planks) {
+    private static void bedsideCabinet(RecipeOutput recipeConsumer, ItemLike cabinet, ItemLike log, ItemLike planks) {
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, cabinet, 2)
                 .pattern("LLL")
                 .pattern("P P")
@@ -396,7 +400,7 @@ public class RecipeGen extends RecipeProvider {
                 .save(recipeConsumer);
     }
 
-    private static void desk(Consumer<RecipeOutput> recipeConsumer, ItemLike desk, ItemLike log, ItemLike planks) {
+    private static void desk(RecipeOutput recipeConsumer, ItemLike desk, ItemLike log, ItemLike planks) {
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, desk, 2)
                 .pattern("LLL")
                 .pattern("P P")
@@ -409,7 +413,7 @@ public class RecipeGen extends RecipeProvider {
                 .save(recipeConsumer);
     }
 
-    private static void deskCabinet(Consumer<RecipeOutput> recipeConsumer, ItemLike desk, ItemLike log, ItemLike planks) {
+    private static void deskCabinet(RecipeOutput recipeConsumer, ItemLike desk, ItemLike log, ItemLike planks) {
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, desk, 2)
                 .pattern("LLL")
                 .pattern("PPP")
@@ -422,7 +426,7 @@ public class RecipeGen extends RecipeProvider {
                 .save(recipeConsumer);
     }
 
-    private static void sofa(Consumer<RecipeOutput> recipeConsumer, ItemLike sofa, ItemLike wool) {
+    private static void sofa(RecipeOutput recipeConsumer, ItemLike sofa, ItemLike wool) {
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, sofa, 2)
                 .pattern("W  ")
                 .pattern("WWW")
@@ -434,7 +438,7 @@ public class RecipeGen extends RecipeProvider {
                 .save(recipeConsumer);
     }
 
-    private static void blinds(Consumer<RecipeOutput> recipeConsumer, ItemLike blinds, ItemLike log) {
+    private static void blinds(RecipeOutput recipeConsumer, ItemLike blinds, ItemLike log) {
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, blinds, 2)
                 .pattern("LLL")
                 .pattern("SSS")
@@ -446,7 +450,7 @@ public class RecipeGen extends RecipeProvider {
                 .save(recipeConsumer);
     }
 
-    private static void upgradedFence(Consumer<RecipeOutput> recipeConsumer, ItemLike fence, ItemLike log) {
+    private static void upgradedFence(RecipeOutput recipeConsumer, ItemLike fence, ItemLike log) {
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, fence, 12)
                 .pattern("LSL")
                 .pattern("LSL")
@@ -457,7 +461,7 @@ public class RecipeGen extends RecipeProvider {
                 .save(recipeConsumer);
     }
 
-    private static void upgradedGate(Consumer<RecipeOutput> recipeConsumer, ItemLike gate, ItemLike log) {
+    private static void upgradedGate(RecipeOutput recipeConsumer, ItemLike gate, ItemLike log) {
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, gate, 2)
                 .pattern("LGL")
                 .define('L', log)
@@ -468,7 +472,7 @@ public class RecipeGen extends RecipeProvider {
                 .save(recipeConsumer);
     }
 
-    private static void picketFence(Consumer<RecipeOutput> recipeConsumer, ItemLike fence, ItemLike concrete, TagKey<Item> dye) {
+    private static void picketFence(RecipeOutput recipeConsumer, ItemLike fence, ItemLike concrete, TagKey<Item> dye) {
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, fence, 12)
                 .pattern("CSC")
                 .pattern("CSC")
@@ -492,7 +496,7 @@ public class RecipeGen extends RecipeProvider {
                 .save(recipeConsumer, ResourceLocation.fromNamespaceAndPath(registryName.getNamespace(), "dye_" + registryName.getPath()));
     }
 
-    private static void picketGate(Consumer<RecipeOutput> recipeConsumer, ItemLike gate, ItemLike concrete, TagKey<Item> dye) {
+    private static void picketGate(RecipeOutput recipeConsumer, ItemLike gate, ItemLike concrete, TagKey<Item> dye) {
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, gate, 2)
                 .pattern("CGC")
                 .define('C', concrete)
@@ -516,7 +520,7 @@ public class RecipeGen extends RecipeProvider {
                 .save(recipeConsumer, ResourceLocation.fromNamespaceAndPath(registryName.getNamespace(), "dye_" + registryName.getPath()));
     }
 
-    private static void crate(Consumer<RecipeOutput> recipeConsumer, ItemLike crate, ItemLike log, ItemLike planks) {
+    private static void crate(RecipeOutput recipeConsumer, ItemLike crate, ItemLike log, ItemLike planks) {
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, crate, 2)
                 .pattern("LPL")
                 .pattern("P P")
@@ -529,7 +533,7 @@ public class RecipeGen extends RecipeProvider {
                 .save(recipeConsumer);
     }
 
-    private static void parkBench(Consumer<RecipeOutput> recipeConsumer, ItemLike bench, ItemLike log, ItemLike planks) {
+    private static void parkBench(RecipeOutput recipeConsumer, ItemLike bench, ItemLike log, ItemLike planks) {
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, bench, 4)
                 .pattern("PPP")
                 .pattern("PPP")
@@ -542,7 +546,7 @@ public class RecipeGen extends RecipeProvider {
                 .save(recipeConsumer);
     }
 
-    private static void mailBox(Consumer<RecipeOutput> recipeConsumer, ItemLike mailbox, ItemLike fence) {
+    private static void mailBox(RecipeOutput recipeConsumer, ItemLike mailbox, ItemLike fence) {
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, mailbox)
                 .pattern("C")
                 .pattern("F")
@@ -555,7 +559,7 @@ public class RecipeGen extends RecipeProvider {
                 .save(recipeConsumer);
     }
 
-    private static void hedge(Consumer<RecipeOutput> recipeConsumer, ItemLike hedge, ItemLike leaves) {
+    private static void hedge(RecipeOutput recipeConsumer, ItemLike hedge, ItemLike leaves) {
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, hedge, 12)
                 .pattern("LLL")
                 .pattern("LLL")
@@ -565,12 +569,10 @@ public class RecipeGen extends RecipeProvider {
                 .save(recipeConsumer);
     }
 
-    private static void trampoline(Consumer<RecipeOutput> recipeConsumer, String key, ItemStack trampoline, DyeColor color, ItemLike wool) {
-        CompoundTag tag = new CompoundTag();
+    private static void trampoline(RecipeOutput recipeConsumer, String key, ItemStack trampoline, DyeColor color, ItemLike wool) {
         CompoundTag blockEntityTag = new CompoundTag();
         blockEntityTag.putInt("Color", color.getId());
-        tag.put("BlockEntityTag", blockEntityTag);
-        trampoline.setTag(tag);
+        trampoline.set(DataComponents.BLOCK_ENTITY_DATA, net.minecraft.world.item.component.CustomData.of(blockEntityTag));
         ForgeShapedRecipeBuilder.shapedRecipe(RecipeCategory.DECORATIONS, key, trampoline)
                 .patternLine("WSW")
                 .patternLine("I I")
@@ -584,7 +586,7 @@ public class RecipeGen extends RecipeProvider {
                 .build(recipeConsumer, ResourceLocation.fromNamespaceAndPath(Reference.MOD_ID, color.getName() + "_trampoline"));
     }
 
-    private static void cooler(Consumer<RecipeOutput> recipeConsumer, ItemLike cooler, ItemLike terracotta) {
+    private static void cooler(RecipeOutput recipeConsumer, ItemLike cooler, ItemLike terracotta) {
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, cooler, 2)
                 .pattern("TTT")
                 .pattern("WCW")
@@ -598,7 +600,7 @@ public class RecipeGen extends RecipeProvider {
                 .save(recipeConsumer);
     }
 
-    private static void grill(Consumer<RecipeOutput> recipeConsumer, ItemLike grill, ItemLike terracotta) {
+    private static void grill(RecipeOutput recipeConsumer, ItemLike grill, ItemLike terracotta) {
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, grill)
                 .pattern("TBT")
                 .pattern("I I")
@@ -612,7 +614,7 @@ public class RecipeGen extends RecipeProvider {
                 .save(recipeConsumer);
     }
 
-    private static void kitchenCounter(Consumer<RecipeOutput> recipeConsumer, ItemLike counter, ItemLike log, ItemLike planks) {
+    private static void kitchenCounter(RecipeOutput recipeConsumer, ItemLike counter, ItemLike log, ItemLike planks) {
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, counter, 8)
                 .pattern("LLL")
                 .pattern("PPP")
@@ -625,7 +627,7 @@ public class RecipeGen extends RecipeProvider {
                 .save(recipeConsumer);
     }
 
-    private static void coloredKitchenCounter(Consumer<RecipeOutput> recipeConsumer, ItemLike counter, TagKey<Item> dye) {
+    private static void coloredKitchenCounter(RecipeOutput recipeConsumer, ItemLike counter, TagKey<Item> dye) {
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, counter, 8)
                 .pattern("SDS")
                 .pattern("CCC")
@@ -639,7 +641,7 @@ public class RecipeGen extends RecipeProvider {
                 .save(recipeConsumer);
     }
 
-    private static void kitchenDrawer(Consumer<RecipeOutput> recipeConsumer, ItemLike counter, ItemLike log, ItemLike planks) {
+    private static void kitchenDrawer(RecipeOutput recipeConsumer, ItemLike counter, ItemLike log, ItemLike planks) {
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, counter, 4)
                 .pattern("LLL")
                 .pattern("PCP")
@@ -654,7 +656,7 @@ public class RecipeGen extends RecipeProvider {
                 .save(recipeConsumer);
     }
 
-    private static void coloredKitchenDrawer(Consumer<RecipeOutput> recipeConsumer, ItemLike counter, TagKey<Item> dye) {
+    private static void coloredKitchenDrawer(RecipeOutput recipeConsumer, ItemLike counter, TagKey<Item> dye) {
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, counter, 4)
                 .pattern("SDS")
                 .pattern("CBC")
@@ -670,7 +672,7 @@ public class RecipeGen extends RecipeProvider {
                 .save(recipeConsumer);
     }
 
-    private static void kitchenSink(Consumer<RecipeOutput> recipeConsumer, ItemLike sink, ItemLike top, ItemLike bottom) {
+    private static void kitchenSink(RecipeOutput recipeConsumer, ItemLike sink, ItemLike top, ItemLike bottom) {
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, sink, 2)
                 .pattern("CIC")
                 .pattern("PBP")
@@ -686,7 +688,7 @@ public class RecipeGen extends RecipeProvider {
                 .save(recipeConsumer);
     }
 
-    private static void coloredKitchenSink(Consumer<RecipeOutput> recipeConsumer, ItemLike sink, ItemLike top) {
+    private static void coloredKitchenSink(RecipeOutput recipeConsumer, ItemLike sink, ItemLike top) {
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, sink, 2)
                 .pattern("CIC")
                 .pattern("PBP")
@@ -702,16 +704,18 @@ public class RecipeGen extends RecipeProvider {
                 .save(recipeConsumer);
     }
 
-    private static void cookingRecipesForMethod(Consumer<RecipeOutput> recipeConsumer, String recipeConsumerIn, SimpleCookingSerializer<?> cookingMethod, int cookingTime) {
-        SimpleCookingRecipeBuilder.generic(Ingredient.of(Items.BEEF), RecipeCategory.FOOD, Items.COOKED_BEEF, 0.35F, cookingTime, cookingMethod).unlockedBy("has_beef", has(Items.BEEF)).save(recipeConsumer, "cooked_beef_from_" + recipeConsumerIn);
-        SimpleCookingRecipeBuilder.generic(Ingredient.of(Items.CHICKEN), RecipeCategory.FOOD, Items.COOKED_CHICKEN, 0.35F, cookingTime, cookingMethod).unlockedBy("has_chicken", has(Items.CHICKEN)).save(recipeConsumer, "cooked_chicken_from_" + recipeConsumerIn);
-        SimpleCookingRecipeBuilder.generic(Ingredient.of(Items.COD), RecipeCategory.FOOD, Items.COOKED_COD, 0.35F, cookingTime, cookingMethod).unlockedBy("has_cod", has(Items.COD)).save(recipeConsumer, "cooked_cod_from_" + recipeConsumerIn);
-        SimpleCookingRecipeBuilder.generic(Ingredient.of(Blocks.KELP), RecipeCategory.FOOD, Items.DRIED_KELP, 0.1F, cookingTime, cookingMethod).unlockedBy("has_kelp", has(Blocks.KELP)).save(recipeConsumer, "dried_kelp_from_" + recipeConsumerIn);
-        SimpleCookingRecipeBuilder.generic(Ingredient.of(Items.SALMON), RecipeCategory.FOOD, Items.COOKED_SALMON, 0.35F, cookingTime, cookingMethod).unlockedBy("has_salmon", has(Items.SALMON)).save(recipeConsumer, "cooked_salmon_from_" + recipeConsumerIn);
-        SimpleCookingRecipeBuilder.generic(Ingredient.of(Items.MUTTON), RecipeCategory.FOOD, Items.COOKED_MUTTON, 0.35F, cookingTime, cookingMethod).unlockedBy("has_mutton", has(Items.MUTTON)).save(recipeConsumer, "cooked_mutton_from_" + recipeConsumerIn);
-        SimpleCookingRecipeBuilder.generic(Ingredient.of(Items.PORKCHOP), RecipeCategory.FOOD, Items.COOKED_PORKCHOP, 0.35F, cookingTime, cookingMethod).unlockedBy("has_porkchop", has(Items.PORKCHOP)).save(recipeConsumer, "cooked_porkchop_from_" + recipeConsumerIn);
-        SimpleCookingRecipeBuilder.generic(Ingredient.of(Items.POTATO), RecipeCategory.FOOD, Items.BAKED_POTATO, 0.35F, cookingTime, cookingMethod).unlockedBy("has_potato", has(Items.POTATO)).save(recipeConsumer, "baked_potato_from_" + recipeConsumerIn);
-        SimpleCookingRecipeBuilder.generic(Ingredient.of(Items.RABBIT), RecipeCategory.FOOD, Items.COOKED_RABBIT, 0.35F, cookingTime, cookingMethod).unlockedBy("has_rabbit", has(Items.RABBIT)).save(recipeConsumer, "cooked_rabbit_from_" + recipeConsumerIn);
+    private static void cookingRecipesForMethod(RecipeOutput recipeConsumer, String recipeConsumerIn, net.minecraft.world.item.crafting.RecipeSerializer<?> cookingMethod, int cookingTime) {
+        @SuppressWarnings("unchecked")
+        net.minecraft.world.item.crafting.RecipeSerializer<GrillCookingRecipe> serializer = (net.minecraft.world.item.crafting.RecipeSerializer<GrillCookingRecipe>) cookingMethod;
+        SimpleCookingRecipeBuilder.generic(Ingredient.of(Items.BEEF), RecipeCategory.FOOD, Items.COOKED_BEEF, 0.35F, cookingTime, serializer, GrillCookingRecipe::new).unlockedBy("has_beef", has(Items.BEEF)).save(recipeConsumer, "cooked_beef_from_" + recipeConsumerIn);
+        SimpleCookingRecipeBuilder.generic(Ingredient.of(Items.CHICKEN), RecipeCategory.FOOD, Items.COOKED_CHICKEN, 0.35F, cookingTime, serializer, GrillCookingRecipe::new).unlockedBy("has_chicken", has(Items.CHICKEN)).save(recipeConsumer, "cooked_chicken_from_" + recipeConsumerIn);
+        SimpleCookingRecipeBuilder.generic(Ingredient.of(Items.COD), RecipeCategory.FOOD, Items.COOKED_COD, 0.35F, cookingTime, serializer, GrillCookingRecipe::new).unlockedBy("has_cod", has(Items.COD)).save(recipeConsumer, "cooked_cod_from_" + recipeConsumerIn);
+        SimpleCookingRecipeBuilder.generic(Ingredient.of(Blocks.KELP), RecipeCategory.FOOD, Items.DRIED_KELP, 0.1F, cookingTime, serializer, GrillCookingRecipe::new).unlockedBy("has_kelp", has(Blocks.KELP)).save(recipeConsumer, "dried_kelp_from_" + recipeConsumerIn);
+        SimpleCookingRecipeBuilder.generic(Ingredient.of(Items.SALMON), RecipeCategory.FOOD, Items.COOKED_SALMON, 0.35F, cookingTime, serializer, GrillCookingRecipe::new).unlockedBy("has_salmon", has(Items.SALMON)).save(recipeConsumer, "cooked_salmon_from_" + recipeConsumerIn);
+        SimpleCookingRecipeBuilder.generic(Ingredient.of(Items.MUTTON), RecipeCategory.FOOD, Items.COOKED_MUTTON, 0.35F, cookingTime, serializer, GrillCookingRecipe::new).unlockedBy("has_mutton", has(Items.MUTTON)).save(recipeConsumer, "cooked_mutton_from_" + recipeConsumerIn);
+        SimpleCookingRecipeBuilder.generic(Ingredient.of(Items.PORKCHOP), RecipeCategory.FOOD, Items.COOKED_PORKCHOP, 0.35F, cookingTime, serializer, GrillCookingRecipe::new).unlockedBy("has_porkchop", has(Items.PORKCHOP)).save(recipeConsumer, "cooked_porkchop_from_" + recipeConsumerIn);
+        SimpleCookingRecipeBuilder.generic(Ingredient.of(Items.POTATO), RecipeCategory.FOOD, Items.BAKED_POTATO, 0.35F, cookingTime, serializer, GrillCookingRecipe::new).unlockedBy("has_potato", has(Items.POTATO)).save(recipeConsumer, "baked_potato_from_" + recipeConsumerIn);
+        SimpleCookingRecipeBuilder.generic(Ingredient.of(Items.RABBIT), RecipeCategory.FOOD, Items.COOKED_RABBIT, 0.35F, cookingTime, serializer, GrillCookingRecipe::new).unlockedBy("has_rabbit", has(Items.RABBIT)).save(recipeConsumer, "cooked_rabbit_from_" + recipeConsumerIn);
     }
 }
 
