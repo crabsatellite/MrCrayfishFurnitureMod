@@ -11,7 +11,7 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 /**
  * Author: MrCrayfish
  */
-@EventBusSubscriber(modid = Reference.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Reference.MOD_ID)
 public class PacketHandler {
     
     @SubscribeEvent
