@@ -10,6 +10,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -113,8 +114,8 @@ public class FridgeBlock extends FurnitureHorizontalBlock implements EntityBlock
     }
 
     @Override
-    public ItemStack getCloneItemStack(BlockGetter reader, BlockPos pos, BlockState state) {
-        return new ItemStack(this.freezer.get().get());
+    public Item asItem() {
+        return this.freezer.get().get().asItem();
     }
 
     @Nullable
