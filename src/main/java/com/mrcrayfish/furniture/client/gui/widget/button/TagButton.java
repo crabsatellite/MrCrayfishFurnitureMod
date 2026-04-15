@@ -13,7 +13,8 @@ import net.minecraft.world.item.ItemStack;
  * Author: MrCrayfish
  */
 public class TagButton extends Button {
-    private static final ResourceLocation TABS = ResourceLocation.fromNamespaceAndPath("minecraft", "textures/gui/container/creative_inventory/tabs.png");
+    private static final ResourceLocation SELECTED_SPRITE = ResourceLocation.fromNamespaceAndPath("minecraft", "container/creative_inventory/tab_top_selected_2");
+    private static final ResourceLocation UNSELECTED_SPRITE = ResourceLocation.fromNamespaceAndPath("minecraft", "container/creative_inventory/tab_top_unselected_2");
 
     private final CreativeScreenEvents.TagFilter category;
     private final ItemStack stack;
@@ -40,13 +41,11 @@ public class TagButton extends Button {
 
     @Override
     public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTicks) {
-        int width = this.toggled ? 32 : 28;
-        int textureX = 26;
-        int textureY = this.toggled ? 32 : 0;
         RenderSystem.enableBlend();
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
-        // Draw rotated texture using blit with rotation (swap width/height for 90-degree rotation)
-        graphics.blit(TABS, this.getX(), this.getY(), textureX, textureY, 26, width);
+        ResourceLocation sprite = this.toggled ? SELECTED_SPRITE : UNSELECTED_SPRITE;
+        int height = this.toggled ? 32 : 28;
+        graphics.blitSprite(sprite, this.getX(), this.getY(), 26, height);
         graphics.renderItem(this.stack, this.getX() + 8, this.getY() + 5);
         RenderSystem.disableBlend();
     }

@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "mail_box",
+  "key": {
+    "C": {
+      "tag": "c:chests/wooden"
+    },
+    "F": {
+      "item": "cfm:stripped_warped_upgraded_fence"
+    }
+  },
+  "pattern": [
+    "C",
+    "F",
+    "F"
+  ],
+  "result": {
+    "count": 1,
+    "id": "cfm:stripped_warped_mail_box"
+  }
+}

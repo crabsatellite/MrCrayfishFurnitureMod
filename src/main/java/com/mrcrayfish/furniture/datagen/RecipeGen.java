@@ -5,6 +5,7 @@ import com.mrcrayfish.furniture.core.ModBlocks;
 import com.mrcrayfish.furniture.core.ModItems;
 import com.mrcrayfish.furniture.core.ModRecipeSerializers;
 import com.mrcrayfish.furniture.data.ForgeShapedRecipeBuilder;
+import com.mrcrayfish.furniture.data.ForgeCookingRecipeBuilder;
 import com.mrcrayfish.furniture.item.crafting.FreezerSolidifyRecipe;
 import com.mrcrayfish.furniture.item.crafting.GrillCookingRecipe;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -331,9 +332,9 @@ public class RecipeGen extends RecipeProvider {
         cookingRecipesForMethod(consumer, "grill_cooking", ModRecipeSerializers.GRILL_COOKING.get(), 600);
 
         // Freezing Recipes
-        SimpleCookingRecipeBuilder.generic(Ingredient.of(Items.WATER_BUCKET), RecipeCategory.MISC, Blocks.ICE, 1, 1000, ModRecipeSerializers.FREEZER_SOLIDIFY.get(), FreezerSolidifyRecipe::new).unlockedBy("has_water", has(Items.WATER_BUCKET)).save(consumer, "ice_from_freezing");
-        SimpleCookingRecipeBuilder.generic(Ingredient.of(Items.ICE), RecipeCategory.MISC, Blocks.PACKED_ICE, 1, 2000, ModRecipeSerializers.FREEZER_SOLIDIFY.get(), FreezerSolidifyRecipe::new).unlockedBy("has_ice", has(Items.ICE)).save(consumer, "packed_ice_from_freezing");
-        SimpleCookingRecipeBuilder.generic(Ingredient.of(Items.PACKED_ICE), RecipeCategory.MISC, Blocks.BLUE_ICE, 1, 4000, ModRecipeSerializers.FREEZER_SOLIDIFY.get(), FreezerSolidifyRecipe::new).unlockedBy("has_packed_ice", has(Items.PACKED_ICE)).save(consumer, "blue_ice_from_freezing");
+        ForgeCookingRecipeBuilder.generic(Ingredient.of(Items.WATER_BUCKET), RecipeCategory.MISC, Blocks.ICE, 1, 1000, ModRecipeSerializers.FREEZER_SOLIDIFY.get(), FreezerSolidifyRecipe::new).unlockedBy("has_water", has(Items.WATER_BUCKET)).save(consumer, "ice_from_freezing");
+        ForgeCookingRecipeBuilder.generic(Ingredient.of(Items.ICE), RecipeCategory.MISC, Blocks.PACKED_ICE, 1, 2000, ModRecipeSerializers.FREEZER_SOLIDIFY.get(), FreezerSolidifyRecipe::new).unlockedBy("has_ice", has(Items.ICE)).save(consumer, "packed_ice_from_freezing");
+        ForgeCookingRecipeBuilder.generic(Ingredient.of(Items.PACKED_ICE), RecipeCategory.MISC, Blocks.BLUE_ICE, 1, 4000, ModRecipeSerializers.FREEZER_SOLIDIFY.get(), FreezerSolidifyRecipe::new).unlockedBy("has_packed_ice", has(Items.PACKED_ICE)).save(consumer, "blue_ice_from_freezing");
     }
 
     private static void table(RecipeOutput recipeConsumer, ItemLike table, ItemLike log, ItemLike planks) {
@@ -571,6 +572,7 @@ public class RecipeGen extends RecipeProvider {
 
     private static void trampoline(RecipeOutput recipeConsumer, String key, ItemStack trampoline, DyeColor color, ItemLike wool) {
         CompoundTag blockEntityTag = new CompoundTag();
+        blockEntityTag.putString("id", Reference.MOD_ID + ":trampoline");
         blockEntityTag.putInt("Color", color.getId());
         trampoline.set(DataComponents.BLOCK_ENTITY_DATA, net.minecraft.world.item.component.CustomData.of(blockEntityTag));
         ForgeShapedRecipeBuilder.shapedRecipe(RecipeCategory.DECORATIONS, key, trampoline)
@@ -707,15 +709,15 @@ public class RecipeGen extends RecipeProvider {
     private static void cookingRecipesForMethod(RecipeOutput recipeConsumer, String recipeConsumerIn, net.minecraft.world.item.crafting.RecipeSerializer<?> cookingMethod, int cookingTime) {
         @SuppressWarnings("unchecked")
         net.minecraft.world.item.crafting.RecipeSerializer<GrillCookingRecipe> serializer = (net.minecraft.world.item.crafting.RecipeSerializer<GrillCookingRecipe>) cookingMethod;
-        SimpleCookingRecipeBuilder.generic(Ingredient.of(Items.BEEF), RecipeCategory.FOOD, Items.COOKED_BEEF, 0.35F, cookingTime, serializer, GrillCookingRecipe::new).unlockedBy("has_beef", has(Items.BEEF)).save(recipeConsumer, "cooked_beef_from_" + recipeConsumerIn);
-        SimpleCookingRecipeBuilder.generic(Ingredient.of(Items.CHICKEN), RecipeCategory.FOOD, Items.COOKED_CHICKEN, 0.35F, cookingTime, serializer, GrillCookingRecipe::new).unlockedBy("has_chicken", has(Items.CHICKEN)).save(recipeConsumer, "cooked_chicken_from_" + recipeConsumerIn);
-        SimpleCookingRecipeBuilder.generic(Ingredient.of(Items.COD), RecipeCategory.FOOD, Items.COOKED_COD, 0.35F, cookingTime, serializer, GrillCookingRecipe::new).unlockedBy("has_cod", has(Items.COD)).save(recipeConsumer, "cooked_cod_from_" + recipeConsumerIn);
-        SimpleCookingRecipeBuilder.generic(Ingredient.of(Blocks.KELP), RecipeCategory.FOOD, Items.DRIED_KELP, 0.1F, cookingTime, serializer, GrillCookingRecipe::new).unlockedBy("has_kelp", has(Blocks.KELP)).save(recipeConsumer, "dried_kelp_from_" + recipeConsumerIn);
-        SimpleCookingRecipeBuilder.generic(Ingredient.of(Items.SALMON), RecipeCategory.FOOD, Items.COOKED_SALMON, 0.35F, cookingTime, serializer, GrillCookingRecipe::new).unlockedBy("has_salmon", has(Items.SALMON)).save(recipeConsumer, "cooked_salmon_from_" + recipeConsumerIn);
-        SimpleCookingRecipeBuilder.generic(Ingredient.of(Items.MUTTON), RecipeCategory.FOOD, Items.COOKED_MUTTON, 0.35F, cookingTime, serializer, GrillCookingRecipe::new).unlockedBy("has_mutton", has(Items.MUTTON)).save(recipeConsumer, "cooked_mutton_from_" + recipeConsumerIn);
-        SimpleCookingRecipeBuilder.generic(Ingredient.of(Items.PORKCHOP), RecipeCategory.FOOD, Items.COOKED_PORKCHOP, 0.35F, cookingTime, serializer, GrillCookingRecipe::new).unlockedBy("has_porkchop", has(Items.PORKCHOP)).save(recipeConsumer, "cooked_porkchop_from_" + recipeConsumerIn);
-        SimpleCookingRecipeBuilder.generic(Ingredient.of(Items.POTATO), RecipeCategory.FOOD, Items.BAKED_POTATO, 0.35F, cookingTime, serializer, GrillCookingRecipe::new).unlockedBy("has_potato", has(Items.POTATO)).save(recipeConsumer, "baked_potato_from_" + recipeConsumerIn);
-        SimpleCookingRecipeBuilder.generic(Ingredient.of(Items.RABBIT), RecipeCategory.FOOD, Items.COOKED_RABBIT, 0.35F, cookingTime, serializer, GrillCookingRecipe::new).unlockedBy("has_rabbit", has(Items.RABBIT)).save(recipeConsumer, "cooked_rabbit_from_" + recipeConsumerIn);
+        ForgeCookingRecipeBuilder.generic(Ingredient.of(Items.BEEF), RecipeCategory.FOOD, Items.COOKED_BEEF, 0.35F, cookingTime, serializer, GrillCookingRecipe::new).unlockedBy("has_beef", has(Items.BEEF)).save(recipeConsumer, "cooked_beef_from_" + recipeConsumerIn);
+        ForgeCookingRecipeBuilder.generic(Ingredient.of(Items.CHICKEN), RecipeCategory.FOOD, Items.COOKED_CHICKEN, 0.35F, cookingTime, serializer, GrillCookingRecipe::new).unlockedBy("has_chicken", has(Items.CHICKEN)).save(recipeConsumer, "cooked_chicken_from_" + recipeConsumerIn);
+        ForgeCookingRecipeBuilder.generic(Ingredient.of(Items.COD), RecipeCategory.FOOD, Items.COOKED_COD, 0.35F, cookingTime, serializer, GrillCookingRecipe::new).unlockedBy("has_cod", has(Items.COD)).save(recipeConsumer, "cooked_cod_from_" + recipeConsumerIn);
+        ForgeCookingRecipeBuilder.generic(Ingredient.of(Blocks.KELP), RecipeCategory.FOOD, Items.DRIED_KELP, 0.1F, cookingTime, serializer, GrillCookingRecipe::new).unlockedBy("has_kelp", has(Blocks.KELP)).save(recipeConsumer, "dried_kelp_from_" + recipeConsumerIn);
+        ForgeCookingRecipeBuilder.generic(Ingredient.of(Items.SALMON), RecipeCategory.FOOD, Items.COOKED_SALMON, 0.35F, cookingTime, serializer, GrillCookingRecipe::new).unlockedBy("has_salmon", has(Items.SALMON)).save(recipeConsumer, "cooked_salmon_from_" + recipeConsumerIn);
+        ForgeCookingRecipeBuilder.generic(Ingredient.of(Items.MUTTON), RecipeCategory.FOOD, Items.COOKED_MUTTON, 0.35F, cookingTime, serializer, GrillCookingRecipe::new).unlockedBy("has_mutton", has(Items.MUTTON)).save(recipeConsumer, "cooked_mutton_from_" + recipeConsumerIn);
+        ForgeCookingRecipeBuilder.generic(Ingredient.of(Items.PORKCHOP), RecipeCategory.FOOD, Items.COOKED_PORKCHOP, 0.35F, cookingTime, serializer, GrillCookingRecipe::new).unlockedBy("has_porkchop", has(Items.PORKCHOP)).save(recipeConsumer, "cooked_porkchop_from_" + recipeConsumerIn);
+        ForgeCookingRecipeBuilder.generic(Ingredient.of(Items.POTATO), RecipeCategory.FOOD, Items.BAKED_POTATO, 0.35F, cookingTime, serializer, GrillCookingRecipe::new).unlockedBy("has_potato", has(Items.POTATO)).save(recipeConsumer, "baked_potato_from_" + recipeConsumerIn);
+        ForgeCookingRecipeBuilder.generic(Ingredient.of(Items.RABBIT), RecipeCategory.FOOD, Items.COOKED_RABBIT, 0.35F, cookingTime, serializer, GrillCookingRecipe::new).unlockedBy("has_rabbit", has(Items.RABBIT)).save(recipeConsumer, "cooked_rabbit_from_" + recipeConsumerIn);
     }
 }
 

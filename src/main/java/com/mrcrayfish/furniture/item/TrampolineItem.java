@@ -56,6 +56,7 @@ public class TrampolineItem extends BlockItem implements CreativeItem {
         for (DyeColor color : DyeColor.values()) {
             ItemStack stack = new ItemStack(this);
             CompoundTag blockEntityTag = new CompoundTag();
+            blockEntityTag.putString("id", Reference.MOD_ID + ":trampoline");
             blockEntityTag.putInt("Color", color.getId());
             stack.set(DataComponents.BLOCK_ENTITY_DATA, CustomData.of(blockEntityTag));
             output.accept(stack);
